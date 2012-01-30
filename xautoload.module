@@ -1,0 +1,120 @@
+<?php
+
+
+/**
+ * Implements hook_boot()
+ */
+function xautoload_boot() {
+  spl_autoload_register('_xautoload_autoload');
+}
+
+
+/**
+ * Autoload callback for classes and interfaces, registered in hook_boot().
+ */
+function _xautoload_autoload($name) {
+  $file = _xautoload_finder()->findFile($name);
+  if ($file) {
+    require_once $file;
+  }
+}
+
+
+function _xautoload_finder() {
+  static $_finder;
+  if (!isset($_finder)) {
+    $modules = module_list();
+    foreach ($modules as $module => $m) {
+      $path = drupal_get_path('module', $module) . '/lib/';
+      if (is_dir($path)) {
+        $modules[$module] = $path;
+      }
+    }
+    $_finder = new xautoload_ClassFinder($modules);
+  }
+  return $_finder;
+}
+
+
+/**
+ * We don't put this in the lib folder, obviously,
+ * because it has to be available before xautoload is initialized.
+ *
+ * The thing is called ClassFinder, but it also works for interfaces.
+ */
+class xautoload_ClassFinder {
+
+  protected $modules = array();
+
+  function __construct($modules) {
+    $this->modules = $modules;
+  }
+
+  function findFile($class) {
+    if (preg_match('/^([a-z0-9_]+)_([A-Z].*)$/', $class, $m)) {
+      list(,$module,$name) = $m;
+      if (isset($this->modules[$module])) {
+        $path = strtr($name, '_', '/');
+        $path = $this->modules[$module] . $path . '.inc';
+        if (file_exists($path)) {
+          return $path;
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * Implements hook_autoload_info()
+ *
+ * Give modules the choice to have their autoloadable classes registered in the
+ * registry with autoload.module, for better autoload performance.
+ */
+function xautoload_autoload_info() {
+  // Get current list of modules and their files.
+  $modules = array();
+  $query = db_query("SELECT * FROM {system} WHERE type = 'module'");
+  // Get the list of files we are going to parse.
+  $locations = array();
+  $scanner = new xautoload_DirScanner($locations);
+  while ($module = db_fetch_object($query)) {
+    $info = unserialize($module->info);
+    if (!empty($info['autoload'])) {
+      $dir = dirname($module->filename);
+      $scanner->scan("$dir/lib", $module->name);
+    }
+  }
+  return $locations;
+}
+
+
+class xautoload_DirScanner {
+
+  protected $locations;
+
+  function __construct(array &$locations) {
+    $this->locations =& $locations;
+  }
+
+  function scan($dir, $prefix) {
+    foreach (scandir($dir) as $candidate) {
+      if ($candidate == '.' || $candidate == '..') {
+        continue;
+      }
+      $path = $dir . '/' . $candidate;
+      // TODO: Strict checking for valid identifier strings
+      if (preg_match('#^(.+)\.inc$#', $candidate, $m)) {
+        if (is_file($path)) {
+          $name = $prefix . '_' . $m[1];
+          $this->locations[$name] = $path;
+        }
+      }
+      elseif (preg_match('#^(.+)$#', $candidate, $m)) {
+        if (is_dir($path)) {
+          $this->scan($path, $prefix . '_' . $candidate);
+        }
+      }
+    }
+  }
+}
