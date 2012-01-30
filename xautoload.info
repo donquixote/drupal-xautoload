@@ -1,5 +1,4 @@
-
 name = "X Autoload"
 description = "Autoload based on pseudo PSR-0 folder structure and module prefix."
-core = 6.x
+core = 7.x
 php = 5.2
