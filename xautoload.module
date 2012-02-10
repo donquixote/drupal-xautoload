@@ -5,6 +5,7 @@
  * Implements hook_boot()
  */
 function xautoload_boot() {
+  // TODO: We want a cached version of this.
   spl_autoload_register('_xautoload_autoload');
 }
 
@@ -20,6 +21,9 @@ function _xautoload_autoload($name) {
 }
 
 
+/**
+ * Static registry for the finder object.
+ */
 function _xautoload_finder() {
   static $_finder;
   if (!isset($_finder)) {
@@ -30,6 +34,8 @@ function _xautoload_finder() {
         $modules[$module] = $path;
       }
     }
+    // Autoload is not ready yet, this is why we include this one explicitly.
+    module_load_include('php', 'xautoload', 'lib/ClassFinder');
     $_finder = new xautoload_ClassFinder($modules);
   }
   return $_finder;
@@ -37,30 +43,17 @@ function _xautoload_finder() {
 
 
 /**
- * We don't put this in the lib folder, obviously,
- * because it has to be available before xautoload is initialized.
+ * Implements hook_registry_files_alter()
  *
- * The thing is called ClassFinder, but it also works for interfaces.
+ * Support wildcard syntax in the files[] setting in your module's info file.
  */
-class xautoload_ClassFinder {
+function xautoload_registry_files_alter(&$files, $modules) {
 
-  protected $modules = array();
+  $orig = $files;
+  // The class file is loaded using the regular uncached xautoload autoload.
+  $rec_scan = new xautoload_RecursiveScan($files);
 
-  function __construct($modules) {
-    $this->modules = $modules;
-  }
-
-  function findFile($class) {
-    if (preg_match('/^([a-z0-9_]+)_([A-Z].*)$/', $class, $m)) {
-      list(,$module,$name) = $m;
-      if (isset($this->modules[$module])) {
-        $path = strtr($name, '_', '/');
-        $path = $this->modules[$module] . $path . '.inc';
-        if (file_exists($path)) {
-          return $path;
-        }
-      }
-    }
+  foreach ($files as $path => $file) {
+    $rec_scan->check($path, $file);
   }
 }
-
