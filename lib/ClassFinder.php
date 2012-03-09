@@ -23,14 +23,14 @@ class xautoload_ClassFinder {
    * @return :string
    *   The file that defines the class or interface, or NULL if not found.
    */
-  function findFile($class) {
+  function findFile($api, $class) {
     if (preg_match('/^([a-z0-9_]+)_([A-Z].*)$/', $class, $m)) {
       list(,$module,$name) = $m;
       if (isset($this->modules[$module])) {
         $path = strtr($name, '_', '/');
         $path = $this->modules[$module] . $path . '.php';
-        if (file_exists($path)) {
-          return $path;
+        if ($api->suggestFile($path)) {
+          return TRUE;
         }
       }
     }

@@ -7,7 +7,7 @@
 /**
  * Scan directories for wildcard files[] instructions in a module's info file.
  */
-class xautoload_RecursiveScan {
+class xautoload_RegistryWildcard_RecursiveScan {
 
   protected $_array;
   protected $_value;

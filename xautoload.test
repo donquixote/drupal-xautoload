@@ -1,0 +1,84 @@
+<?php
+
+
+class XAutoloadUnitTestCase extends DrupalUnitTestCase {
+
+  static function getInfo() {
+    return array(
+      'name' => 'X Autoload unit test',
+      'description' => 'Test the xautoload class finder.',
+      'group' => 'X Autoload',
+    );
+  }
+
+  function assertPublic($status, $message) {
+    return $this->assert($status, $message);
+  }
+
+  function setUp() {
+    drupal_load('module', 'xautoload');
+    // _xautoload_register();
+    parent::setUp();
+  }
+
+  function testNsRegNested() {
+    $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
+    $finder->registerNamespaceDeep('Drupal\\menu_block', 'sites/all/modules/contrib/menu_block/lib');
+    $finder->registerPrefixDeep('menu_block', 'sites/all/modules/contrib/menu_block/lib');
+    $finder_str = print_r($finder, TRUE);
+
+    $this->_findClass($finder, 'Drupal\\menu_block\\Abc_Def', array(
+      'sites/all/modules/contrib/menu_block/lib/Abc/Def.php',
+    ));
+    $this->_findClass($finder, 'menu_block_Abc_Def', array(
+      'sites/all/modules/contrib/menu_block/lib/Abc/Def.php',
+    ));
+
+    $this->assert(print_r($finder, TRUE) === $finder_str,
+      "Finder configuration may not change during the process.");
+    $this->assert(TRUE, '<pre>' . print_r($finder, TRUE) . '</pre>');
+  }
+
+  function testNsReg() {
+    $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
+    $finder->registerNamespaceDeep('Drupal\\dqx_adminmenu', 'sites/all/modules/contrib/dqx_adminmenu/lib');
+    $finder->registerNamespaceRoot('Drupal\\dqx_adminmenu', 'sites/all/modules/contrib/dqx_adminmenu/vendor');
+    $finder->registerPrefixDeep('dqx_adminmenu', 'sites/all/modules/contrib/dqx_adminmenu/lib');
+    $finder->registerPrefixRoot('dqx_adminmenu', 'sites/all/modules/contrib/dqx_adminmenu/vendor');
+    $finder_str = print_r($finder, TRUE);
+
+    $this->_findClass($finder, 'Drupal\\dqx_adminmenu\\Abc_Def', array(
+      'sites/all/modules/contrib/dqx_adminmenu/lib/Abc/Def.php',
+      'sites/all/modules/contrib/dqx_adminmenu/vendor/Drupal/dqx_adminmenu/Abc/Def.php',
+    ));
+    $this->_findClass($finder, 'dqx_adminmenu_Abc_Def', array(
+      'sites/all/modules/contrib/dqx_adminmenu/lib/Abc/Def.php',
+      // Yes, this is how prefix-root works: The _ in the module name becomes a dir separator.
+      'sites/all/modules/contrib/dqx_adminmenu/vendor/dqx/adminmenu/Abc/Def.php',
+    ));
+
+    $this->assert(print_r($finder, TRUE) === $finder_str,
+      "Finder configuration may not change during the process.");
+    $this->assert(TRUE, '<pre>' . print_r($finder, TRUE) . '</pre>');
+  }
+
+  protected function _findClass($finder, $class, array $expectedSuggestions) {
+    try {
+      if (TRUE) {
+        for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {
+          $api = new xautoload_Mock_InjectedAPI_findFile($this, $class, $expectedSuggestions, $iAccept);
+          $finder->findFile($api, $class);
+          $api->finish();
+        }
+      }
+      $api = new xautoload_Mock_InjectedAPI_findFile($this, $class, $expectedSuggestions);
+      $finder->findFile($api, $class);
+      $api->finish();
+    }
+    catch (Exception $e) {
+      $this->assert(FALSE, 'Exception: ' . $e->getMessage());
+      return;
+    }
+    $this->assert(TRUE, "Successfully loaded $class");
+  }
+}

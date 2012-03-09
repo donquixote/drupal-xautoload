@@ -9,7 +9,7 @@
  * Actually, this only works in D6 (yet), but we keep this file around for
  * easier porting between the D6 and the D7 version of xautoload.
  */
-class xautoload_DirScanner {
+class xautoload_Discovery_DirScanner {
 
   protected $locations;
 
