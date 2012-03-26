@@ -3,11 +3,22 @@
 
 /**
  * Implements hook_boot()
+ *
+ * This is only to let Drupal know we want this module to load in bootstrap.
  */
 function xautoload_boot() {
-  // TODO: We want a cached version of this.
-  _xautoload_register();
+  // Nothing happening here.
 }
+
+
+/*
+ * When the module has just been installed,
+ * Drupal does not know yet this is a boot-level module.
+ *
+ * We can not rely on hook_boot() to fire, and instead register the autoloader
+ * on inclusion of this *.module file.
+ */
+_xautoload_register();
 
 
 function _xautoload_register() {
@@ -32,7 +43,7 @@ function _xautoload_register() {
 
   $loader = new xautoload_ClassLoader($finder);
   $loader->register(TRUE);
-  // spl_autoload_unregister('_xautoload_autoload_temp');
+  spl_autoload_unregister('_xautoload_autoload_temp');
 }
 
 
@@ -53,6 +64,15 @@ function _xautoload_autoload_temp($name) {
 
 
 /**
+ * Get the class finder object.
+ * This is the public version of _xautoload_finder().
+ */
+function xautoload_get_finder() {
+  return _xautoload_finder();
+}
+
+
+/**
  * Static cache for the finder object.
  */
 function _xautoload_finder() {
@@ -64,21 +84,27 @@ function _xautoload_finder() {
 }
 
 
+/**
+ * Two autoload styles are registered by default:
+ * 
+ */
 function _xautoload_finder_create() {
 
   $system = new xautoload_DrupalExtensionSystem();
   $handler = new xautoload_NamespaceHandler_DrupalExtensionLib($system);
+  $handler_psr0 = new xautoload_NamespaceHandler_DrupalExtensionPSR0($system);
 
   if (version_compare(PHP_VERSION, '5.3') >= 0) {
     $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
-    $finder->registerNamespaceHandler('Drupal', $handler);
-    $finder->registerNamespaceHandler('Drupal\\Module', $handler);
+    // D8-style autoloading.
+    $finder->registerNamespaceHandler('Drupal', $handler_psr0);
   }
   else {
     // If we are not at PHP 5.3 +, we don't need namespaces support.
     $finder = new xautoload_ClassFinder_Prefix();
   }
 
+  // xautoload-style autoloading:
   $finder->registerPrefixHandler('', $handler);
 
   return $finder;
