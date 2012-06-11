@@ -92,7 +92,7 @@ function _xautoload_finder_create() {
 
   $system = new xautoload_DrupalExtensionSystem();
   $handler = new xautoload_NamespaceHandler_DrupalExtensionLib($system);
-  $handler_psr0 = new xautoload_NamespaceHandler_DrupalExtensionPSR0($system);
+  $handler_psr0 = new xautoload_NamespaceHandler_DrupalExtensionLibPSR0($system);
 
   if (version_compare(PHP_VERSION, '5.3') >= 0) {
     $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
