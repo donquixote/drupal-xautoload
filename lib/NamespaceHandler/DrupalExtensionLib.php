@@ -3,7 +3,7 @@
 
 class xautoload_NamespaceHandler_DrupalExtensionLib implements xautoload_NamespaceHandler_Interface {
 
-  protected $modules = array();
+  protected $extensions = array();
   protected $system;
 
   function __construct($system) {
@@ -26,14 +26,14 @@ class xautoload_NamespaceHandler_DrupalExtensionLib implements xautoload_Namespa
         // We found a '_' followed by an uppercase character.
         break;
       }
-      // We hit a normal '_' within a module name.
+      // We hit a normal '_' within an extension name.
       $path_suffix[$pos] = '_';
     }
     if (FALSE !== $pos) {
-      $module = substr($path_suffix, 0, $pos);
-      $this->_initModule($module, $path_prefix_symbolic);
-      if (!empty($this->modules[$module])) {
-        $path = $this->modules[$module] . substr($path_suffix, $pos + 1);
+      $extension = substr($path_suffix, 0, $pos);
+      $this->_initExtension($extension, $path_prefix_symbolic);
+      if (!empty($this->extensions[$extension])) {
+        $path = $this->extensions[$extension] . substr($path_suffix, $pos + 1);
         if ($api->suggestFile($path)) {
           return TRUE;
         }
@@ -41,19 +41,19 @@ class xautoload_NamespaceHandler_DrupalExtensionLib implements xautoload_Namespa
     }
   }
 
-  protected function _initModule($module, $path_prefix_symbolic) {
-    if (!isset($this->modules[$module])) {
-      if ($this->system->module_exists($module)) {
-        $module_dir = $this->system->drupal_get_path('module', $module);
-        $this->modules[$module] = $this->_moduleClassesDir($module, $module_dir, $path_prefix_symbolic);
+  protected function _initExtension($extension, $path_prefix_symbolic) {
+    if (!isset($this->extensions[$extension])) {
+      if ($this->system->extensionExists($extension)) {
+        $extension_dir = $this->system->getExtensionPath($extension);
+        $this->extensions[$extension] = $this->_extensionClassesDir($extension, $extension_dir, $path_prefix_symbolic);
       }
       else {
-        $this->modules[$module] = FALSE;
+        $this->extensions[$extension] = FALSE;
       }
     }
   }
 
-  protected function _moduleClassesDir($module, $module_dir, $path_prefix_symbolic) {
-    return $module_dir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
+  protected function _extensionClassesDir($name, $extension_dir, $path_prefix_symbolic) {
+    return $extension_dir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
   }
 }
