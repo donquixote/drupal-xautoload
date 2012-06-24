@@ -5,17 +5,6 @@ class xautoload_Mock_DrupalExtensionSystem {
 
   protected $extensions;
 
-  function module_exists($module) {
-    return isset($this->extensions[$module]);
-  }
-
-  function drupal_get_path($type, $name) {
-    $info = @$this->extensions[$name];
-    if ($info && $info['type'] === $type) {
-      return $info['path'];
-    }
-  }
-
   function addExtension($type, $name, $path) {
     $this->extensions[$name] = array(
       'type' => $type,
@@ -29,5 +18,16 @@ class xautoload_Mock_DrupalExtensionSystem {
 
   function addTheme($name, $path) {
     $this->addExtension('theme', $name, $path);
+  }
+
+  function extensionExists($name) {
+    return isset($this->extensions[$module]);
+  }
+
+  function getExtensionPath($name) {
+    $info = @$this->extensions[$name];
+    if ($info) {
+      return $info['path'];
+    }
   }
 }
