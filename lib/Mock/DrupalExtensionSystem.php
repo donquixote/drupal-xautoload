@@ -21,7 +21,7 @@ class xautoload_Mock_DrupalExtensionSystem {
   }
 
   function extensionExists($name) {
-    return isset($this->extensions[$module]);
+    return isset($this->extensions[$name]);
   }
 
   function getExtensionPath($name) {

@@ -104,15 +104,15 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
     $system = new xautoload_Mock_DrupalExtensionSystem();
     $system->addModule('menu_block', 'sites/all/modules/contrib/menu_block');
     $this->assert(
-      $system->module_exists('menu_block'),
+      $system->extensionExists('menu_block'),
       'menu_block should "exist".'
     );
     $this->assert(
-      !$system->module_exists('foo'),
+      !$system->extensionExists('foo'),
       'foo should not "exist".'
     );
     $this->assert(
-      $system->drupal_get_path('module', 'menu_block') === 'sites/all/modules/contrib/menu_block',
+      $system->getExtensionPath('menu_block') === 'sites/all/modules/contrib/menu_block',
       'menu_block should be located in sites/all/modules/contrib/menu_block'
     );
 
