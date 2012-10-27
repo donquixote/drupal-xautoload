@@ -11,6 +11,60 @@ function xautoload_boot() {
 }
 
 
+/**
+ * Implements hook_init()
+ *
+ * Note:
+ *   This is a first step to allow modules to register foreign namespaces.
+ *   We will probably change this, to allow bootstrap modules to register their
+ *   namespaces earlier in the request.
+ *   We might also find a solution to cache the result of this hook between
+ *   requests. This would require a different implementation of the InjectedAPI,
+ *   which would no longer have a direct reference to the finder object.
+ */
+function xautoload_init() {
+  $api = new xautoload_InjectedAPI_hookXautoload(xautoload_get_finder());
+  foreach (module_implements('xautoload') as $module) {
+    $api->setModule($module);
+    $f = $module . '_xautoload';
+    $f($api);
+  }
+}
+
+
+/**
+ * Implements hook_module_implements_alter()
+ */
+function xautoload_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'init') {
+    // Move xautoload_init() to the start.
+    $implementations = array('xautoload' => FALSE) + $implementations;
+  }
+}
+
+
+/**
+ * Implements hook_xautoload on behalf of libraries module
+ */
+function libraries_xautoload($api) {
+  foreach (libraries_info() as $name => $info) {
+    if (isset($info['xautoload'])) {
+      $xinfo = $info['xautoload'];
+      $api->setLibrary($name);
+      if (is_array($xinfo)) {
+        // TODO: Support array settings.
+        if (isset($xinfo['callback'])) {
+          call_user_func($xinfo, $api);
+        }
+      }
+      elseif (is_callable($xinfo)) {
+        call_user_func($xinfo, $api);
+      }
+    }
+  }
+}
+
+
 /*
  * When the module has just been installed,
  * Drupal does not know yet this is a boot-level module.
