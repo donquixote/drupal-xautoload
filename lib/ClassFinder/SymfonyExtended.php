@@ -95,7 +95,7 @@ class xautoload_ClassFinder_SymfonyExtended extends xautoload_ClassFinder_Namesp
    */
   function registerNamespaces(array $namespaces) {
     foreach ($namespaces as $namespace => $locations) {
-      $this->registerNamespace($namespace => $locations);
+      $this->registerNamespace($namespace, $locations);
     }
   }
 
@@ -139,7 +139,7 @@ class xautoload_ClassFinder_SymfonyExtended extends xautoload_ClassFinder_Namesp
    */
   function registerPrefix($prefix, $paths) {
     $this->prefixes[$prefix] = (array) $paths;
-    $subdir = str_replace('_', DIRECTORY_SEPARATOR, $prefix)
+    $subdir = str_replace('_', DIRECTORY_SEPARATOR, $prefix);
     foreach ($locations as $path) {
       $this->registerPrefixDeepLocation($prefix, $path . DIRECTORY_SEPARATOR . $subdir);
     }
