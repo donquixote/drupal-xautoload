@@ -1,6 +1,16 @@
 <?php
 
 
+/*
+ * When the module has just been installed,
+ * Drupal does not know yet this is a boot-level module.
+ *
+ * We can not rely on hook_boot() to fire, and instead register the autoloader
+ * on inclusion of this *.module file.
+ */
+_xautoload_register();
+
+
 /**
  * Implements hook_boot()
  *
@@ -79,16 +89,6 @@ function libraries_xautoload($api) {
     }
   }
 }
-
-
-/*
- * When the module has just been installed,
- * Drupal does not know yet this is a boot-level module.
- *
- * We can not rely on hook_boot() to fire, and instead register the autoloader
- * on inclusion of this *.module file.
- */
-_xautoload_register();
 
 
 function _xautoload_register() {
