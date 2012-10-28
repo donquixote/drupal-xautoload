@@ -33,6 +33,22 @@ function xautoload_init() {
 
 
 /**
+ * Implements hook_xautoload() on behalf of simpletest
+ */
+function simpletest_xautoload($api) {
+
+  if (version_compare(PHP_VERSION, '5.3') < 0) {
+    // Namespaces only exist since PHP 5.3.
+    return;
+  }
+
+  // Register a handler that can find classes within disabled modules.
+  // The handler will only load classes of the format "Drupal\(module)\Tests\.."
+  $api->namespaceHandler('Drupal', new xautoload_NamespaceHandler_Simpletest);
+}
+
+
+/**
  * Implements hook_module_implements_alter()
  */
 function xautoload_module_implements_alter(&$implementations, $hook) {
@@ -143,7 +159,13 @@ function _xautoload_finder() {
  */
 function xautoload_simpletest_alter(&$groups) {
 
+  if (version_compare(PHP_VERSION, '5.3') < 0) {
+    // Namespaces only exist since PHP 5.3.
+    return;
+  }
+
   // Select all PSR-0 classes in the Tests namespace of all modules.
+  // This does include disabled modules.
   $system_list = db_query("SELECT name, filename FROM {system}")->fetchAllKeyed();
 
   foreach ($system_list as $name => $filename) {
