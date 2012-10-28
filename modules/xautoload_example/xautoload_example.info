@@ -1,0 +1,5 @@
+name = X Autoload Example
+description = Example module for X Autoload
+core = 7.x
+
+dependencies[] = xautoload
