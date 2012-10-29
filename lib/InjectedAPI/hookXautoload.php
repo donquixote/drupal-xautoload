@@ -110,11 +110,11 @@ class xautoload_InjectedAPI_hookXautoload {
     }
     elseif ($relative) {
       // Root dir is relative to module root.
-      if (empty($psr_0_root_dir)) {
-        $psr_0_root_dir = $this->extensionDir;
+      if (empty($dir)) {
+        $dir = $this->extensionDir;
       }
       else {
-        $psr_0_root_dir = $this->extensionDir . '/' . $psr_0_root_dir;
+        $dir = $this->extensionDir . '/' . $dir;
       }
     }
     else {
