@@ -79,7 +79,7 @@ class xautoload_InjectedAPI_hookXautoload {
    *   If $relative is TRUE, this is relative to the current extension dir.
    *   If $relative is FALSE, this is an absolute path.
    * @param boolean $relative
-   *   Whether or not the path is relative to the current extension dir.   
+   *   Whether or not the path is relative to the current extension dir.
    */
   function prefixDeep($prefix, $prefix_deep_dir = NULL, $relative = TRUE) {
     $prefix_root_dir = $this->processDir($prefix_deep_dir, $relative);
