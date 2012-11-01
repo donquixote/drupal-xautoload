@@ -47,7 +47,7 @@ class xautoload_InjectedAPI_hookXautoload {
    */
   function prefixRoot($prefix, $prefix_root_dir = NULL, $relative = TRUE) {
     $prefix_root_dir = $this->processDir($prefix_root_dir, $relative);
-    $this->finder->registerPrefixRoot($namespace, $prefix_root_dir);
+    $this->finder->registerPrefixRoot($prefix, $prefix_root_dir);
   }
 
   /**
@@ -83,7 +83,7 @@ class xautoload_InjectedAPI_hookXautoload {
    */
   function prefixDeep($prefix, $prefix_deep_dir = NULL, $relative = TRUE) {
     $prefix_root_dir = $this->processDir($prefix_deep_dir, $relative);
-    $this->finder->registerPrefixDeep($namespace, $prefix_deep_dir);
+    $this->finder->registerPrefixDeep($prefix, $prefix_deep_dir);
   }
 
   /**
