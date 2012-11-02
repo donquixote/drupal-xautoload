@@ -4,11 +4,15 @@
 class xautoload_ClassFinder_Prefix {
 
   protected $prefixMap;
+  protected $classes = array();
 
   function __construct() {
     $this->prefixMap = new xautoload_ClassFinder_Helper_RecursiveMapEvaluator();
   }
 
+  /**
+   *
+   */
   function registerPrefixRoot($prefix, $root_path, $lazy_check = TRUE) {
     $subdir = str_replace('_', DIRECTORY_SEPARATOR, $prefix);
     $deep_path
@@ -17,10 +21,16 @@ class xautoload_ClassFinder_Prefix {
       : $subdir
     ;
     $this->registerPrefixDeepLocation($prefix, $deep_path, $lazy_check);
+    // We assume that the class named $prefix is also found at this path.
+    $this->registerClass($prefix, $deep_path . '.php');
   }
 
   function registerPrefixDeep($prefix, $deep_path, $lazy_check = TRUE) {
     $this->registerPrefixDeepLocation($prefix, $deep_path, $lazy_check);
+  }
+
+  function registerClass($class, $deep_path) {
+    $this->classes[$class] = $deep_path;
   }
 
   /**
@@ -54,15 +64,39 @@ class xautoload_ClassFinder_Prefix {
   }
 
   function findFile($api, $class) {
-    if ($class{0} === '_') return;
-    if (false !== $pos = strrpos($class, '_')) {
-      $path_prefix_symbolic = str_replace('_', DIRECTORY_SEPARATOR, substr($class, 0, $pos + 1));
-      $suffix = substr($class, $pos + 1);
+
+    // First check if the literal class name is registered.
+    if (isset($this->classes[$class])) {
+      if ($api->suggestFile($this->classes[$class])) {
+        return TRUE;
+      }
     }
-    else {
-      $path_prefix_symbolic = '';
-      $suffix = $class;
+
+    if ($class{0} === '_') {
+      // We don't autoload classes that begin with '_'.
+      return;
     }
-    return $this->prefixMap->findFile_rec($api, $path_prefix_symbolic, $suffix . '.php', '_');
+
+    if (FALSE !== $pos = strrpos($class, '_')) {
+
+      // Class does contain one or more '_' symbols.
+      // Determine the canonical path.
+      $path = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+
+      // Loop through all '/', backwards.
+      do {
+        $first_part = substr($path, 0, $pos + 1);
+        $second_part = substr($path, $pos + 1);
+        if ($this->prefixMap->findFile_nested($api, $first_part, $second_part)) {
+          return TRUE;
+        }
+        $pos = strrpos($first_part, DIRECTORY_SEPARATOR, -2);
+      } while (FALSE !== $pos);
+
+      // Check if anything is registered for '' prefix.
+      if ($this->prefixMap->findFile_nested($api, '', $path)) {
+        return TRUE;
+      }
+    }
   }
 }

@@ -57,15 +57,37 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
       $class = substr($class, 1);
     }
 
-    if (false !== $pos = strrpos($class, '\\')) {
-      // namespaced class name
-      if ($class{$pos + 1} === '_') return;
-      $path_prefix_symbolic = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, 0, $pos + 1));
-      $path_suffix = str_replace('_', DIRECTORY_SEPARATOR, substr($class, $pos + 1)) . '.php';
-      return $this->namespaceMap->findFile_rec($api, $path_prefix_symbolic, $path_suffix);
+    if (FALSE !== $pos = strrpos($class, '\\')) {
+
+      // The class is within a namespace.
+      if ($class{$pos + 1} === '_') {
+        // We do not autoload classes where the class name begins with '_'.
+        return;
+      }
+
+      // Loop through positions of '\\', backwards.
+      $first_part = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, 0, $pos + 1));
+      $second_part = str_replace('_', DIRECTORY_SEPARATOR, substr($class, $pos + 1)) . '.php';
+      $path = $first_part . $second_part;
+      while (TRUE) {
+        if ($this->namespaceMap->findFile_nested($api, $first_part, $second_part)) {
+          return TRUE;
+        }
+        $pos = strrpos($first_part, DIRECTORY_SEPARATOR, -2);
+        if (FALSE === $pos) break;
+        $first_part = substr($path, 0, $pos + 1);
+        $second_part = substr($path, $pos + 1);
+      }
+
+      // Check if anything is registered for the root namespace.
+      if ($this->namespaceMap->findFile_nested($api, '', $path)) {
+        return TRUE;
+      }
     }
     else {
-      // class name with prefix
+
+      // The class is not within a namespace.
+      // Fall back to the prefix-based finder.
       return parent::findFile($api, $class);
     }
   }
