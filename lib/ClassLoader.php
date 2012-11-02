@@ -8,6 +8,10 @@ class xautoload_ClassLoader {
 
   protected $finder;
 
+  /**
+   * @param xautoload_ClassFinder $finder
+   *   The object that does the actual class finding.
+   */
   function __construct($finder) {
     $this->finder = $finder;
   }
@@ -15,9 +19,8 @@ class xautoload_ClassLoader {
   /**
    * Registers this instance as an autoloader.
    *
-   * @param Boolean $prepend Whether to prepend the autoloader or not
-   *
-   * @api
+   * @param boolean $prepend
+   *   If TRUE, the loader will be prepended. Otherwise, it will be appended.
    */
   function register($prepend = false) {
     // http://www.php.net/manual/de/function.spl-autoload-register.php#107362
@@ -38,6 +41,12 @@ class xautoload_ClassLoader {
     }
   }
 
+  /**
+   * Callback for class loading. This will include ("require") the file found.
+   *
+   * @param string $class
+   *   The class to load.
+   */
   function loadClass($class) {
     $api = new xautoload_InjectedAPI_findFile($class);
     if ($this->finder->findFile($api, $class)) {
@@ -48,6 +57,15 @@ class xautoload_ClassLoader {
     }
   }
 
+  /**
+   * For compatibility, it is possible to use the class loader as a finder.
+   *
+   * @param string $class
+   *   The class to find.
+   *
+   * @return string
+   *   File where the class is assumed to be.
+   */
   function findFile($class) {
     $api = new xautoload_InjectedAPI_findFile($class);
     if ($this->finder->findFile($api, $class)) {
