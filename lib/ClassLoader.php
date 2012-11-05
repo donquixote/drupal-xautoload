@@ -49,11 +49,15 @@ class xautoload_ClassLoader {
    */
   function loadClass($class) {
     $api = new xautoload_InjectedAPI_findFile($class);
+    // $api has a ->suggestFile($file) method, which returns TRUE if the
+    // suggested file exists.
+    // The $finder->findFile() method is supposed to suggest a number of files
+    // to the $api, until one is successful, and then return TRUE. Or return
+    // FALSE, if nothing was found.
     if ($this->finder->findFile($api, $class)) {
+      // In case of success, the file will be in the $api, to be retrieved with
+      // $api->getFile().
       require $api->getFile();
-    }
-    elseif (preg_match('#^xautoload_#', $class)) {
-      // die("Failed to load '$class'.");
     }
   }
 
