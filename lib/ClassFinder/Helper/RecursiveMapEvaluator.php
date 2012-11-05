@@ -3,6 +3,30 @@
 
 /**
  * Helper class for the class finder.
+ * This is not part of ClassFinder, because we want to use the same logic for
+ * namespaces (PSR-0) and prefixes (PEAR).
+ *
+ * This thing does not actually deal with class names, but with transformed
+ * paths.
+ *
+ * Example A:
+ * When looking for a class \Aaa\Bbb\Ccc_Ddd, the class finder will
+ * 1. Determine that this class is within a namespace.
+ * 2. Transform that into "Aaa/Bbb/Ccc/Ddd.php".
+ * 3. Check if the namespace map evaluator has anything registered for
+ *   3.1. "Aaa/Bbb/"
+ *   3.2. "Aaa/"
+ *   3.3. ""
+ *
+ * Example A:
+ * When looking for a class Aaa_Bbb_Ccc, the class finder will
+ * 1. Determine that this class is NOT within a namespace.
+ * 2. Check if a file is explicitly registered for the class itself.
+ * 3. Transform the class name into "Aaa/Bbb/Ccc.php".
+ * 4. Check if the prefix map evaluator has anything registered for
+ *   4.1. "Aaa/Bbb/"
+ *   4.2. "Aaa/"
+ *   4.3. ""
  */
 class xautoload_ClassFinder_Helper_RecursiveMapEvaluator {
 
@@ -14,6 +38,16 @@ class xautoload_ClassFinder_Helper_RecursiveMapEvaluator {
    *   $psr0_root . '/' . $first_part . $second_part
    * then instead, we look in
    *   $root_path . '/' . $first_part . $second_part
+   *
+   * @param string $first_part
+   *   The would-be namespace path relative to PSR-0 root.
+   *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
+   * @param string $path
+   *   The filesystem location of the (PSR-0) root folder for the given
+   *   namespace.
+   * @param boolean $lazy_check
+   *   If TRUE, then it is yet unknown whether the directory exists. If during
+   *   the process we find that it does not exist, we unregister it.
    */
   function registerRootPath($first_part, $root_path) {
     $deep_path = $root_path . DIRECTORY_SEPARATOR . $first_part;

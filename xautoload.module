@@ -237,13 +237,16 @@ function _xautoload_finder_create() {
     $finder = new xautoload_ClassFinder_Prefix();
   }
 
-  // xautoload-style autoloading:
+  // Register the xautoload-style PHP 5.2 compatibility solution.
   $finder->registerPrefixHandler('', $handler);
 
   return $finder;
 }
 
 
+/**
+ * Generate a prefix to use in the APC cache.
+ */
 function _xautoload_apc_prefix() {
   global $databases;
   if (!empty($databases)) {
