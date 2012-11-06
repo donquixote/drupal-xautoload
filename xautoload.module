@@ -73,17 +73,15 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
  * Implements hook_xautoload on behalf of libraries module
  */
 function libraries_xautoload($api) {
+  if (!function_exists('libraries_info')) {
+    // Libraries is at a lower version, which does not have this function.
+    return;
+  }
   foreach (libraries_info() as $name => $info) {
     if (isset($info['xautoload'])) {
       $xinfo = $info['xautoload'];
       $api->setLibrary($name);
-      if (is_array($xinfo)) {
-        // TODO: Support array settings.
-        if (isset($xinfo['callback'])) {
-          call_user_func($xinfo, $api);
-        }
-      }
-      elseif (is_callable($xinfo)) {
+      if (is_callable($xinfo)) {
         call_user_func($xinfo, $api);
       }
     }
