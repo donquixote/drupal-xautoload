@@ -54,7 +54,7 @@ function simpletest_xautoload($api) {
 
   // Register a handler that can find classes within disabled modules.
   // The handler will only load classes of the format "Drupal\(module)\Tests\.."
-  $api->namespaceHandler('Drupal', new xautoload_NamespaceHandler_Simpletest);
+  $api->namespaceHandler('Drupal', new xautoload_NamespaceHandler_DrupalSimpletest);
 }
 
 

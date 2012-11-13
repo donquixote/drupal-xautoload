@@ -1,7 +1,7 @@
 <?php
 
 
-class xautoload_NamespaceHandler_Simpletest implements xautoload_NamespaceHandler_Interface {
+class xautoload_NamespaceHandler_DrupalSimpletest implements xautoload_NamespaceHandler_Interface {
 
   protected $extensionsRaw;
   protected $extensions = array();
