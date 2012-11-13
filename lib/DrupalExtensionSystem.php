@@ -7,6 +7,9 @@ class xautoload_DrupalExtensionSystem {
     if (module_exists($name)) {
       return TRUE;
     }
+    if (!function_exists('list_themes')) {
+      return;
+    }
     $themes = list_themes();
     if (isset($themes[$name])) {
       return TRUE;
