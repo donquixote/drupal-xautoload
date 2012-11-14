@@ -16,7 +16,7 @@ class xautoload_ServiceFactory {
 
   function cachedClassFinder($registry) {
     $apc_prefix = $this->_apcPrefix();
-    if (!empty($apc_prefix)) {
+    if (!empty($apc_prefix) && FALSE) {
       $finder = $registry->classFinder;
       return new xautoload_ClassFinder_ApcCache($finder, $apc_prefix);
     }
