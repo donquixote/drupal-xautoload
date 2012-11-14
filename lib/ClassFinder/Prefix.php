@@ -7,7 +7,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
   protected $classes = array();
 
   function __construct() {
-    $this->prefixMap = new xautoload_ClassFinder_Helper_RecursiveMapEvaluator();
+    $this->prefixMap = new xautoload_ClassFinder_Helper_Map();
   }
 
   /**

@@ -62,44 +62,6 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
     // $this->assert(TRUE, '<pre>' . print_r($finder, TRUE) . '</pre>');
   }
 
-  /**
-   * This was suggested once for D8, but discarded.
-   */
-  function testLibPseudoPSR0() {
-    $system = new xautoload_Mock_DrupalExtensionSystem();
-    $system->addModule('menu_block', 'sites/all/modules/contrib/menu_block');
-
-    // PSR0-style without the /lib/ folder.
-    $handler_psr0 = new xautoload_NamespaceHandler_DrupalExtensionLib($system);
-
-    $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
-    $finder->registerNamespaceHandler('Drupal', $handler_psr0);
-
-    // We mix in some underscores just to make sure they work as designed.
-    $this->_findClass($finder, 'Drupal\\menu_block\\Abc_Def\\G_Hi', array(
-      'sites/all/modules/contrib/menu_block/lib/Abc_Def/G/Hi.php',
-    ));
-  }
-
-  /**
-   * This was suggested once for D8, but discarded.
-   */
-  function testPSR0() {
-    $system = new xautoload_Mock_DrupalExtensionSystem();
-    $system->addModule('menu_block', 'sites/all/modules/contrib/menu_block');
-
-    // PSR0-style without the /lib/ folder.
-    $handler_psr0 = new xautoload_NamespaceHandler_DrupalExtensionPSR0($system);
-
-    $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
-    $finder->registerNamespaceHandler('Drupal', $handler_psr0);
-
-    // We mix in some underscores just to make sure they work as designed.
-    $this->_findClass($finder, 'Drupal\\menu_block\\Abc_Def\\G_Hi', array(
-      'sites/all/modules/contrib/menu_block/Drupal/menu_block/Abc_Def/G/Hi.php',
-    ));
-  }
-
   function testLibPSR0() {
     $system = new xautoload_Mock_DrupalExtensionSystem();
     $system->addModule('menu_block', 'sites/all/modules/contrib/menu_block');
@@ -116,7 +78,7 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
       'menu_block should be located in sites/all/modules/contrib/menu_block'
     );
 
-    $handler = new xautoload_NamespaceHandler_DrupalExtensionLib($system);
+    $handler = new xautoload_NamespaceHandler_DrupalExtensionLibPrefixDeep($system);
     $handler_psr0 = new xautoload_NamespaceHandler_DrupalExtensionLibPSR0($system);
 
     $finder = new xautoload_ClassFinder_NamespaceOrPrefix();

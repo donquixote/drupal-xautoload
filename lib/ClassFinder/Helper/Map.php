@@ -28,7 +28,7 @@
  *   4.2. "Aaa/"
  *   4.3. ""
  */
-class xautoload_ClassFinder_Helper_RecursiveMapEvaluator {
+class xautoload_ClassFinder_Helper_Map {
 
   protected $nsPaths = array();
   protected $nsHandlers = array();

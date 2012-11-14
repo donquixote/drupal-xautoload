@@ -7,7 +7,7 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
 
   function __construct() {
     parent::__construct();
-    $this->namespaceMap = new xautoload_ClassFinder_Helper_RecursiveMapEvaluator();
+    $this->namespaceMap = new xautoload_ClassFinder_Helper_Map();
   }
 
   /**
