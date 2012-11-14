@@ -33,6 +33,10 @@ class xautoload_ClassFinder_Helper_RecursiveMapEvaluator {
   protected $nsPaths = array();
   protected $nsHandlers = array();
 
+  // Index of the last inserted handler.
+  // We can't use count(), because handlers at some index can be unset.
+  protected $lastHandlerIds = array();
+
   /**
    * If a class file would be in
    *   $psr0_root . '/' . $first_part . $second_part
@@ -73,8 +77,37 @@ class xautoload_ClassFinder_Helper_RecursiveMapEvaluator {
     $this->nsPaths[$first_part][$deep_path] = $lazy_check;
   }
 
+  /**
+   * Register a handler for a namespace or prefix.
+   *
+   * @param string $first_part
+   *   First part of the path generated from the class name.
+   * @param xautoload_NamespaceHandler_Interface $handler
+   *   The handler.
+   */
   function registerNamespaceHandler($first_part, $handler) {
-    $this->nsHandlers[$first_part][] = $handler;
+
+    if (!isset($handler)) {
+      throw new Exception("Second argument cannot be NULL.");
+    }
+    elseif (!is_a($handler, 'xautoload_NamespaceHandler_Interface')) {
+      throw new Exception("Second argument must implement xautoload_NamespaceHandler_Interface.");
+    }
+
+    if (!isset($this->nsHandlers[$first_part])) {
+      $id = $this->lastHandlerIds[$first_part] = 1;
+    }
+    else {
+      $id = $this->lastHandlerIds[$first_part]++;
+    }
+    $this->nsHandlers[$first_part][$id] = $handler;
+
+    if (method_exists($handler, 'setKillswitch')) {
+      // Give the handler a red button to unregister or replace itself.
+      $handler->setKillswitch($handler, $first_part, $id);
+    }
+
+    return $id;
   }
 
   /**
