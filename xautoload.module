@@ -285,6 +285,13 @@ function _xautoload_register() {
   // Unregister our temporary solution.
   spl_autoload_unregister('_xautoload_autoload_temp');
 
+  // if xautoload has just been enabled, it won't be listed as a boot-level
+  // module. To be sure, we register its namespace explicitly.
+  if (!module_exists('xautoload')) {
+    $lib_dir = drupal_get_path('module', 'xautoload') . '/lib';
+    xautoload('classFinder')->registerPrefixDeep('xautoload', $lib_dir);
+  }
+
   // Let's crash right here if it doesn't work.
   new xautoload_InjectedAPI_hookXautoload(xautoload('classFinder'));
 }
