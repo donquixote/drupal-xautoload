@@ -48,7 +48,7 @@ function _simpletest_xautoload($api) {
  * We only do this because that's the first hook to fire after bootstrap.
  */
 function xautoload_custom_theme() {
-return;
+
   // Make sure this only runs once.
   // (we run this from hook_init also, to avoid upgrade issues)
   static $first_run = TRUE;
@@ -57,8 +57,8 @@ return;
   }
   $first_run = FALSE;
 
-  // The "extension system" needs some babysitting.
-  // Now we tell it that the "main phase" has started.
+  // Tell the "extension system" that the "main phase" has started, and thus
+  // all Drupal modules are now available.
   xautoload('drupalExtensionSystem')->mainPhase();
 
   // Let other modules register stuff to the finder.
@@ -84,7 +84,8 @@ return;
  */
 function xautoload_init() {
 
-  // xautoload_custom_theme();
+  // If hook_custom_theme() hasn't been triggered, we call it now.
+  xautoload_custom_theme();
 }
 
 
@@ -287,7 +288,7 @@ function _xautoload_register() {
 
   // if xautoload has just been enabled, it won't be listed as a boot-level
   // module. To be sure, we register its namespace explicitly.
-  if (!module_exists('xautoload')) {
+  if (!module_exists('xautoload') && function_exists('drupal_get_path')) {
     $lib_dir = drupal_get_path('module', 'xautoload') . '/lib';
     xautoload('classFinder')->registerPrefixDeep('xautoload', $lib_dir);
   }
