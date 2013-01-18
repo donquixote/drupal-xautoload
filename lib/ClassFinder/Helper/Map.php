@@ -98,7 +98,7 @@ class xautoload_ClassFinder_Helper_Map {
       $id = $this->lastHandlerIds[$first_part] = 1;
     }
     else {
-      $id = $this->lastHandlerIds[$first_part]++;
+      $id = ++$this->lastHandlerIds[$first_part];
     }
     $this->nsHandlers[$first_part][$id] = $handler;
 
