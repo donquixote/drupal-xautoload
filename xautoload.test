@@ -78,12 +78,12 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
       'menu_block should be located in sites/all/modules/contrib/menu_block'
     );
 
-    $handler = new xautoload_NamespaceHandler_DrupalExtensionLibPrefixDeep($system);
-    $handler_psr0 = new xautoload_NamespaceHandler_DrupalExtensionLibPSR0($system);
+    $plugin = new xautoload_Plugin_DrupalExtensionLibPrefixDeep($system);
+    $plugin_psr0 = new xautoload_Plugin_DrupalExtensionLibPSR0($system);
 
     $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
-    $finder->registerNamespaceHandler('Drupal', $handler_psr0);
-    $finder->registerPrefixHandler('', $handler);
+    $finder->registerNamespacePlugin('Drupal', $plugin_psr0);
+    $finder->registerPrefixPlugin('', $plugin);
 
     // PSR0-style (D8, PHP 5.3)
     // We mix in some underscores just to make sure they work as designed.

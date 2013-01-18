@@ -71,20 +71,20 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
   }
 
   /**
-   * Register a handler for a namespace.
+   * Register a plugin for a namespace.
    *
    * @param string $namespace
    *   The namespace, e.g. "My\Library"
-   * @param xautoload_NamespaceHandler_Interface $handler
-   *   The handler.
+   * @param xautoload_Plugin_Interface $plugin
+   *   The plugin.
    */
-  function registerNamespaceHandler($namespace, $handler) {
+  function registerNamespacePlugin($namespace, $plugin) {
     $path_prefix_symbolic =
       strlen($namespace)
       ? str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\')
       : ''
     ;
-    $this->namespaceMap->registerNamespaceHandler($path_prefix_symbolic, $handler);
+    $this->namespaceMap->registerNamespacePlugin($path_prefix_symbolic, $plugin);
   }
 
   /**

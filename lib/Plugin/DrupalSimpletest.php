@@ -1,7 +1,7 @@
 <?php
 
 
-class xautoload_NamespaceHandler_DrupalSimpletest extends xautoload_NamespaceHandler_WithKillswitch {
+class xautoload_Plugin_DrupalSimpletest extends xautoload_Plugin_WithKillswitch {
 
   protected $extensionsRaw;
   protected $extensions = array();
@@ -14,7 +14,7 @@ class xautoload_NamespaceHandler_DrupalSimpletest extends xautoload_NamespaceHan
    * @param object $api
    *   The InjectedAPI object.
    * @param string $Drupal_string
-   *   The way this handler is registered, this will be "Drupal/".
+   *   The way this plugin is registered, this will be "Drupal/".
    * @param string $second_part
    *   Second part of the path, e.g. "$module/Tests/SomeTest.php".
    */

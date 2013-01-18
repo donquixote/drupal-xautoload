@@ -89,20 +89,20 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
   }
 
   /**
-   * Register a handler for a prefix.
+   * Register a plugin for a prefix.
    *
    * @param string $prefix
    *   The prefix, e.g. "My_Library"
-   * @param xautoload_NamespaceHandler_Interface $handler
-   *   The handler. See 
+   * @param xautoload_Plugin_Interface $plugin
+   *   The plugin. See 
    */
-  function registerPrefixHandler($prefix, $handler) {
+  function registerPrefixPlugin($prefix, $plugin) {
     $path_prefix_symbolic =
       strlen($prefix)
       ? str_replace('_', DIRECTORY_SEPARATOR, $prefix . '_')
       : ''
     ;
-    $this->prefixMap->registerNamespaceHandler($path_prefix_symbolic, $handler);
+    $this->prefixMap->registerNamespacePlugin($path_prefix_symbolic, $plugin);
   }
 
   /**

@@ -31,11 +31,11 @@
 class xautoload_ClassFinder_Helper_Map {
 
   protected $nsPaths = array();
-  protected $nsHandlers = array();
+  protected $nsPlugins = array();
 
-  // Index of the last inserted handler.
-  // We can't use count(), because handlers at some index can be unset.
-  protected $lastHandlerIds = array();
+  // Index of the last inserted plugin.
+  // We can't use count(), because plugins at some index can be unset.
+  protected $lastPluginIds = array();
 
   /**
    * If a class file would be in
@@ -78,33 +78,33 @@ class xautoload_ClassFinder_Helper_Map {
   }
 
   /**
-   * Register a handler for a namespace or prefix.
+   * Register a plugin for a namespace or prefix.
    *
    * @param string $first_part
    *   First part of the path generated from the class name.
-   * @param xautoload_NamespaceHandler_Interface $handler
-   *   The handler.
+   * @param xautoload_Plugin_Interface $plugin
+   *   The plugin.
    */
-  function registerNamespaceHandler($first_part, $handler) {
+  function registerNamespacePlugin($first_part, $plugin) {
 
-    if (!isset($handler)) {
+    if (!isset($plugin)) {
       throw new Exception("Second argument cannot be NULL.");
     }
-    elseif (!is_a($handler, 'xautoload_NamespaceHandler_Interface')) {
-      throw new Exception("Second argument must implement xautoload_NamespaceHandler_Interface.");
+    elseif (!is_a($plugin, 'xautoload_Plugin_Interface')) {
+      throw new Exception("Second argument must implement xautoload_Plugin_Interface.");
     }
 
-    if (!isset($this->nsHandlers[$first_part])) {
-      $id = $this->lastHandlerIds[$first_part] = 1;
+    if (!isset($this->nsPlugins[$first_part])) {
+      $id = $this->lastPluginIds[$first_part] = 1;
     }
     else {
-      $id = ++$this->lastHandlerIds[$first_part];
+      $id = ++$this->lastPluginIds[$first_part];
     }
-    $this->nsHandlers[$first_part][$id] = $handler;
+    $this->nsPlugins[$first_part][$id] = $plugin;
 
-    if (method_exists($handler, 'setKillswitch')) {
-      // Give the handler a red button to unregister or replace itself.
-      $handler->setKillswitch($handler, $first_part, $id);
+    if (method_exists($plugin, 'setKillswitch')) {
+      // Give the plugin a red button to unregister or replace itself.
+      $plugin->setKillswitch($plugin, $first_part, $id);
     }
 
     return $id;
@@ -140,10 +140,10 @@ class xautoload_ClassFinder_Helper_Map {
       }
     }
 
-    // Check any handlers registered for this namespace.
-    if (isset($this->nsHandlers[$first_part])) {
-      foreach ($this->nsHandlers[$first_part] as $handler) {
-        if ($handler->findFile($api, $first_part, $second_part)) {
+    // Check any plugin registered for this namespace.
+    if (isset($this->nsPlugins[$first_part])) {
+      foreach ($this->nsPlugins[$first_part] as $plugin) {
+        if ($plugin->findFile($api, $first_part, $second_part)) {
           return TRUE;
         }
       }

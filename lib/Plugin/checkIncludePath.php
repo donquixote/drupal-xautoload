@@ -5,7 +5,7 @@
  * This class is not used anywhere in xautoload, but could be used by other
  * modules.
  */
-class xautoload_NamespaceHandler_checkIncludePath implements xautoload_NamespaceHandler_Interface {
+class xautoload_Plugin_checkIncludePath implements xautoload_Plugin_Interface {
 
   /**
    * Expect a class Aaa_Bbb_Ccc_Ddd to be in Aaa/Bbb/Ccc/Ddd.php,

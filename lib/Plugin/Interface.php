@@ -2,12 +2,12 @@
 
 
 /**
- * Namespace handlers are for:
+ * X Autoload plugins are for:
  *   - More exotic autoload patterns that are incompatible with PSR-0 or PEAR
  *   - Situations where we don't want to register a ton of namespaces, and using
- *     a handler instead gives us performance benefits.
+ *     a plugin instead gives us performance benefits.
  */
-interface xautoload_NamespaceHandler_Interface {
+interface xautoload_Plugin_Interface {
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
@@ -16,10 +16,10 @@ interface xautoload_NamespaceHandler_Interface {
    * E.g.:
    *   - The class we look for is Some\Namespace\Some\Class
    *   - The file is actually in "exotic/location.php". This is not following
-   *     PSR-0 or PEAR standard, so we need a handler.
+   *     PSR-0 or PEAR standard, so we need a plugin.
    *   -> The class finder will transform the class name to
    *     "Some/Namespace/Some/Class.php"
-   *   - The handler was registered for the namespace "Some\Namespace". This is
+   *   - The plugin was registered for the namespace "Some\Namespace". This is
    *     because all those exotic classes all begin with Some\Namespace\
    *   -> The arguments will be:
    *     ($api = the API object, see below)
@@ -36,7 +36,7 @@ interface xautoload_NamespaceHandler_Interface {
    *   We are supposed to suggest files until suggestFile() returns TRUE, or we
    *   have no more suggestions.
    * @param string $first_part
-   *   The key that this handler was registered with.
+   *   The key that this plugin was registered with.
    *   With trailing DIRECTORY_SEPARATOR.
    * @param string $second_part
    *   Second part of the canonical path, ending with '.php'.

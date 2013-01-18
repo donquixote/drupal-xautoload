@@ -2,20 +2,20 @@
 
 
 /**
- * Namespace handlers are for:
+ * X Autoload plugins are for:
  *   - More exotic autoload patterns that are incompatible with PSR-0 or PEAR
  *   - Situations where we don't want to register a ton of namespaces, and using
- *     a handler instead gives us performance benefits.
+ *     a plugin instead gives us performance benefits.
  */
-abstract class xautoload_NamespaceHandler_WithKillswitch implements xautoload_NamespaceHandler_Interface {
+abstract class xautoload_Plugin_WithKillswitch implements xautoload_Plugin_Interface {
 
   protected $map;
   protected $key;
   protected $id;
 
   /**
-   * Allow the namespace handler to unsubscribe or replace itself.
-   * This is called by the ClassFinder itself, the moment the namespace handler
+   * Allow the namespace plugin to unsubscribe or replace itself.
+   * This is called by the ClassFinder itself, the moment the namespace plugin
    * is registered.
    *
    * @param xautoload_ClassFinder_Helper_Map $map

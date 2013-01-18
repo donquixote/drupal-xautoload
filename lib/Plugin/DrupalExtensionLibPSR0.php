@@ -1,7 +1,7 @@
 <?php
 
 
-class xautoload_NamespaceHandler_DrupalExtensionLibPSR0 extends xautoload_NamespaceHandler_WithKillswitch {
+class xautoload_Plugin_DrupalExtensionLibPSR0 extends xautoload_Plugin_WithKillswitch {
 
   protected $system;
 
@@ -14,14 +14,14 @@ class xautoload_NamespaceHandler_DrupalExtensionLibPSR0 extends xautoload_Namesp
   }
 
   /**
-   * The way this handler is registered, it will only ever be called if the
+   * The way this plugin is registered, it will only ever be called if the
    * class is within the \Drupal\ namespace. All the DIRECTORY_SEPARATOR in the
    * $path parameter were namespace separators before.
    *
    * @param xautoload_InjectedAPI_findFile $api
    *   API object with suggestFile() method.
    * @param string $Drupal_string
-   *   The way we register this handler, this parameter will always be a string
+   *   The way we register this plugin, this parameter will always be a string
    *   with value "Drupal/".
    * @param string $path
    *   The part of the PSR-0 path after "Drupal/". E.g., if the class is

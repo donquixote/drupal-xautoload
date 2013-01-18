@@ -1,7 +1,7 @@
 <?php
 
 
-class xautoload_NamespaceHandler_DrupalExtensionLibPrefixDeep extends xautoload_NamespaceHandler_WithKillswitch {
+class xautoload_Plugin_DrupalExtensionLibPrefixDeep extends xautoload_Plugin_WithKillswitch {
 
   protected $system;
 
@@ -14,14 +14,14 @@ class xautoload_NamespaceHandler_DrupalExtensionLibPrefixDeep extends xautoload_
   }
 
   /**
-   * The way this handler is registered, it will only ever be called if the
+   * The way this plugin is registered, it will only ever be called if the
    * class is not within a namespace. This means, all the DIRECTORY_SEPARATOR in
    * the $path parameter were underscores before.
    *
    * @param xautoload_InjectedAPI_findFile $api
    *   API object with suggestFile() method.
    * @param string $empty_string
-   *   The way we register this handler, this parameter will always be empty
+   *   The way we register this plugin, this parameter will always be empty
    *   string.
    * @param string $path
    *   The class name converted into a path by usual PEAR rules. All underscores

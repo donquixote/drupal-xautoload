@@ -42,8 +42,8 @@ class xautoload_ServiceFactory {
       $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
 
       // D8-style autoloading.
-      $drupal_psr0 = $registry->drupalNamespaceHandler;
-      $finder->registerNamespaceHandler('Drupal', $drupal_psr0);
+      $drupal_psr0 = $registry->drupalNamespacePlugin;
+      $finder->registerNamespacePlugin('Drupal', $drupal_psr0);
     }
     else {
       // If we are not at PHP 5.3 +, we can't have namespaces support.
@@ -51,20 +51,20 @@ class xautoload_ServiceFactory {
     }
 
     // Register the xautoload-style PHP 5.2 compatibility solution.
-    $drupal_prefix = $registry->drupalPrefixHandler;
-    $finder->registerPrefixHandler('', $drupal_prefix);
+    $drupal_prefix = $registry->drupalPrefixPlugin;
+    $finder->registerPrefixPlugin('', $drupal_prefix);
 
     return $finder;
   }
 
-  function drupalPrefixHandler($registry) {
+  function drupalPrefixPlugin($registry) {
     $system = $registry->drupalExtensionSystem;
-    return new xautoload_NamespaceHandler_DrupalExtensionLibPrefixDeep($system);
+    return new xautoload_Plugin_DrupalExtensionLibPrefixDeep($system);
   }
 
-  function drupalNamespaceHandler($registry) {
+  function drupalNamespacePlugin($registry) {
     $system = $registry->drupalExtensionSystem;
-    return new xautoload_NamespaceHandler_DrupalExtensionLibPSR0($system);
+    return new xautoload_Plugin_DrupalExtensionLibPSR0($system);
   }
 
   function drupalExtensionSystem() {

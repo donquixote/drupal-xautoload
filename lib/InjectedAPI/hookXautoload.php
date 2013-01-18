@@ -87,17 +87,17 @@ class xautoload_InjectedAPI_hookXautoload {
   }
 
   /**
-   * Register a namespace handler object
+   * Register a namespace plugin object
    */
-  function namespaceHandler($namespace, $handler) {
-    $this->finder->registerNamespaceHandler($namespace, $handler);
+  function namespacePlugin($namespace, $plugin) {
+    $this->finder->registerNamespacePlugin($namespace, $plugin);
   }
 
   /**
-   * Register a prefix handler object
+   * Register a prefix plugin object
    */
-  function prefixHandler($prefix, $handler) {
-    $this->finder->registerNamespaceHandler($prefix, $handler);
+  function prefixPlugin($prefix, $plugin) {
+    $this->finder->registerPrefixPlugin($prefix, $plugin);
   }
 
   /**
