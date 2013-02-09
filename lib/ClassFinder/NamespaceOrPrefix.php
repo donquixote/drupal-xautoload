@@ -111,6 +111,13 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
   }
 
   /**
+   * Legacy: Plugins were called Handlers before.
+   */
+  function registerNamespaceHandler($prefix, $plugin) {
+    return $this->registerNamespacePlugin($prefix, $plugin);
+  }
+
+  /**
    * Register a plugin for a namespace.
    *
    * @param string $namespace
