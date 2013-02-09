@@ -10,13 +10,19 @@ class xautoload_ServiceFactory {
   }
 
   function classLoader($registry) {
-    $finder = $registry->cachedClassFinder;
-    return new xautoload_ClassLoader($finder);
+    $finder = $registry->classFinder;
+    $apc_prefix = $this->_apcPrefix();
+    if (!empty($apc_prefix) && FALSE) {
+      return new xautoload_ClassLoader_ApcCache($finder, $apc_prefix);
+    }
+    else {
+      return new xautoload_ClassLoader($finder);
+    }
   }
 
   function cachedClassFinder($registry) {
     $apc_prefix = $this->_apcPrefix();
-    if (!empty($apc_prefix) && FALSE) {
+    if (!empty($apc_prefix)) {
       $finder = $registry->classFinder;
       return new xautoload_ClassFinder_ApcCache($finder, $apc_prefix);
     }
@@ -28,10 +34,9 @@ class xautoload_ServiceFactory {
   protected function _apcPrefix() {
     if (
       extension_loaded('apc') &&
-      function_exists('apc_store') &&
-      !empty($GLOBALS['databases'])
+      function_exists('apc_store')
     ) {
-      return 'drupal_xautoload_' . hash('sha256', serialize($GLOBALS['databases']));
+      return 'drupal.xautoload.' . $GLOBALS['drupal_hash_salt'];
     }
   }
 
@@ -39,22 +44,12 @@ class xautoload_ServiceFactory {
 
     if (version_compare(PHP_VERSION, '5.3') >= 0) {
       // Create the finder with namespace support.
-      $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
-
-      // D8-style autoloading.
-      $drupal_psr0 = $registry->drupalNamespacePlugin;
-      $finder->registerNamespacePlugin('Drupal', $drupal_psr0);
+      return new xautoload_ClassFinder_NamespaceOrPrefix();
     }
     else {
       // If we are not at PHP 5.3 +, we can't have namespaces support.
-      $finder = new xautoload_ClassFinder_Prefix();
+      return new xautoload_ClassFinder_Prefix();
     }
-
-    // Register the xautoload-style PHP 5.2 compatibility solution.
-    $drupal_prefix = $registry->drupalPrefixPlugin;
-    $finder->registerPrefixPlugin('', $drupal_prefix);
-
-    return $finder;
   }
 
   function drupalPrefixPlugin($registry) {
@@ -69,5 +64,14 @@ class xautoload_ServiceFactory {
 
   function drupalExtensionSystem() {
     return new xautoload_DrupalExtensionSystem();
+  }
+
+  function plan($registry) {
+    if (version_compare(PHP_VERSION, '5.3') >= 0) {
+      return new xautoload_DrupalRegistrationPlan_PHP53($registry->classFinder);
+    }
+    else {
+      return new xautoload_DrupalRegistrationPlan_PHP52($registry->classFinder);
+    }
   }
 }

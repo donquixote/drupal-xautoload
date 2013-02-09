@@ -77,6 +77,10 @@ class xautoload_ClassFinder_Helper_Map {
     $this->nsPaths[$first_part][$deep_path] = $lazy_check;
   }
 
+  function registerDeepPaths($map) {
+    $this->nsPaths = $map + $this->nsPaths;
+  }
+
   /**
    * Register a plugin for a namespace or prefix.
    *

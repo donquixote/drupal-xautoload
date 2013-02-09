@@ -13,6 +13,7 @@ class ExampleWebTest extends \DrupalWebTestCase {
   }
 
   function testStringConcat() {
+    $this->verbose('foo');
     // TODO: We could something really web-testy here..
     $this->assert('aa' + 'bb' == 'aabb', "'aa' + 'bb' == 'aabb'");
   }

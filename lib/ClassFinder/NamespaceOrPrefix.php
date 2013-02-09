@@ -25,16 +25,38 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
    */
-  function registerNamespaceRoot($namespace, $root_path, $lazy_check = TRUE) {
-    $subdir = str_replace('\\', DIRECTORY_SEPARATOR, $namespace);
-    $deep_path
-      = !strlen($root_path)
-      ? $subdir
-      : !strlen($subdir)
-      ? $root_path
-      : ($root_path . DIRECTORY_SEPARATOR . $subdir)
-    ;
-    $this->registerNamespaceDeepLocation($namespace, $deep_path, $lazy_check);
+  function registerNamespaceRoot($namespace, $path, $lazy_check = TRUE) {
+    $namespace_path_fragment = $this->namespacePathFragment($namespace);
+    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
+    $deep_path .= $namespace_path_fragment;
+    $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
+  }
+
+  /**
+   * Register PSR-0 root folders for given namespaces.
+   *
+   * @param array $map
+   *   Associative array, the keys are the namespaces, the values are the
+   *   directories.
+   * @param string $common_path_fragment
+   *   Suffix to append to each path, before appending the namespace path fragment.
+   *   Without trailing DIRECTORY_SEPARATOR.
+   *   A typical value would be e.g. "lib".
+   * @param boolean $lazy_check
+   *   If TRUE, then we are not sure if the directory at $path actually exists.
+   *   If during the process we find the directory to be nonexistent, we
+   *   unregister the path.
+   */
+  function registerNamespacesRoot($map, $common_path_fragment = NULL, $lazy_check = TRUE) {
+    $deep_map = array();
+    foreach ($map as $namespace => $path) {
+      $namespace_path_fragment = $this->namespacePathFragment($namespace);
+      $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
+      $deep_path .= strlen($common_path_fragment) ? $common_path_fragment . DIRECTORY_SEPARATOR : '';
+      $deep_path .= $namespace_path_fragment;
+      $deep_map[$namespace_path_fragment][$deep_path] = $lazy_check;
+    }
+    $this->namespaceMap->registerDeepPaths($deep_map);
   }
 
   /**
@@ -50,7 +72,20 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   unregister the path.
    */
   function registerNamespaceDeep($namespace, $path, $lazy_check = TRUE) {
-    $this->registerNamespaceDeepLocation($namespace, $path, $lazy_check);
+    $namespace_path_fragment = str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\');
+    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
+    $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
+  }
+
+  function registerNamespacesDeep($map, $common_path_fragment = NULL, $lazy_check = TRUE) {
+    $deep_map = array();
+    foreach ($map as $namespace => $path) {
+      $namespace_path_fragment = $this->namespacePathFragment($namespace);
+      $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
+      $deep_path .= strlen($common_path_fragment) ? $common_path_fragment . DIRECTORY_SEPARATOR : '';
+      $deep_map[$namespace_path_fragment][$deep_path] = $lazy_check;
+    }
+    $this->namespaceMap->registerDeepPaths($deep_map);
   }
 
   /**
@@ -66,8 +101,13 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   unregister the path.
    */
   function registerNamespaceDeepLocation($namespace, $path, $lazy_check = TRUE) {
-    $path_prefix_symbolic = str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\');
-    $this->namespaceMap->registerDeepPath($path_prefix_symbolic, $path . '/', $lazy_check);
+    $namespace_path_fragment = str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\');
+    $deep_path
+      = strlen($path)
+      ? $path . DIRECTORY_SEPARATOR
+      : ''
+    ;
+    $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
   }
 
   /**
@@ -79,12 +119,12 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   The plugin.
    */
   function registerNamespacePlugin($namespace, $plugin) {
-    $path_prefix_symbolic =
+    $namespace_path_fragment =
       strlen($namespace)
       ? str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\')
       : ''
     ;
-    $this->namespaceMap->registerNamespacePlugin($path_prefix_symbolic, $plugin);
+    $this->namespaceMap->registerNamespacePlugin($namespace_path_fragment, $plugin);
   }
 
   /**
@@ -144,5 +184,22 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
       // Fall back to the prefix-based finder.
       return parent::findFile($api, $class);
     }
+  }
+
+  /**
+   * Replace the namespace separator with directory separator.
+   *
+   * @param string $namespace
+   *   Namespace without trailing namespace separator.
+   *
+   * @return string
+   *   Path fragment representing the namespace, with trailing DIRECTORY_SEPARATOR.
+   */
+  protected function namespacePathFragment($namespace) {
+    return
+      strlen($namespace)
+      ? str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\')
+      : ''
+    ;
   }
 }
