@@ -77,8 +77,16 @@ class xautoload_ClassFinder_Helper_Map {
     $this->nsPaths[$first_part][$deep_path] = $lazy_check;
   }
 
+  /**
+   * Register a bunch of those paths ..
+   */
   function registerDeepPaths($map) {
-    $this->nsPaths = $map + $this->nsPaths;
+    foreach ($map as $key => $paths) {
+      if (isset($this->nsPaths[$key])) {
+        $paths += $this->nsPaths[$key];
+      }
+      $this->nsPaths[$key] = $paths;
+    }
   }
 
   /**
