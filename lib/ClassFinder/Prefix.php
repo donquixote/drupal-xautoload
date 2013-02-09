@@ -89,6 +89,13 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
   }
 
   /**
+   * Legacy: Plugins were called Handlers before.
+   */
+  function registerPrefixHandler($prefix, $plugin) {
+    return $this->registerPrefixPlugin($prefix, $plugin);
+  }
+
+  /**
    * Register a plugin for a prefix.
    *
    * @param string $prefix
