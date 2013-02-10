@@ -3,44 +3,51 @@
 
 class xautoload_ServiceFactory {
 
-  protected $config;
-
-  function __construct($config = array()) {
-    $this->config = $config;
-  }
-
-  function classLoader($registry) {
-    $finder = $registry->classFinder;
-    $apc_prefix = $this->_apcPrefix();
-    if (!empty($apc_prefix) && FALSE) {
-      return new xautoload_ClassLoader_ApcCache($finder, $apc_prefix);
+  /**
+   * Registration plan.
+   *
+   * @return object
+   *   Object that will register Drupal-related namespaces and prefixes at
+   *   applicable moments during the request.
+   */
+  function plan($services) {
+    if (version_compare(PHP_VERSION, '5.3') >= 0) {
+      return new xautoload_DrupalRegistrationPlan_PHP53($services->classFinder);
     }
     else {
-      return new xautoload_ClassLoader($finder);
+      return new xautoload_DrupalRegistrationPlan_PHP52($services->classFinder);
     }
   }
 
-  function cachedClassFinder($registry) {
-    $apc_prefix = $this->_apcPrefix();
-    if (!empty($apc_prefix)) {
-      $finder = $registry->classFinder;
-      return new xautoload_ClassFinder_ApcCache($finder, $apc_prefix);
-    }
-    else {
-      return $registry->classFinder;
-    }
+  /**
+   * Loaders
+   *
+   * @return object
+   *   Object that can create class loaders with different cache mechanics,
+   *   register the one for the currently configured cache method, and also
+   *   switch between cache methods.
+   */
+  function loaders($services) {
+    return new xautoload_ClassLoaders($services->finder);
   }
 
-  protected function _apcPrefix() {
-    if (
-      extension_loaded('apc') &&
-      function_exists('apc_store')
-    ) {
-      return 'drupal.xautoload.' . $GLOBALS['drupal_hash_salt'];
-    }
+  /**
+   * Legacy alias for 'finder'.
+   *
+   * @return xautoload_ClassFinder_Interface
+   *   Object that can find classes.
+   *   Note: The findClass() method takes an InjectedAPI argument.
+   */
+  function classFinder($services) {
+    return $services->finder;
   }
 
-  function classFinder($registry) {
+  /**
+   * @return xautoload_ClassFinder_Interface
+   *   Object that can find classes.
+   *   Note: The findClass() method takes an InjectedAPI argument.
+   */
+  function finder($services) {
 
     if (version_compare(PHP_VERSION, '5.3') >= 0) {
       // Create the finder with namespace support.
@@ -49,29 +56,6 @@ class xautoload_ServiceFactory {
     else {
       // If we are not at PHP 5.3 +, we can't have namespaces support.
       return new xautoload_ClassFinder_Prefix();
-    }
-  }
-
-  function drupalPrefixPlugin($registry) {
-    $system = $registry->drupalExtensionSystem;
-    return new xautoload_Plugin_DrupalExtensionLibPrefixDeep($system);
-  }
-
-  function drupalNamespacePlugin($registry) {
-    $system = $registry->drupalExtensionSystem;
-    return new xautoload_Plugin_DrupalExtensionLibPSR0($system);
-  }
-
-  function drupalExtensionSystem() {
-    return new xautoload_DrupalExtensionSystem();
-  }
-
-  function plan($registry) {
-    if (version_compare(PHP_VERSION, '5.3') >= 0) {
-      return new xautoload_DrupalRegistrationPlan_PHP53($registry->classFinder);
-    }
-    else {
-      return new xautoload_DrupalRegistrationPlan_PHP52($registry->classFinder);
     }
   }
 }

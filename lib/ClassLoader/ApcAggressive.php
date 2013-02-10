@@ -1,16 +1,16 @@
 <?php
 
 
-class xautoload_ClassLoader_ApcAgressive extends xautoload_ClassLoader_ApcCache {
+class xautoload_ClassLoader_ApcAggressive extends xautoload_ClassLoader_ApcCache {
 
   /**
-   * For compatibility, it is possible to use the class loader as a finder.
+   * Find the file where we expect a class to be defined.
    *
    * @param string $class
    *   The class to find.
    *
    * @return string
-   *   File where the class is assumed to be.
+   *   File where the class is assumed to be defined.
    */
   function findFile($class) {
 

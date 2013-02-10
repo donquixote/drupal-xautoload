@@ -1,7 +1,7 @@
 <?php
 
 
-class xautoload_ClassLoader_ApcCache extends xautoload_ClassLoader {
+class xautoload_ClassLoader_ApcCache extends xautoload_ClassLoader_NoCache {
 
   protected $prefix;
   protected $finder;

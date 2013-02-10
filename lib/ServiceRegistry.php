@@ -4,20 +4,20 @@
 class xautoload_ServiceRegistry {
 
   protected $factory;
-  protected $cache = array();
+  protected $services = array();
 
   function get($key) {
-    if (!isset($this->cache[$key])) {
-      $this->cache[$key] = $this->factory->$key($this);
-      if (!isset($this->cache[$key])) {
-        $this->cache[$key] = FALSE;
+    if (!isset($this->services[$key])) {
+      $this->services[$key] = $this->factory->$key($this);
+      if (!isset($this->services[$key])) {
+        $this->services[$key] = FALSE;
       }
     }
-    return $this->cache[$key];
+    return $this->services[$key];
   }
 
   function reset($key) {
-    $this->cache[$key] = NULL;
+    $this->services[$key] = NULL;
   }
 
   function __get($key) {
