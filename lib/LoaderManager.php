@@ -26,8 +26,12 @@ class xautoload_LoaderManager {
    *
    * @param string $mode
    *   Loader mode, e.g. 'apc' or 'default'.
+   * @param boolean $prepend
+   *   If TRUE, the loader will be prepended before other loaders.
+   *   If FALSE, the loader will be inserted into the dedicated position between
+   *     other loaders.
    */
-  function register($mode = NULL) {
+  function register($mode = NULL, $prepend = FALSE) {
     if (!isset($mode)) {
       $mode = $this->detectLoaderMode();
     }
@@ -37,7 +41,7 @@ class xautoload_LoaderManager {
       $this->initLoaderMode('default');
       $mode = 'default';
     }
-    $this->switchLoaderMode($mode);
+    $this->switchLoaderMode($mode, $prepend);
   }
 
   /**
@@ -58,16 +62,20 @@ class xautoload_LoaderManager {
    *
    * @param string $mode
    *   Loader mode, e.g. 'apc' or 'default'.
+   * @param boolean $prepend
+   *   If TRUE, the loader will be prepended before other loaders.
+   *   If FALSE, the loader will be inserted into the dedicated position between
+   *     other loaders.
    */
-  protected function switchLoaderMode($mode) {
-    if ($mode === $this->mode) {
+  protected function switchLoaderMode($mode, $prepend) {
+    if ($mode === $this->mode && !$prepend) {
       return;
     }
     if (isset($this->loaders[$this->mode])) {
       // Unregister the original loader.
       $this->loaders[$this->mode]->unregister();
     }
-    $this->registerLoader($this->loaders[$mode]);
+    $this->registerLoader($this->loaders[$mode], $prepend);
     $this->mode = $mode;
   }
 
@@ -93,9 +101,9 @@ class xautoload_LoaderManager {
    * @param object $loader
    *   The loader to register.
    */
-  protected function registerLoader($loader) {
+  protected function registerLoader($loader, $prepend) {
     // TODO: Figure out correct position in spl autoload stack.
-    $loader->register(TRUE);
+    $loader->register($prepend);
   }
 
   /**

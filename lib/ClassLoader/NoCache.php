@@ -42,6 +42,13 @@ class xautoload_ClassLoader_NoCache {
   }
 
   /**
+   * Unregister from the spl autoload stack.
+   */
+  function unregister() {
+    spl_autoload_unregister(array($this, 'loadClass'));
+  }
+
+  /**
    * Callback for class loading. This will include ("require") the file found.
    *
    * @param string $class

@@ -18,7 +18,10 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
   function setUp() {
     drupal_load('module', 'xautoload');
     // Make sure we use the regular loader, not the APC one.
-    xautoload('loaders')->register('default');
+    // Also make sure to prepend this one. Otherwise, the core class loader will
+    // try to load xautoload-related stuff, e.g. xautoload_Mock_* stuff, and
+    // will fail due to the database.
+    xautoload('loaders')->register('default', TRUE);
     parent::setUp();
   }
 

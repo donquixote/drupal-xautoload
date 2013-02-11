@@ -15,6 +15,11 @@ class xautoload_ClassLoader_Interface {
   function register($prepend = FALSE);
 
   /**
+   * Unregister this instance as an autoloader.
+   */
+  function unregister();
+
+  /**
    * Callback for class loading. This will include ("require") the file found.
    *
    * @param string $class
