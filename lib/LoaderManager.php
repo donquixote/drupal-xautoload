@@ -52,7 +52,8 @@ class xautoload_LoaderManager {
    */
   protected function detectLoaderMode() {
     if (function_exists('variable_get')) {
-      return variable_get('autoload_mode', 'default');
+      $mode = variable_get('autoloader_mode', 'default');
+      return $mode;
     }
     return 'default';
   }
@@ -121,7 +122,7 @@ class xautoload_LoaderManager {
 
       case 'apc':
         if ($apc_prefix = $this->_apcPrefix()) {
-          return new xautoload_ClassLoader_ApcCache($this->finder);
+          return new xautoload_ClassLoader_ApcCache($this->finder, $apc_prefix);
         }
         break;
 
