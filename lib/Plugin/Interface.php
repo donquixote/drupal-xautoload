@@ -11,7 +11,7 @@ interface xautoload_Plugin_Interface {
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
-   * $psr_0_root . '/' . $first_part . $second_part
+   * $psr_0_root . '/' . $path_fragment . $path_suffix
    *
    * E.g.:
    *   - The class we look for is Some\Namespace\Some\Class
@@ -23,8 +23,8 @@ interface xautoload_Plugin_Interface {
    *     because all those exotic classes all begin with Some\Namespace\
    *   -> The arguments will be:
    *     ($api = the API object, see below)
-   *     $first_part = "Some/Namespace/"
-   *     $second_part = "Some/Class.php"
+   *     $path_fragment = "Some/Namespace/"
+   *     $path_suffix = "Some/Class.php"
    *     $api->getClass() gives the original class name, if we still need it.
    *   -> We are supposed to:
    *     if ($api->suggestFile('exotic/location.php')) {
@@ -35,11 +35,11 @@ interface xautoload_Plugin_Interface {
    *   An object with a suggestFile() method.
    *   We are supposed to suggest files until suggestFile() returns TRUE, or we
    *   have no more suggestions.
-   * @param string $first_part
+   * @param string $path_fragment
    *   The key that this plugin was registered with.
    *   With trailing DIRECTORY_SEPARATOR.
-   * @param string $second_part
+   * @param string $path_suffix
    *   Second part of the canonical path, ending with '.php'.
    */
-  function findFile($api, $first_part, $second_part);
+  function findFile($api, $path_fragment, $path_suffix);
 }

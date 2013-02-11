@@ -5,7 +5,7 @@
  * mechanics. It can detect the currently applicable cache method, and it can
  * switch between cache methods.
  */
-class xautoload_ClassLoaders {
+class xautoload_LoaderManager {
 
   protected $finder;
   protected $mode;
@@ -95,7 +95,7 @@ class xautoload_ClassLoaders {
    */
   protected function registerLoader($loader) {
     // TODO: Figure out correct position in spl autoload stack.
-    $loader->register();
+    $loader->register(TRUE);
   }
 
   /**
@@ -118,6 +118,7 @@ class xautoload_ClassLoaders {
         break;
 
       case 'default':
+      case 'dev':
       default:
         return new xautoload_ClassLoader_NoCache($this->finder);
     }
@@ -127,7 +128,7 @@ class xautoload_ClassLoaders {
   }
 
   /**
-   * Check if APC is enabled and generate a prefix.
+   * Check if APC is enabled, and generate a prefix.
    *
    * @return string
    *   APC cache prefix.

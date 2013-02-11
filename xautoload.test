@@ -17,8 +17,30 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
 
   function setUp() {
     drupal_load('module', 'xautoload');
-    // _xautoload_register();
+    // Make sure we use the regular loader, not the APC one.
+    xautoload('loaders')->register('default');
     parent::setUp();
+  }
+
+  function testBasics() {
+    $msg = 'spl_autoload_functions():';
+    foreach (spl_autoload_functions() as $f) {
+      if (is_array($f)) {
+        list($obj, $method) = $f;
+        if (is_object($obj)) {
+          $str = get_class($obj) . '->' . $method . '()';
+        }
+        else {
+          $str = $obj . '::' . $method . '()';
+        }
+      }
+      else {
+        $str = $f;
+      }
+      $msg .= "\n  " . $str;
+    }
+    // It is useful to know the current autoload stack, so we print it.
+    debug($msg);
   }
 
   function testNsRegNested() {
@@ -62,59 +84,15 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
     // $this->assert(TRUE, '<pre>' . print_r($finder, TRUE) . '</pre>');
   }
 
-  function testLibPSR0() {
-    $system = new xautoload_Mock_DrupalExtensionSystem();
-    $system->addModule('menu_block', 'sites/all/modules/contrib/menu_block');
-    $this->assert(
-      $system->extensionExists('menu_block'),
-      'menu_block should "exist".'
-    );
-    $this->assert(
-      !$system->extensionExists('foo'),
-      'foo should not "exist".'
-    );
-    $this->assert(
-      $system->getExtensionPath('menu_block') === 'sites/all/modules/contrib/menu_block',
-      'menu_block should be located in sites/all/modules/contrib/menu_block'
-    );
-
-    $plugin = new xautoload_Plugin_DrupalExtensionLibPrefixDeep($system);
-    $plugin_psr0 = new xautoload_Plugin_DrupalExtensionLibPSR0($system);
-
-    $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
-    $finder->registerNamespacePlugin('Drupal', $plugin_psr0);
-    $finder->registerPrefixPlugin('', $plugin);
-
-    // PSR0-style (D8, PHP 5.3)
-    // We mix in some underscores just to make sure they work as designed.
-    $this->_findClass($finder, 'Drupal\\menu_block\\Abc_Def\\G_Hi', array(
-      'sites/all/modules/contrib/menu_block/lib/Drupal/menu_block/Abc_Def/G/Hi.php',
-    ));
-
-    // xautoload-style (D6, D7, PHP 5.2)
-    // We mix in some lowercase characters, only to make sure they work as designed.
-    $this->_findClass($finder, 'menu_block_Abc_Def_g_hi', array(
-      'sites/all/modules/contrib/menu_block/lib/Abc/Def/g/hi.php',
-    ));
-  }
-
   protected function _findClass($finder, $class, array $expectedSuggestions) {
-    try {
-      if (TRUE) {
-        for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {
-          $api = new xautoload_Mock_InjectedAPI_findFile($this, $class, $expectedSuggestions, $iAccept);
-          $finder->findFile($api, $class);
-          $api->finish();
-        }
-      }
-      $api = new xautoload_Mock_InjectedAPI_findFile($this, $class, $expectedSuggestions);
+    for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {
+      $api = new xautoload_Mock_InjectedAPI_findFile($this, $class, $expectedSuggestions, $iAccept);
       $finder->findFile($api, $class);
       $api->finish();
     }
-    catch (Exception $e) {
-      $this->assert(FALSE, 'Exception: ' . $e->getMessage());
-      return;
-    }
+    $api = new xautoload_Mock_InjectedAPI_findFile($this, $class, $expectedSuggestions);
+    $finder->findFile($api, $class);
+    $api->finish();
     $this->assert(TRUE, "Successfully loaded $class");
   }
 }

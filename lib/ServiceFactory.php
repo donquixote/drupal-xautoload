@@ -28,7 +28,7 @@ class xautoload_ServiceFactory {
    *   switch between cache methods.
    */
   function loaders($services) {
-    return new xautoload_ClassLoaders($services->finder);
+    return new xautoload_LoaderManager($services->finder);
   }
 
   /**

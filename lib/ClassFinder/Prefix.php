@@ -186,7 +186,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    */
   function registerPrefixPlugin($prefix, $plugin) {
     $prefix_path_fragment = $this->prefixPathFragment($prefix);
-    $this->prefixMap->registerNamespacePlugin($prefix_path_fragment, $plugin);
+    $this->prefixMap->registerPlugin($prefix_path_fragment, $plugin);
   }
 
   /**
@@ -231,12 +231,12 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
 
       // Loop through all '/', backwards.
       do {
-        $first_part = substr($path, 0, $pos + 1);
-        $second_part = substr($path, $pos + 1);
-        if ($this->prefixMap->findFile_nested($api, $first_part, $second_part)) {
+        $prefix_path_fragment = substr($path, 0, $pos + 1);
+        $path_suffix = substr($path, $pos + 1);
+        if ($this->prefixMap->findFile_nested($api, $prefix_path_fragment, $path_suffix)) {
           return TRUE;
         }
-        $pos = strrpos($first_part, DIRECTORY_SEPARATOR, -2);
+        $pos = strrpos($prefix_path_fragment, DIRECTORY_SEPARATOR, -2);
       } while (FALSE !== $pos);
 
       // Check if anything is registered for '' prefix.

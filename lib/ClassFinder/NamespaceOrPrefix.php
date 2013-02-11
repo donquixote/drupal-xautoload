@@ -72,11 +72,15 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   unregister the path.
    */
   function registerNamespaceDeep($namespace, $path, $lazy_check = TRUE) {
-    $namespace_path_fragment = str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\');
+    strlen($namespace);
+    $namespace_path_fragment = $this->namespacePathFragment($namespace);
     $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
     $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
   }
 
+  /**
+   * Register a number of "deep" namespace directories at once.
+   */
   function registerNamespacesDeep($map, $common_path_fragment = NULL, $lazy_check = TRUE) {
     $deep_map = array();
     foreach ($map as $namespace => $path) {
@@ -101,12 +105,8 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   unregister the path.
    */
   function registerNamespaceDeepLocation($namespace, $path, $lazy_check = TRUE) {
-    $namespace_path_fragment = str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\');
-    $deep_path
-      = strlen($path)
-      ? $path . DIRECTORY_SEPARATOR
-      : ''
-    ;
+    $namespace_path_fragment = $this->namespacePathFragment($namespace);
+    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
     $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
   }
 
@@ -126,12 +126,8 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   The plugin.
    */
   function registerNamespacePlugin($namespace, $plugin) {
-    $namespace_path_fragment =
-      strlen($namespace)
-      ? str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\')
-      : ''
-    ;
-    $this->namespaceMap->registerNamespacePlugin($namespace_path_fragment, $plugin);
+    $namespace_path_fragment = $this->namespacePathFragment($namespace);
+    $this->namespaceMap->registerPlugin($namespace_path_fragment, $plugin);
   }
 
   /**
@@ -167,17 +163,17 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
       }
 
       // Loop through positions of '\\', backwards.
-      $first_part = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, 0, $pos + 1));
-      $second_part = str_replace('_', DIRECTORY_SEPARATOR, substr($class, $pos + 1)) . '.php';
-      $path = $first_part . $second_part;
+      $namespace_path_fragment = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, 0, $pos + 1));
+      $path_suffix = str_replace('_', DIRECTORY_SEPARATOR, substr($class, $pos + 1)) . '.php';
+      $path = $namespace_path_fragment . $path_suffix;
       while (TRUE) {
-        if ($this->namespaceMap->findFile_nested($api, $first_part, $second_part)) {
+        if ($this->namespaceMap->findFile_nested($api, $namespace_path_fragment, $path_suffix)) {
           return TRUE;
         }
-        $pos = strrpos($first_part, DIRECTORY_SEPARATOR, -2);
+        $pos = strrpos($namespace_path_fragment, DIRECTORY_SEPARATOR, -2);
         if (FALSE === $pos) break;
-        $first_part = substr($path, 0, $pos + 1);
-        $second_part = substr($path, $pos + 1);
+        $namespace_path_fragment = substr($path, 0, $pos + 1);
+        $path_suffix = substr($path, $pos + 1);
       }
 
       // Check if anything is registered for the root namespace.

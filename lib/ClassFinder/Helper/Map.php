@@ -30,8 +30,8 @@
  */
 class xautoload_ClassFinder_Helper_Map {
 
-  protected $nsPaths = array();
-  protected $nsPlugins = array();
+  protected $paths = array();
+  protected $plugins = array();
 
   // Index of the last inserted plugin.
   // We can't use count(), because plugins at some index can be unset.
@@ -39,11 +39,11 @@ class xautoload_ClassFinder_Helper_Map {
 
   /**
    * If a class file would be in
-   *   $psr0_root . '/' . $first_part . $second_part
+   *   $psr0_root . '/' . $path_fragment . $path_suffix
    * then instead, we look in
-   *   $root_path . '/' . $first_part . $second_part
+   *   $root_path . '/' . $path_fragment . $path_suffix
    *
-   * @param string $first_part
+   * @param string $path_fragment
    *   The would-be namespace path relative to PSR-0 root.
    *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
    * @param string $path
@@ -53,18 +53,18 @@ class xautoload_ClassFinder_Helper_Map {
    *   If TRUE, then it is yet unknown whether the directory exists. If during
    *   the process we find that it does not exist, we unregister it.
    */
-  function registerRootPath($first_part, $root_path) {
-    $deep_path = $root_path . DIRECTORY_SEPARATOR . $first_part;
-    $this->registerDeepPath($first_part, $deep_path);
+  function registerRootPath($path_fragment, $root_path) {
+    $deep_path = $root_path . DIRECTORY_SEPARATOR . $path_fragment;
+    $this->registerDeepPath($path_fragment, $deep_path);
   }
 
   /**
    * If a class file would be in
-   *   $psr0_root . '/' . $first_part . $second_part
+   *   $psr0_root . '/' . $path_fragment . $path_suffix
    * then instead, we look in
-   *   $deep_path . $second_part
+   *   $deep_path . $path_suffix
    *
-   * @param string $first_part
+   * @param string $path_fragment
    *   The would-be namespace path relative to PSR-0 root.
    *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
    * @param string $path
@@ -73,8 +73,8 @@ class xautoload_ClassFinder_Helper_Map {
    *   If TRUE, then it is yet unknown whether the directory exists. If during
    *   the process we find that it does not exist, we unregister it.
    */
-  function registerDeepPath($first_part, $deep_path, $lazy_check = TRUE) {
-    $this->nsPaths[$first_part][$deep_path] = $lazy_check;
+  function registerDeepPath($path_fragment, $deep_path, $lazy_check = TRUE) {
+    $this->paths[$path_fragment][$deep_path] = $lazy_check;
   }
 
   /**
@@ -82,22 +82,22 @@ class xautoload_ClassFinder_Helper_Map {
    */
   function registerDeepPaths($map) {
     foreach ($map as $key => $paths) {
-      if (isset($this->nsPaths[$key])) {
-        $paths += $this->nsPaths[$key];
+      if (isset($this->paths[$key])) {
+        $paths += $this->paths[$key];
       }
-      $this->nsPaths[$key] = $paths;
+      $this->paths[$key] = $paths;
     }
   }
 
   /**
    * Register a plugin for a namespace or prefix.
    *
-   * @param string $first_part
+   * @param string $path_fragment
    *   First part of the path generated from the class name.
    * @param xautoload_Plugin_Interface $plugin
    *   The plugin.
    */
-  function registerNamespacePlugin($first_part, $plugin) {
+  function registerPlugin($path_fragment, $plugin) {
 
     if (!isset($plugin)) {
       throw new Exception("Second argument cannot be NULL.");
@@ -106,17 +106,17 @@ class xautoload_ClassFinder_Helper_Map {
       throw new Exception("Second argument must implement xautoload_Plugin_Interface.");
     }
 
-    if (!isset($this->nsPlugins[$first_part])) {
-      $id = $this->lastPluginIds[$first_part] = 1;
+    if (!isset($this->plugins[$path_fragment])) {
+      $id = $this->lastPluginIds[$path_fragment] = 1;
     }
     else {
-      $id = ++$this->lastPluginIds[$first_part];
+      $id = ++$this->lastPluginIds[$path_fragment];
     }
-    $this->nsPlugins[$first_part][$id] = $plugin;
+    $this->plugins[$path_fragment][$id] = $plugin;
 
     if (method_exists($plugin, 'setKillswitch')) {
       // Give the plugin a red button to unregister or replace itself.
-      $plugin->setKillswitch($plugin, $first_part, $id);
+      $plugin->setKillswitch($plugin, $path_fragment, $id);
     }
 
     return $id;
@@ -124,38 +124,38 @@ class xautoload_ClassFinder_Helper_Map {
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
-   * $psr_0_root . '/' . $first_part . $second_part
+   * $psr_0_root . '/' . $path_fragment . $path_suffix
    *
-   * @param string $first_part
+   * @param string $path_fragment
    *   First part of the canonical path, with trailing DIRECTORY_SEPARATOR.
-   * @param string $second_part
+   * @param string $path_suffix
    *   Second part of the canonical path, ending with '.php'.
    */
-  function findFile_nested($api, $first_part, $second_part) {
+  function findFile_nested($api, $path_fragment, $path_suffix) {
 
     // Check any paths registered for this namespace.
-    if (isset($this->nsPaths[$first_part])) {
+    if (isset($this->paths[$path_fragment])) {
       $lazy_remove = FALSE;
-      foreach ($this->nsPaths[$first_part] as $dir => $lazy_check) {
-        $file = $dir . $second_part;
+      foreach ($this->paths[$path_fragment] as $dir => $lazy_check) {
+        $file = $dir . $path_suffix;
         if ($api->suggestFile($file)) {
           return TRUE;
         }
+        // Lazy-check whether the registereds directory exists.
         if ($lazy_check && !$api->is_dir($dir)) {
-          // This is the best place to lazy-check whether a directory exists.
-          unset($this->nsPaths[$first_part][$dir]);
+          unset($this->paths[$path_fragment][$dir]);
           $lazy_remove = TRUE;
         }
       }
-      if ($lazy_remove && empty($this->nsPaths[$first_part])) {
-        unset($this->nsPaths[$first_part]);
+      if ($lazy_remove && empty($this->paths[$path_fragment])) {
+        unset($this->paths[$path_fragment]);
       }
     }
 
     // Check any plugin registered for this namespace.
-    if (isset($this->nsPlugins[$first_part])) {
-      foreach ($this->nsPlugins[$first_part] as $plugin) {
-        if ($plugin->findFile($api, $first_part, $second_part)) {
+    if (isset($this->plugins[$path_fragment])) {
+      foreach ($this->plugins[$path_fragment] as $plugin) {
+        if ($plugin->findFile($api, $path_fragment, $path_suffix)) {
           return TRUE;
         }
       }
