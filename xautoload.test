@@ -50,7 +50,6 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
     $finder = new xautoload_ClassFinder_NamespaceOrPrefix();
     $finder->registerNamespaceDeep('Drupal\\menu_block', 'sites/all/modules/contrib/menu_block/lib');
     $finder->registerPrefixDeep('menu_block', 'sites/all/modules/contrib/menu_block/lib');
-    $finder_str = print_r($finder, TRUE);
 
     $this->_findClass($finder, 'Drupal\\menu_block\\Abc_Def', array(
       'sites/all/modules/contrib/menu_block/lib/Abc/Def.php',
@@ -58,10 +57,6 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
     $this->_findClass($finder, 'menu_block_Abc_Def', array(
       'sites/all/modules/contrib/menu_block/lib/Abc/Def.php',
     ));
-
-    $this->assert(print_r($finder, TRUE) === $finder_str,
-      "Finder configuration may not change during the process.");
-    // $this->assert(TRUE, '<pre>' . print_r($finder, TRUE) . '</pre>');
   }
 
   function testNsReg() {
@@ -70,7 +65,6 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
     $finder->registerNamespaceRoot('Drupal\\dqx_adminmenu', 'sites/all/modules/contrib/dqx_adminmenu/vendor');
     $finder->registerPrefixDeep('dqx_adminmenu', 'sites/all/modules/contrib/dqx_adminmenu/lib');
     $finder->registerPrefixRoot('dqx_adminmenu', 'sites/all/modules/contrib/dqx_adminmenu/vendor');
-    $finder_str = print_r($finder, TRUE);
 
     $this->_findClass($finder, 'Drupal\\dqx_adminmenu\\Abc_Def', array(
       'sites/all/modules/contrib/dqx_adminmenu/lib/Abc/Def.php',
@@ -82,9 +76,6 @@ class XAutoloadUnitTestCase extends DrupalUnitTestCase {
       'sites/all/modules/contrib/dqx_adminmenu/vendor/dqx/adminmenu/Abc/Def.php',
     ));
 
-    $this->assert(print_r($finder, TRUE) === $finder_str,
-      "Finder configuration may not change during the process.");
-    // $this->assert(TRUE, '<pre>' . print_r($finder, TRUE) . '</pre>');
   }
 
   protected function _findClass($finder, $class, array $expectedSuggestions) {
