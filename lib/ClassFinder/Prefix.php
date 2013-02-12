@@ -54,20 +54,17 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *   Associative array, the keys are the prefixes, the values are the
    *   directories.
    *   This does NOT cover the class named $prefix itself.
-   * @param string $common_path_fragment
-   *   A suffix to be appended to all paths. A typical value could be 'lib'.
    * @param boolean $lazy_check
    *   If TRUE, then we are not sure if the directory at $path actually exists.
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
    */
-  function registerPrefixesRoot($map, $common_path_fragment = NULL, $lazy_check = TRUE) {
+  function registerPrefixesRoot($map, $lazy_check = TRUE) {
     $deep_map = array();
     $class_map = array();
     foreach ($map as $prefix => $path) {
       $prefix_path_fragment = $this->prefixPathFragment($prefix);
       $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-      $deep_path .= strlen($common_path_fragment) ? $common_path_fragment . DIRECTORY_SEPARATOR : '';
       $deep_path .= $prefix_path_fragment;
       $deep_map[$prefix_path_fragment][$deep_path] = $lazy_check;
 
@@ -122,19 +119,16 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *   Associative array, the keys are the prefixes, the values are the
    *   directories.
    *   This does NOT cover the class named $prefix itself.
-   * @param string $common_path_fragment
-   *   A suffix to be appended to all paths. A typical value could be 'lib'.
    * @param boolean $lazy_check
    *   If TRUE, then we are not sure if the directory at $path actually exists.
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
    */
-  function registerPrefixesDeep($map, $common_path_fragment = NULL, $lazy_check = TRUE) {
+  function registerPrefixesDeep($map, $lazy_check = TRUE) {
     $deep_map = array();
     foreach ($map as $prefix => $path) {
       $prefix_path_fragment = $this->prefixPathFragment($prefix);
       $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-      $deep_path .= strlen($common_path_fragment) ? $common_path_fragment . DIRECTORY_SEPARATOR : '';
       $deep_map[$prefix_path_fragment][$deep_path] = $lazy_check;
     }
     $this->prefixMap->registerDeepPaths($deep_map);
@@ -181,7 +175,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *
    * @param string $prefix
    *   The prefix, e.g. "My_Library"
-   * @param xautoload_Plugin_Interface $plugin
+   * @param xautoload_FinderPlugin_Interface $plugin
    *   The plugin. See 
    */
   function registerPrefixPlugin($prefix, $plugin) {

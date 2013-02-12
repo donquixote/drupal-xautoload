@@ -38,21 +38,16 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    * @param array $map
    *   Associative array, the keys are the namespaces, the values are the
    *   directories.
-   * @param string $common_path_fragment
-   *   Suffix to append to each path, before appending the namespace path fragment.
-   *   Without trailing DIRECTORY_SEPARATOR.
-   *   A typical value would be e.g. "lib".
    * @param boolean $lazy_check
    *   If TRUE, then we are not sure if the directory at $path actually exists.
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
    */
-  function registerNamespacesRoot($map, $common_path_fragment = NULL, $lazy_check = TRUE) {
+  function registerNamespacesRoot($map, $lazy_check = TRUE) {
     $deep_map = array();
     foreach ($map as $namespace => $path) {
       $namespace_path_fragment = $this->namespacePathFragment($namespace);
       $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-      $deep_path .= strlen($common_path_fragment) ? $common_path_fragment . DIRECTORY_SEPARATOR : '';
       $deep_path .= $namespace_path_fragment;
       $deep_map[$namespace_path_fragment][$deep_path] = $lazy_check;
     }
@@ -81,12 +76,11 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
   /**
    * Register a number of "deep" namespace directories at once.
    */
-  function registerNamespacesDeep($map, $common_path_fragment = NULL, $lazy_check = TRUE) {
+  function registerNamespacesDeep($map, $lazy_check = TRUE) {
     $deep_map = array();
     foreach ($map as $namespace => $path) {
       $namespace_path_fragment = $this->namespacePathFragment($namespace);
       $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-      $deep_path .= strlen($common_path_fragment) ? $common_path_fragment . DIRECTORY_SEPARATOR : '';
       $deep_map[$namespace_path_fragment][$deep_path] = $lazy_check;
     }
     $this->namespaceMap->registerDeepPaths($deep_map);
@@ -122,7 +116,7 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *
    * @param string $namespace
    *   The namespace, e.g. "My\Library"
-   * @param xautoload_Plugin_Interface $plugin
+   * @param xautoload_FinderPlugin_Interface $plugin
    *   The plugin.
    */
   function registerNamespacePlugin($namespace, $plugin) {
@@ -167,6 +161,7 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
       $path_suffix = str_replace('_', DIRECTORY_SEPARATOR, substr($class, $pos + 1)) . '.php';
       $path = $namespace_path_fragment . $path_suffix;
       while (TRUE) {
+
         if ($this->namespaceMap->findFile_nested($api, $namespace_path_fragment, $path_suffix)) {
           return TRUE;
         }
@@ -177,6 +172,9 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
       }
 
       // Check if anything is registered for the root namespace.
+      if ($this->namespaceMap->findFile_nested($api, '', $path)) {
+        return TRUE;
+      }
       if ($this->namespaceMap->findFile_nested($api, '', $path)) {
         return TRUE;
       }

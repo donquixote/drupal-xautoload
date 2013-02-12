@@ -17,7 +17,7 @@ class xautoload_DrupalRegistrationPlan_PHP52 {
     // TODO:
     //   Is it safe to do this with a simple query?
     //   Do we need to expect any reset events?
-    $extension_filepaths = db_query("SELECT name, filename from {system} WHERE status = 1")->fetchAllKeyed();
+    $extension_filepaths = db_query("SELECT name, filename, type from {system} WHERE status = 1")->fetchAll();
     $this->registerExtensionFilepaths($extension_filepaths);
   }
 
@@ -42,10 +42,17 @@ class xautoload_DrupalRegistrationPlan_PHP52 {
    *   Associative array, keys are extension names, values are file paths.
    */
   protected function registerExtensionFilepaths($extension_filepaths) {
-    $prefix_map = array();
-    foreach ($extension_filepaths as $name => $filepath) {
-      $prefix_map[$name] = dirname($filepath) . '/lib';
+    $prefix_maps = array();
+    foreach ($extension_filepaths as $info) {
+      $prefix_maps[$info->type][$info->name] = dirname($info->filename) . '/lib';
     }
-    $this->finder->registerPrefixesDeep($prefix_map);
+    $this->registerPrefixMaps($prefix_maps);
+  }
+
+  protected function registerPrefixMaps($prefix_maps) {
+    foreach ($prefix_maps as $type => $map) {
+      $missing_dir_plugin = new xautoload_MissingDirPlugin_DrupalExtensionPrefix($type, TRUE);
+      $this->finder->registerPrefixesDeep($map, $missing_dir_plugin);
+    }
   }
 }
