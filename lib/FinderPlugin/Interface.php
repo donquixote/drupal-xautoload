@@ -7,7 +7,7 @@
  *   - Situations where we don't want to register a ton of namespaces, and using
  *     a plugin instead gives us performance benefits.
  */
-interface xautoload_Plugin_Interface {
+interface xautoload_FinderPlugin_Interface {
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in

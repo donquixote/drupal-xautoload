@@ -5,7 +5,7 @@
  * This class is not used anywhere in xautoload, but could be used by other
  * modules.
  */
-class xautoload_Plugin_SkipModuleExists implements xautoload_Plugin_Interface {
+class xautoload_FinderPlugin_CheckIncludePath implements xautoload_FinderPlugin_Interface {
 
   /**
    * Expect a class Aaa_Bbb_Ccc_Ddd to be in Aaa/Bbb/Ccc/Ddd.php,
@@ -13,14 +13,14 @@ class xautoload_Plugin_SkipModuleExists implements xautoload_Plugin_Interface {
    *
    * @param object $api
    *   The InjectedAPI object.
-   * @param string $path_fragment
+   * @param string $path_prefix_symbolic
    *   First part of the path, for instance "Aaa/Bbb/".
    * @param string $path_suffix
    *   Second part of the path, for instance "Ccc/Ddd.php".
    */
   function findFile($api, $path_fragment, $path_suffix) {
     $path = $path_fragment . $path_suffix;
-    if ($api->suggestFile_skipModuleExists($path)) {
+    if ($api->suggestFile_checkIncludePath($path)) {
       return TRUE;
     }
   }

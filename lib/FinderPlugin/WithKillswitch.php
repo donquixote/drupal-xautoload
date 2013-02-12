@@ -7,7 +7,7 @@
  *   - Situations where we don't want to register a ton of namespaces, and using
  *     a plugin instead gives us performance benefits.
  */
-abstract class xautoload_Plugin_WithKillswitch implements xautoload_Plugin_Interface {
+abstract class xautoload_FinderPlugin_WithKillswitch implements xautoload_FinderPlugin_Interface {
 
   protected $map;
   protected $key;
