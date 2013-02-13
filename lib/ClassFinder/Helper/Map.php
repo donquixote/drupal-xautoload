@@ -122,8 +122,6 @@ class xautoload_ClassFinder_Helper_Map {
     return $id;
   }
 
-  function foo($api, $path_fragment, $path_suffix) {}
-
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
    * $psr_0_root . '/' . $path_fragment . $path_suffix
@@ -133,57 +131,72 @@ class xautoload_ClassFinder_Helper_Map {
    * @param string $path_suffix
    *   Second part of the canonical path, ending with '.php'.
    */
-  function findFile_nested($api, $path_fragment, $path_suffix) {
-
-    // Check any paths registered for this namespace.
-    if (isset($this->paths[$path_fragment])) {
-      $lazy_remove = FALSE;
-      foreach ($this->paths[$path_fragment] as $dir => &$lazy_check) {
-        $file = $dir . $path_suffix;
-        if ($api->suggestFile($file)) {
-          // Next time we can skip the check, because now we know that the
-          // directory exists.
-          $lazy_check = FALSE;
-          return TRUE;
-        }
-        if ($lazy_check) {
-          // Lazy-check whether the registered directory exists.
-          if (!$api->is_dir($dir)) {
-            // The registered directory does not exist, so we can unregister it.
-            unset($this->paths[$path_fragment][$dir]);
-            $lazy_remove = TRUE;
-            if (is_object($lazy_check)) {
-              $new_dir = $lazy_check->alternativeDir($path_fragment);
-              if ($new_dir !== $dir) {
-                $file = $new_dir . $path_suffix;
-                if ($api->suggestFile($file)) {
-                  $this->paths[$path_fragment][$new_dir] = FALSE;
-                  return TRUE;
-                }
-                elseif ($api->is_dir($new_dir)) {
-                  $this->paths[$path_fragment][$new_dir] = FALSE;
+  function findFile_map($api, $path_fragment, $path_suffix) {
+    $path = $path_fragment . $path_suffix;
+    while (TRUE) {
+      if (isset($this->paths[$path_fragment])) {
+        $lazy_remove = FALSE;
+        foreach ($this->paths[$path_fragment] as $dir => &$lazy_check) {
+          $file = $dir . $path_suffix;
+          if ($api->suggestFile($file)) {
+            // Next time we can skip the check, because now we know that the
+            // directory exists.
+            $lazy_check = FALSE;
+            return TRUE;
+          }
+          // Now we know the file does not exist. Does the directory?
+          if ($lazy_check) {
+            // Lazy-check whether the registered directory exists.
+            if ($api->is_dir($dir)) {
+              // Next time we can skip the check, because now we know that the
+              // directory exists.
+              $lazy_check = FALSE;
+            }
+            else {
+              // The registered directory does not exist, so we can unregister it.
+              unset($this->paths[$path_fragment][$dir]);
+              $lazy_remove = TRUE;
+              if (is_object($lazy_check)) {
+                $new_dir = $lazy_check->alternativeDir($path_fragment);
+                if ($new_dir !== $dir) {
+                  $file = $new_dir . $path_suffix;
+                  if ($api->suggestFile($file)) {
+                    $this->paths[$path_fragment][$new_dir] = FALSE;
+                    return TRUE;
+                  }
+                  elseif ($api->is_dir($new_dir)) {
+                    $this->paths[$path_fragment][$new_dir] = FALSE;
+                  }
                 }
               }
             }
           }
-          else {
-            // Next time we can skip the check, because now we know that the
-            // directory exists.
-            $lazy_check = FALSE;
+        }
+        if ($lazy_remove && empty($this->paths[$path_fragment])) {
+          unset($this->paths[$path_fragment]);
+        }
+      }
+
+      // Check any plugin registered for this fragment.
+      if (isset($this->plugins[$path_fragment])) {
+        foreach ($this->plugins[$path_fragment] as $plugin) {
+          if ($plugin->findFile($api, $path_fragment, $path_suffix)) {
+            return TRUE;
           }
         }
       }
-      if ($lazy_remove && empty($this->paths[$path_fragment])) {
-        unset($this->paths[$path_fragment]);
-      }
-    }
 
-    // Check any plugin registered for this namespace.
-    if (isset($this->plugins[$path_fragment])) {
-      foreach ($this->plugins[$path_fragment] as $plugin) {
-        if ($plugin->findFile($api, $path_fragment, $path_suffix)) {
-          return TRUE;
-        }
+      // Continue with parent fragment.
+      if ('' === $path_fragment) {
+        break;
+      }
+      if (FALSE !== $pos = strrpos($path_fragment, DIRECTORY_SEPARATOR, -2)) {
+        $path_fragment = substr($path_fragment, 0, $pos + 1);
+        $path_suffix = substr($path, $pos + 1);
+      }
+      else {
+        $path_fragment = '';
+        $path_suffix = $path;
       }
     }
   }

@@ -212,31 +212,11 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
       }
     }
 
-    if ($class{0} === '_') {
-      // We don't autoload classes that begin with '_'.
-      return;
-    }
-
-    if (FALSE !== $pos = strrpos($class, '_')) {
-
-      // Class does contain one or more '_' symbols.
-      // Determine the canonical path.
-      $path = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-
-      // Loop through all '/', backwards.
-      do {
-        $prefix_path_fragment = substr($path, 0, $pos + 1);
-        $path_suffix = substr($path, $pos + 1);
-        if ($this->prefixMap->findFile_nested($api, $prefix_path_fragment, $path_suffix)) {
-          return TRUE;
-        }
-        $pos = strrpos($prefix_path_fragment, DIRECTORY_SEPARATOR, -2);
-      } while (FALSE !== $pos);
-
-      // Check if anything is registered for '' prefix.
-      if ($this->prefixMap->findFile_nested($api, '', $path)) {
-        return TRUE;
-      }
+    // The class is not within a namespace.
+    // Fall back to the prefix-based finder.
+    $prefix_path_fragment = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+    if ($this->prefixMap->findFile_map($api, $prefix_path_fragment, '')) {
+      return TRUE;
     }
   }
 

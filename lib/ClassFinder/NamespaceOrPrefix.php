@@ -144,38 +144,25 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    */
   function findFile($api, $class) {
 
-    if ('\\' == $class[0]) {
+    if ('\\' === $class[0]) {
       $class = substr($class, 1);
+    }
+
+    // First check if the literal class name is registered.
+    if (!empty($this->classes[$class])) {
+      foreach ($this->classes[$class] as $filepath => $true) {
+        if ($api->suggestFile($filepath)) {
+          return TRUE;
+        }
+      }
     }
 
     if (FALSE !== $pos = strrpos($class, '\\')) {
 
-      // The class is within a namespace.
-      if ($class{$pos + 1} === '_') {
-        // We do not autoload classes where the class name begins with '_'.
-        return;
-      }
-
       // Loop through positions of '\\', backwards.
       $namespace_path_fragment = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, 0, $pos + 1));
       $path_suffix = str_replace('_', DIRECTORY_SEPARATOR, substr($class, $pos + 1)) . '.php';
-      $path = $namespace_path_fragment . $path_suffix;
-      while (TRUE) {
-
-        if ($this->namespaceMap->findFile_nested($api, $namespace_path_fragment, $path_suffix)) {
-          return TRUE;
-        }
-        $pos = strrpos($namespace_path_fragment, DIRECTORY_SEPARATOR, -2);
-        if (FALSE === $pos) break;
-        $namespace_path_fragment = substr($path, 0, $pos + 1);
-        $path_suffix = substr($path, $pos + 1);
-      }
-
-      // Check if anything is registered for the root namespace.
-      if ($this->namespaceMap->findFile_nested($api, '', $path)) {
-        return TRUE;
-      }
-      if ($this->namespaceMap->findFile_nested($api, '', $path)) {
+      if ($this->namespaceMap->findFile_map($api, $namespace_path_fragment, $path_suffix)) {
         return TRUE;
       }
     }
@@ -183,7 +170,10 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
 
       // The class is not within a namespace.
       // Fall back to the prefix-based finder.
-      return parent::findFile($api, $class);
+      $prefix_path_fragment = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+      if ($this->prefixMap->findFile_map($api, $prefix_path_fragment, '')) {
+        return TRUE;
+      }
     }
   }
 
