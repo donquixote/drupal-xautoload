@@ -2,12 +2,6 @@
 
 class xautoload_DrupalRegistrationPlan_PHP53 extends xautoload_DrupalRegistrationPlan_PHP52 {
 
-  function missingDir($path_fragment) {
-    $module = substr($path_fragment, 0, -1);
-    $module_dir = drupal_get_path('module', $module);
-    return $module_dir . '/lib/';
-  }
-
   protected function registerExtensionFilepaths($extensions) {
 
     $prefix_maps = array();

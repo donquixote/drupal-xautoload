@@ -22,6 +22,19 @@ class xautoload_DrupalRegistrationPlan_PHP52 {
   }
 
   /**
+   * This is called during hook_init() / hook_custom_theme().
+   */
+  function mainPhase() {
+    // Let other modules register stuff to the finder via hook_xautoload().
+    $api = new xautoload_InjectedAPI_hookXautoload($this->finder);
+    foreach (module_implements('xautoload') as $module) {
+      $api->setModule($module);
+      $f = $module . '_xautoload';
+      $f($api);
+    }
+  }
+
+  /**
    * Add modules after they have been enabled or installed.
    *
    * @param array $modules
