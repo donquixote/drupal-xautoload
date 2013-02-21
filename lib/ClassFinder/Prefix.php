@@ -147,6 +147,18 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
   }
 
   /**
+   * Register an array ("map") of classes to file paths.
+   *
+   * @param array $classes
+   *   The map of classes to file paths.
+   */
+  function registerClasses($classes) {
+    foreach ($classes as $class => $file_path) {
+      $this->classes[$class][$file_path] = TRUE;
+    }
+  }
+
+  /**
    * Register a filesystem location for a given class prefix.
    *
    * @param string $prefix
