@@ -17,8 +17,8 @@ class xautoload_DrupalRegistrationPlan_PHP52 {
     // TODO:
     //   Is it safe to do this with a simple query?
     //   Do we need to expect any reset events?
-    $extension_filepaths = db_query("SELECT name, filename, type from {system} WHERE status = 1")->fetchAll();
-    $this->registerExtensionFilepaths($extension_filepaths);
+    $extensions = db_query("SELECT name, filename, type from {system} WHERE status = 1")->fetchAll();
+    $this->registerExtensions($extensions);
   }
 
   /**
@@ -43,25 +43,32 @@ class xautoload_DrupalRegistrationPlan_PHP52 {
   function addModules(array $modules) {
     $q = db_select('system');
     $q->condition('name', $modules);
-    $q->fields('system', array('name', 'filename'));
-    $extension_filepaths = $q->execute()->fetchAllKeyed();
-    $this->registerExtensionFilepaths($extension_filepaths);
+    $q->fields('system', array('name', 'filename', 'type'));
+    $extensions = $q->execute()->fetchAll();
+    $this->registerExtensions($extensions);
   }
 
   /**
    * Register prefixes for enabled Drupal extensions (modules/themes).
    *
-   * @param array $extension_filepaths
-   *   Associative array, keys are extension names, values are file paths.
+   * @param array $extensions
+   *   Info about extensions.
    */
-  protected function registerExtensionFilepaths($extension_filepaths) {
+  protected function registerExtensions($extensions) {
     $prefix_maps = array();
-    foreach ($extension_filepaths as $info) {
+    foreach ($extensions as $info) {
       $prefix_maps[$info->type][$info->name] = dirname($info->filename) . '/lib';
     }
     $this->registerPrefixMaps($prefix_maps);
   }
 
+  /**
+   * Register prefix maps, one map per extension type.
+   *
+   * @param array $prefix_maps
+   *   Prefix maps for different extension types. Modules and themes are
+   *   registered speparately, because they need a different MissingDirPlugin.
+   */
   protected function registerPrefixMaps($prefix_maps) {
     foreach ($prefix_maps as $type => $map) {
       $missing_dir_plugin = new xautoload_MissingDirPlugin_DrupalExtensionPrefix($type, TRUE);

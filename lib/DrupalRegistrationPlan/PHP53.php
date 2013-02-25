@@ -27,7 +27,13 @@ class xautoload_DrupalRegistrationPlan_PHP53 extends xautoload_DrupalRegistratio
     }
   }
 
-  protected function registerExtensionFilepaths($extensions) {
+  /**
+   * Register prefixes and namespaces for enabled Drupal extensions (modules/themes).
+   *
+   * @param array $extensions
+   *   Info about extensions.
+   */
+  protected function registerExtensions($extensions) {
 
     $prefix_maps = array();
     $namespace_maps = array();
@@ -40,13 +46,20 @@ class xautoload_DrupalRegistrationPlan_PHP53 extends xautoload_DrupalRegistratio
     $this->registerNamespaceMaps($namespace_maps);
 
     // Check if simpletest is installed.
-    if (!empty($extension_filepaths['simpletest'])) {
+    if (!empty($extensions['simpletest'])) {
       // Also register test namespaces.
       // TODO: Should we postpone this until later in the request?
       $this->registerSimpletestNamespaces();
     }
   }
 
+  /**
+   * Register namespace maps, one map per extension type.
+   *
+   * @param array $namespace_maps
+   *   Namespace maps for different extension types. Modules and themes are
+   *   registered speparately, because they need a different MissingDirPlugin.
+   */
   protected function registerNamespaceMaps($namespace_maps) {
     foreach ($namespace_maps as $type => $map) {
       $missing_dir_plugin = new xautoload_MissingDirPlugin_DrupalExtensionNamespace($type, FALSE);
