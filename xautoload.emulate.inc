@@ -14,11 +14,11 @@
  * and call it any time to initialize xautoloading for a specific module.
  */
 function _MYMODULE_include() {
-  static $_first_run = TRUE;
-  if (!$_first_run) {
+  static $first_run = TRUE;
+  if (!$first_run) {
     return;
   }
-  $_first_run = FALSE;
+  $first_run = FALSE;
 
   if (!module_exists('xautoload')) {
     spl_autoload_register('_MYMODULE_autoload');
