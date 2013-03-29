@@ -4,6 +4,11 @@
  * This thing has an overview of available class loaders with different cache
  * mechanics. It can detect the currently applicable cache method, and it can
  * switch between cache methods.
+ *
+ * It should be mentioned that "loader" and "finder" mean two separate things
+ * in xautoload. The "finder" knows all the namespaces and directories. The
+ * "loader" is for the cache layer and for file inclusion, and it is plugged
+ * with a "finder" to actually find the class on a cache miss.
  */
 class xautoload_LoaderManager {
 
@@ -42,6 +47,28 @@ class xautoload_LoaderManager {
       $mode = 'default';
     }
     $this->switchLoaderMode($mode, $prepend);
+  }
+
+  /**
+   * Invalidate the APC cache
+   */
+  function flushCache() {
+
+    if ($this->apcSupported()) {
+
+      // Generate a new APC prefix
+      $apc_prefix = $this->generateApcPrefix();
+
+      // Set it in all apc-based loaders.
+      foreach ($this->loaders as $loader_key => $loader) {
+        if (1
+          && 'apc_' === substr($loader_key . '_', 0, 4)
+          && method_exists($loader, 'setApcPrefix')
+        ) {
+          $loader->setApcPrefix($apc_prefix);
+        }
+      }
+    }
   }
 
   /**
@@ -120,8 +147,17 @@ class xautoload_LoaderManager {
 
     switch ($mode) {
 
+      case 'apc_lazy':
+        if ($apc_prefix = $this->apcPrefix()) {
+          $loader = new xautoload_ClassLoader_ApcCache($this->finder, $apc_prefix);
+          $finder_wrapper = new xautoload_ClassFinder_LazyWrapper($loader, $this->finder, xautoload('plan'));
+          $loader->setFinder($finder_wrapper);
+          return $loader;
+        }
+        break;
+
       case 'apc':
-        if ($apc_prefix = $this->_apcPrefix()) {
+        if ($apc_prefix = $this->apcPrefix()) {
           return new xautoload_ClassLoader_ApcCache($this->finder, $apc_prefix);
         }
         break;
@@ -142,12 +178,45 @@ class xautoload_LoaderManager {
    * @return string
    *   APC cache prefix.
    */
-  protected function _apcPrefix() {
-    if (
-      extension_loaded('apc') &&
-      function_exists('apc_store')
-    ) {
-      return 'drupal.xautoload.' . $GLOBALS['drupal_hash_salt'];
+  protected function apcPrefix() {
+    if ($this->apcSupported()) {
+      $apc_prefix = apc_fetch($this->apcKey());
+      if (empty($apc_prefix)) {
+        $apc_prefix = $this->generateApcPrefix();
+      }
+      return $apc_prefix;
     }
+  }
+
+  /**
+   * Generate a new prefix and save it to APC.
+   */
+  protected function generateApcPrefix() {
+
+    // Generate a new APC prefix
+    $apc_prefix = xautoload_Util::randomString();
+
+    // Store the APC prefix
+    apc_store($this->apcKey(), $apc_prefix);
+
+    return $apc_prefix;
+  }
+
+  /**
+   * Test if the APC extension is installed and working.
+   */
+  protected function apcSupported() {
+    return 1
+      && extension_loaded('apc')
+      && function_exists('apc_store')
+      && function_exists('apc_fetch')
+    ;
+  }
+
+  /**
+   * Get the key in APC where the APC prefix is stored.
+   */
+  protected function apcKey() {
+    return 'drupal.xautoload.' . $GLOBALS['drupal_hash_salt'] . '.apc_prefix';
   }
 }

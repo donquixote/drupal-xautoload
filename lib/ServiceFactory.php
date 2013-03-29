@@ -12,11 +12,19 @@ class xautoload_ServiceFactory {
    */
   function plan($services) {
     if (version_compare(PHP_VERSION, '5.3') >= 0) {
-      return new xautoload_DrupalRegistrationPlan_PHP53($services->classFinder);
+      $plan = new xautoload_DrupalRegistrationPlan_PHP53($services->classFinder);
     }
     else {
-      return new xautoload_DrupalRegistrationPlan_PHP52($services->classFinder);
+      $plan = new xautoload_DrupalRegistrationPlan_PHP52($services->classFinder);
     }
+    if (1
+      && extension_loaded('apc')
+      && function_exists('apc_store')
+      && 'apc_lazy' === variable_get('autoloader_mode', 'default')
+    ) {
+      $plan = new xautoload_DrupalRegistrationPlan_Lazy($plan, $services);
+    }
+    return $plan;
   }
 
   /**

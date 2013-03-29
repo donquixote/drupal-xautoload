@@ -20,6 +20,13 @@ class xautoload_ServiceRegistry {
     $this->services[$key] = NULL;
   }
 
+  /**
+   * Register a new service under the given key.
+   */
+  function set($key, $service) {
+    $this->services[$key] = $service;
+  }
+
   function __get($key) {
     return $this->get($key);
   }
