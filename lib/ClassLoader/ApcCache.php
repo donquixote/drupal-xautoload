@@ -4,7 +4,6 @@
 class xautoload_ClassLoader_ApcCache extends xautoload_ClassLoader_NoCache {
 
   protected $prefix;
-  protected $finder;
 
   /**
    * @param object $finder
@@ -16,7 +15,17 @@ class xautoload_ClassLoader_ApcCache extends xautoload_ClassLoader_NoCache {
     if (!extension_loaded('apc') || !function_exists('apc_store')) {
       throw new Exception('Unable to use xautoload_ClassLoader_ApcCache, because APC is not enabled.');
     }
-    $this->finder = $finder;
+    $this->prefix = $prefix;
+    parent::__construct($finder);
+  }
+
+  /**
+   * Set the APC prefix after a flush cache.
+   *
+   * @param string $prefix
+   *   A prefix for the storage key in APC.
+   */
+  function setApcPrefix($prefix) {
     $this->prefix = $prefix;
   }
 
@@ -48,6 +57,7 @@ class xautoload_ClassLoader_ApcCache extends xautoload_ClassLoader_NoCache {
       (FALSE === $file = apc_fetch($this->prefix . $class)) ||
       (!empty($file) && !is_file($file))
     ) {
+      // Resolve cache miss.
       apc_store($this->prefix . $class, $file = parent::findFile($class));
     }
 
