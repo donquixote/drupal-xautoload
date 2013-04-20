@@ -1,6 +1,6 @@
 <?php
 
-class xautoload_DrupalRegistrationPlan_PHP52 {
+class xautoload_DrupalRegistrationPlan_PHP52 implements xautoload_DrupalRegistrationPlan_Interface {
 
   protected $finder;
 

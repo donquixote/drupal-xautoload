@@ -1,6 +1,6 @@
 <?php
 
-class xautoload_DrupalRegistrationPlan_Lazy {
+class xautoload_DrupalRegistrationPlan_Lazy implements xautoload_DrupalRegistrationPlan_Interface {
 
   protected $delayed = array();
   protected $plan;
