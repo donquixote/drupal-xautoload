@@ -55,8 +55,6 @@ function xautoload_init() {
 
   // If hook_custom_theme() hasn't been triggered, we call it now.
   xautoload_custom_theme();
-
-  class_exists('Drupal\krumong\Main');
 }
 
 /**
