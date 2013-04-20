@@ -150,7 +150,7 @@ class xautoload_LoaderManager {
       case 'apc_lazy':
         if ($apc_prefix = $this->apcPrefix()) {
           $loader = new xautoload_ClassLoader_ApcCache($this->finder, $apc_prefix);
-          $finder_wrapper = new xautoload_ClassFinder_LazyWrapper($loader, $this->finder, xautoload('plan'));
+          $finder_wrapper = new xautoload_ClassFinder_Proxy($loader, $this->finder, xautoload('plan'));
           $loader->setFinder($finder_wrapper);
           return $loader;
         }

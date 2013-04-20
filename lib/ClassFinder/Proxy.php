@@ -1,6 +1,6 @@
 <?php
 
-class xautoload_ClassFinder_LazyWrapper implements xautoload_ClassFinder_Interface {
+class xautoload_ClassFinder_Proxy implements xautoload_ClassFinder_Interface {
 
   protected $loader;
   protected $finder;
@@ -13,7 +13,7 @@ class xautoload_ClassFinder_LazyWrapper implements xautoload_ClassFinder_Interfa
   }
 
   function findFile($api, $class) {
-    print "LazyWrapper ($class)\n";
+    print __CLASS__ . "::findFile(\$api, '$class')\n";
     $this->loader->setFinder($this->finder);
     $this->plan->flush();
     return $this->finder->findFile($api, $class);
