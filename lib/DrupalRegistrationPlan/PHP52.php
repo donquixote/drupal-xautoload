@@ -10,7 +10,7 @@ class xautoload_DrupalRegistrationPlan_PHP52 {
 
   /**
    * Register prefixes and namespaces for enabled Drupal extensions.
-   * (for namespaces, look at xautoload_DrupalRegistrationPlan_PHP53)
+   * (namespaces only happen in xautoload_DrupalRegistrationPlan_PHP53)
    */
   function start() {
     // Doing this directly tends to be a hell lot faster than system_list().
