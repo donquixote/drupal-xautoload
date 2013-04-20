@@ -5,8 +5,12 @@ class xautoload_DrupalRegistrationPlan_PHP53 extends xautoload_DrupalRegistratio
   /**
    * Register prefixes and namespaces for enabled Drupal extensions.
    * (for namespaces, look at xautoload_DrupalRegistrationPlan_PHP53)
+   *
+   * NOTE:
+   *   This is disabled for the stable version, because we don't know yet what
+   *   will be the official standard place for composer stuff.
    */
-  function start() {
+  function start__DISABLED() {
 
     // Drupal extensions.
     parent::start();
