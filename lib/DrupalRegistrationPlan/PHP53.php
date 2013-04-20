@@ -3,35 +3,6 @@
 class xautoload_DrupalRegistrationPlan_PHP53 extends xautoload_DrupalRegistrationPlan_PHP52 {
 
   /**
-   * Register prefixes and namespaces for enabled Drupal extensions.
-   * (for namespaces, look at xautoload_DrupalRegistrationPlan_PHP53)
-   *
-   * NOTE:
-   *   This is disabled for the stable version, because we don't know yet what
-   *   will be the official standard place for composer stuff.
-   */
-  function start__DISABLED() {
-
-    // Drupal extensions.
-    parent::start();
-
-    // Now some composer stuff.
-    $this->composerVendorDir('sites/all/vendor');
-    $this->composerVendorDir(conf_path() . '/vendor');
-  }
-
-  protected function composerVendorDir($dir) {
-    if (is_file($dir . '/composer/autoload_namespaces.php')) {
-      $namespaces = include $dir . '/composer/autoload_namespaces.php';
-      $this->finder->registerNamespacesRoot($namespaces);
-    }
-    if (is_file($dir . '/composer/autoload_classmap.php')) {
-      $class_map = include $dir . '/composer/autoload_classmap.php';
-      $this->finder->registerClasses($class_map);
-    }
-  }
-
-  /**
    * Register prefixes and namespaces for enabled Drupal extensions (modules/themes).
    *
    * @param array $extensions
