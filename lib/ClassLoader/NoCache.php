@@ -17,6 +17,13 @@ class xautoload_ClassLoader_NoCache {
   }
 
   /**
+   * Replace the finder with another one.
+   */
+  function setFinder($finder) {
+    $this->finder = $finder;
+  }
+
+  /**
    * Registers this instance as an autoloader.
    *
    * @param boolean $prepend
