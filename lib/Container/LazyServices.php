@@ -1,7 +1,7 @@
 <?php
 
 
-class xautoload_ServiceRegistry {
+class xautoload_Container_LazyServices {
 
   protected $factory;
   protected $services = array();
