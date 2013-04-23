@@ -1,6 +1,5 @@
 <?php
 
-
 /*
  * When the module has just been installed,
  * Drupal does not know yet this is a boot-level module.
