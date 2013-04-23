@@ -1,0 +1,7 @@
+name = X Autoload Test 1
+description = Test module for X Autoload
+core = 7.x
+php = 5.3
+hidden = 1
+
+dependencies[] = xautoload

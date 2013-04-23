@@ -34,9 +34,9 @@ function xautoload_custom_theme() {
   }
   $first_run = FALSE;
 
-  // Tell the "registration plan" that the "main phase" has started, and thus
-  // all Drupal modules are now available.
-  xautoload('plan')->mainPhase();
+  // Tell the "boot schedule" that the "main phase" has started.
+  // This will trigger invocation of hook_xautoload().
+  xautoload('schedule')->initMainPhase();
 }
 
 /**
@@ -60,14 +60,16 @@ function xautoload_init() {
  * Implements hook_modules_enabled()
  */
 function xautoload_modules_enabled($modules) {
-  xautoload('plan')->addModules($modules);
+  xautoload('schedule')->modulesInstalledOrEnabled($modules);
+  xautoload('apcKeyManager')->renewApcPrefix();
 }
 
 /**
  * Implements hook_modules_installed()
  */
 function xautoload_modules_installed($modules) {
-  xautoload('plan')->addModules($modules);
+  xautoload('schedule')->modulesInstalledOrEnabled($modules);
+  xautoload('apcKeyManager')->renewApcPrefix();
 }
 
 /**
@@ -148,7 +150,6 @@ function xautoload_registry_files_alter(&$files, $modules) {
   }
 }
 
-
 /**
  * Implements hook_module_implements_alter()
  */
@@ -158,6 +159,41 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
     // Move xautoload_$hook() to the start.
     $implementations = array('xautoload' => FALSE) + $implementations;
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ * with FORM_ID = "system_performance_settings"
+ */
+function xautoload_form_system_performance_settings_alter(&$form, $form_state) {
+
+  $form['xautoload'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('X Autoload'),
+  );
+
+  if (1
+    && extension_loaded('apc')
+    && function_exists('apc_store')
+  ) {
+    $apc_status = t('APC installed and working.');
+  }
+  else {
+    $apc_status = t('No APC detected. The setting will have no effect.');
+  }
+
+  $form['xautoload']['xautoload_cache_mode'] = array(
+    '#type' => 'radios',
+    '#title' => t('Cache mode'),
+    '#default_value' => variable_get('xautoload_cache_mode', 'default'),
+    '#options' => array(
+      'default' => t('No cache'),
+      'apc' => t('APC: Use APC cache, if possible. (Extension status: !status)', array(
+        '!status' => $apc_status,
+      )),
+      'apc_lazy' => t('APC, lazy: Use APC cache, and skip registration of module namespaces, if possible.'),
+    ),
+  );
 }
 
 
@@ -203,8 +239,8 @@ function _xautoload_register_drupal() {
   require_once dirname(__FILE__) . '/xautoload.early.inc';
 
   // Now that variable_get() is available, we can switch on some caching.
-  xautoload('loaders')->register(NULL);
+  xautoload('loaderManager')->register(NULL);
 
-  // Let the "registration plan" register our modules.
-  xautoload('plan')->start();
+  // Let the "boot schedule" register our modules.
+  xautoload('schedule')->initBootstrapPhase();
 }

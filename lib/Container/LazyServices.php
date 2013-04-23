@@ -1,7 +1,7 @@
 <?php
 
 
-class xautoload_ServiceRegistry {
+class xautoload_Container_LazyServices {
 
   protected $factory;
   protected $services = array();
@@ -18,6 +18,13 @@ class xautoload_ServiceRegistry {
 
   function reset($key) {
     $this->services[$key] = NULL;
+  }
+
+  /**
+   * Register a new service under the given key.
+   */
+  function set($key, $service) {
+    $this->services[$key] = $service;
   }
 
   function __get($key) {

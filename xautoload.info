@@ -2,5 +2,3 @@ name = "X Autoload"
 description = "Autoload based on pseudo PSR-0 folder structure and module prefix."
 core = 7.x
 php = 5.2
-
-files[] = xautoload.test

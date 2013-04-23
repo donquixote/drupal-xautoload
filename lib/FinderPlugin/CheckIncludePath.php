@@ -13,7 +13,7 @@ class xautoload_FinderPlugin_CheckIncludePath implements xautoload_FinderPlugin_
    *
    * @param object $api
    *   The InjectedAPI object.
-   * @param string $path_prefix_symbolic
+   * @param string $path_fragment
    *   First part of the path, for instance "Aaa/Bbb/".
    * @param string $path_suffix
    *   Second part of the path, for instance "Ccc/Ddd.php".

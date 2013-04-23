@@ -14,11 +14,11 @@
  * and call it any time to initialize xautoloading for a specific module.
  */
 function _MYMODULE_include() {
-  static $_first_run = TRUE;
-  if (!$_first_run) {
+  static $first_run = TRUE;
+  if (!$first_run) {
     return;
   }
-  $_first_run = FALSE;
+  $first_run = FALSE;
 
   if (!module_exists('xautoload')) {
     spl_autoload_register('_MYMODULE_autoload');
@@ -32,7 +32,10 @@ function _MYMODULE_include() {
  * The autoload callback for this specific module, used if xautoload is not
  * present.
  *
- * You want to replace any "MYMODULE" with the module name.
+ * You want to replace any "MYMODULE" with your module name.
+ *
+ * @param string $class
+ *   The class we want to load.
  */
 function _MYMODULE_autoload($class) {
 
@@ -41,9 +44,13 @@ function _MYMODULE_autoload($class) {
     $lib_dir = dirname(__FILE__) . '/lib/';
   }
 
+  // Replace MYMODULE with your module name.
+  $module = 'MYMODULE';
+  $l = strlen($module);
+
   if (FALSE !== $nspos = strrpos($class, '\\')) {
     // PSR-0 mode. Omit this if you use only the PHP 5.2 compatibility mode.
-    if (substr($class, 0, strlen('Drupal\\MYMODULE\\')) === 'Drupal\\MYMODULE\\') {
+    if ("Drupal\\$module\\" === substr($class, 0, $l + 8)) {
       $namespace = substr($class, 0, $nspos);
       $classname = substr($class, $nspos + 1);
       $path = $lib_dir . str_replace('\\', '/', $namespace) . '/' . str_replace('_', '/', $classname) . '.php';
@@ -54,7 +61,7 @@ function _MYMODULE_autoload($class) {
   }
   else {
     // PHP 5.2 compatibility mode. Omit this if you use only PSR-0.
-    if (substr($class, 0, strlen('MYMODULE_')) === 'MYMODULE_') {
+    if ($module . '_' === substr($class, 0, $l + 1)) {
       $path = $lib_dir . str_replace('_', '/', $class) . '.php';
       if (is_file($path)) {
         include $path;

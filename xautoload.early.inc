@@ -34,11 +34,11 @@ function xautoload_get_finder() {
  *   Identifier of the service within the registry.
  *   The xautoload_ServiceFactory should have a method with the same name.
  */
-function xautoload($key) {
+function xautoload($key = 'main') {
   static $service_registry;
   if (!isset($service_registry)) {
     $service_factory = new xautoload_ServiceFactory();
-    $service_registry = new xautoload_ServiceRegistry($service_factory);
+    $service_registry = new xautoload_Container_LazyServices($service_factory);
   }
   return $service_registry->get($key);
 }
@@ -68,17 +68,13 @@ function _xautoload_register() {
   _xautoload_autoload_temp('xautoload_InjectedAPI_findFile');
 
   // Register the "real" class loader.
-  xautoload('loaders')->register(NULL);
+  xautoload('loaderManager')->register(NULL);
 
   // Register the xautoload_ prefix.
   xautoload('finder')->registerPrefixDeep('xautoload', XAUTOLOAD_LIB_DIR);
 
   // Unregister our temporary loader.
   spl_autoload_unregister('_xautoload_autoload_temp');
-}
-
-function _xautoload_register_loader($mode = 'default') {
-  
 }
 
 /**
