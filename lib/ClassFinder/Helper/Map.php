@@ -190,7 +190,12 @@ class xautoload_ClassFinder_Helper_Map {
       if ('' === $path_fragment) {
         break;
       }
-      if (FALSE !== $pos = strrpos($path_fragment, DIRECTORY_SEPARATOR, -2)) {
+      elseif (DIRECTORY_SEPARATOR === $path_fragment) {
+        // This happens if a class begins with an underscore.
+        $path_fragment = '';
+        $path_suffix = $path;
+      }
+      elseif (FALSE !== $pos = strrpos($path_fragment, DIRECTORY_SEPARATOR, -2)) {
         $path_fragment = substr($path_fragment, 0, $pos + 1);
         $path_suffix = substr($path, $pos + 1);
       }
