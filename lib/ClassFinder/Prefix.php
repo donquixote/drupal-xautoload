@@ -227,6 +227,9 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
     // The class is not within a namespace.
     // Fall back to the prefix-based finder.
     $prefix_path_fragment = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+    if ('_' === $class{0}) {
+      $prefix_path_fragment{0} = '_';
+    }
     if ($this->prefixMap->findFile_map($api, $prefix_path_fragment, '')) {
       return TRUE;
     }
