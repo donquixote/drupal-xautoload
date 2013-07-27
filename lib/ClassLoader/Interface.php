@@ -4,7 +4,7 @@
 /**
  * Behaves mostly like the Symfony ClassLoader classes.
  */
-class xautoload_ClassLoader_Interface {
+interface xautoload_ClassLoader_Interface {
 
   /**
    * Registers this instance as an autoloader.

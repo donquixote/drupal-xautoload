@@ -4,7 +4,7 @@
 /**
  * Behaves mostly like the Symfony ClassLoader classes.
  */
-class xautoload_ClassLoader_NoCache {
+class xautoload_ClassLoader_NoCache implements xautoload_ClassLoader_Interface {
 
   protected $finder;
 
