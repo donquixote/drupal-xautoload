@@ -12,8 +12,19 @@
  */
 class xautoload_LoaderManager {
 
+  /**
+   * @var xautoload_LoaderFactory
+   */
   protected $loaderFactory;
+
+  /**
+   * @var string|NULL
+   */
   protected $mode;
+
+  /**
+   * @var array
+   */
   protected $loaders = array();
 
   /**
@@ -54,6 +65,8 @@ class xautoload_LoaderManager {
    * This is called on instantiation,
    * and whenever the APC prefix is renewed,
    * but only if the system actually supports APC.
+   *
+   * @param string $apc_prefix
    */
   function setApcPrefix($apc_prefix) {
 
@@ -125,6 +138,7 @@ class xautoload_LoaderManager {
    *
    * @param object $loader
    *   The loader to register.
+   * @param bool $prepend
    */
   protected function registerLoader($loader, $prepend) {
     // TODO: Figure out correct position in spl autoload stack.

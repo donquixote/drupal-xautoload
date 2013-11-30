@@ -3,15 +3,23 @@
 
 /**
  * An instance of this class is passed around to implementations of
- * hook_xautoload().
+ * hook_xautoload(). It acts as a wrapper around the ClassFinder, to register
+ * stuff.
  */
 class xautoload_InjectedAPI_hookXautoload {
 
+  /**
+   * @var xautoload_ClassFinder_Prefix|xautoload_ClassFinder_NamespaceOrPrefix
+   */
   protected $finder;
+
+  /**
+   * @var string
+   */
   protected $extensionDir;
 
   /**
-   * @param xautoload_ClassFinder $finder
+   * @param xautoload_ClassFinder_Interface $finder
    *   The class finder object.
    */
   function __construct($finder) {
@@ -37,11 +45,11 @@ class xautoload_InjectedAPI_hookXautoload {
   }
 
   /**
-   * Register an additional namespace for this module.
+   * Register an additional prefix for this module.
    * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
    *
-   * @param string $namespace
-   *   The namespace
+   * @param string $prefix
+   *   The prefix.
    * @param string $prefix_root_dir
    *   Prefix root dir.
    *   If $relative is TRUE, this is relative to the extension module dir.
@@ -60,7 +68,7 @@ class xautoload_InjectedAPI_hookXautoload {
    *
    * @param string $namespace
    *   The namespace
-   * @param string $psr_0_root_dir
+   * @param string $namespace_deep_dir
    *   PSR-0 root dir.
    *   If $relative is TRUE, this is relative to the current extension dir.
    *   If $relative is FALSE, this is an absolute path.
@@ -76,7 +84,7 @@ class xautoload_InjectedAPI_hookXautoload {
    * Register an additional namespace for this module.
    * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
    *
-   * @param string $namespace
+   * @param string $prefix
    *   The namespace
    * @param string $prefix_deep_dir
    *   PSR-0 root dir.
@@ -92,6 +100,9 @@ class xautoload_InjectedAPI_hookXautoload {
 
   /**
    * Legacy: Plugins were called "Handler" before.
+   *
+   * @param string $namespace
+   * @param xautoload_FinderPlugin_Interface $plugin
    */
   function namespaceHandler($namespace, $plugin) {
     $this->finder->registerNamespacePlugin($namespace, $plugin);
@@ -99,6 +110,9 @@ class xautoload_InjectedAPI_hookXautoload {
 
   /**
    * Legacy: Plugins were called "Handler" before.
+   *
+   * @param string $prefix
+   * @param xautoload_FinderPlugin_Interface $plugin
    */
   function prefixHandler($prefix, $plugin) {
     $this->finder->registerPrefixPlugin($prefix, $plugin);
@@ -106,6 +120,9 @@ class xautoload_InjectedAPI_hookXautoload {
 
   /**
    * Register a namespace plugin object
+   *
+   * @param string $namespace
+   * @param xautoload_FinderPlugin_Interface $plugin
    */
   function namespacePlugin($namespace, $plugin) {
     $this->finder->registerNamespacePlugin($namespace, $plugin);
@@ -113,6 +130,9 @@ class xautoload_InjectedAPI_hookXautoload {
 
   /**
    * Register a prefix plugin object
+   *
+   * @param string $prefix
+   * @param xautoload_FinderPlugin_Interface $plugin
    */
   function prefixPlugin($prefix, $plugin) {
     $this->finder->registerPrefixPlugin($prefix, $plugin);
@@ -185,6 +205,8 @@ class xautoload_InjectedAPI_hookXautoload {
    *
    * @param string $library
    *   Machine name of the library.
+   *
+   * @throws Exception
    */
   function setLibrary($library) {
     if (!module_exists('libraries')) {

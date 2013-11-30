@@ -3,10 +3,20 @@
 
 class xautoload_ServiceFactory {
 
+  /**
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_Main
+   */
   function main($services) {
     return new xautoload_Main($services);
   }
 
+  /**
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_BootSchedule_Helper_PHP52|xautoload_BootSchedule_Helper_PHP53
+   */
   function registrationHelper($services) {
     // Build the helper object.
     if (version_compare(PHP_VERSION, '5.3') >= 0) {
@@ -20,6 +30,8 @@ class xautoload_ServiceFactory {
 
   /**
    * Drupal bootstrap registration schedule.
+   *
+   * @param xautoload_Container_LazyServices $services
    *
    * @return xautoload_BootSchedule_Interface
    *   Object that will register Drupal-related namespaces and prefixes at
@@ -38,7 +50,9 @@ class xautoload_ServiceFactory {
   /**
    * Loader manager
    *
-   * @return object
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_LoaderManager
    *   Object that can
    *   - create class loaders with different cache mechanics,
    *   - register the one for the currently configured cache method, and also
@@ -58,6 +72,11 @@ class xautoload_ServiceFactory {
     return $loaderManager;
   }
 
+  /**
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_ApcKeyManager_Disabled|xautoload_ApcKeyManager_Enabled
+   */
   function apcKeyManager($services) {
 
     // Check if the system supports APC cache method.
@@ -76,6 +95,8 @@ class xautoload_ServiceFactory {
   /**
    * Proxy class finder.
    *
+   * @param xautoload_Container_LazyServices $services
+   *
    * @return xautoload_ClassFinder_Interface
    *   Proxy object wrapping the class finder.
    *   This is used to delay namespace registration until the first time the
@@ -93,6 +114,8 @@ class xautoload_ServiceFactory {
   /**
    * The class finder (alias for 'finder').
    *
+   * @param xautoload_Container_LazyServices $services
+   *
    * @return xautoload_ClassFinder_Interface
    *   Object that can find classes,
    *   and provides methods to register namespaces and prefixes.
@@ -104,6 +127,8 @@ class xautoload_ServiceFactory {
 
   /**
    * The class finder (alias for 'classFinder').
+   *
+   * @param xautoload_Container_LazyServices $services
    *
    * @return xautoload_ClassFinder_Interface
    *   Object that can find classes,

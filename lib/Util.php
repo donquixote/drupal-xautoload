@@ -39,6 +39,7 @@ class xautoload_Util {
    *
    * @param mixed $arg
    *   The argument.
+   *
    * @return mixed
    *   The argument, returned.
    */
@@ -46,14 +47,41 @@ class xautoload_Util {
     return $arg;
   }
 
+  /**
+   * @param mixed $arg
+   *   A value to be returned by the callback.
+   * @return callback
+   *   A callback with no arguments, that will always return the value specified
+   *   in $arg.
+   */
   static function identityCallback($arg) {
     return array(new xautoload_Container_Identity($arg), 'get');
   }
 
+  /**
+   * @param object $container
+   *   An object with a __get() method.
+   * @param string $key
+   *   Key to be passed to the __get() method as an argument.
+   *
+   * @return callback
+   *   Callback with no arguments, that will return the result of
+   *   $container->__get($key).
+   */
   static function containerCallback($container, $key) {
     return array(new xautoload_Container_MagicGet($container, $key), 'get');
   }
 
+  /**
+   * Get a string representation of a callback for debug purposes.
+   *
+   * @param callback $callback
+   *   A PHP callback, which could be an array or a string.
+   *
+   * @return string
+   *   A string representation to be displayed to a user, e.g.
+   *   "Foo::staticMethod()", or "Foo->bar()"
+   */
   static function callbackToString($callback) {
     if (is_array($callback)) {
       list($obj, $method) = $callback;

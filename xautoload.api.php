@@ -64,6 +64,9 @@ function mymodule_libraries_info() {
       'download url' => 'http://github.com/example/my-php-api',
       'version' => '1.0',
       'xautoload' => function($api) {
+        /**
+         * @var xautoload_InjectedAPI_hookXautoload $api
+         */
         // Register a namespace with PSR-0 root in <library dir>/lib/.
         // The second argument is relative to the directory of the library, so
         // PSR-0 root will be e.g. "sites/all/libraries/example-lib/lib".

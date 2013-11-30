@@ -12,7 +12,14 @@
  */
 class xautoload_LoaderFactory {
 
+  /**
+   * @var xautoload_ClassFinder_Proxy
+   */
   protected $proxyFinder;
+
+  /**
+   * @var string
+   */
   protected $apcPrefix;
 
   /**
@@ -27,6 +34,8 @@ class xautoload_LoaderFactory {
    * This is called on instantiation,
    * and whenever the APC prefix is renewed,
    * but only if the system actually supports APC.
+   *
+   * @param string $apc_prefix
    */
   function setApcPrefix($apc_prefix) {
     $this->apcPrefix = $apc_prefix;

@@ -20,6 +20,8 @@ _xautoload_register();
 /**
  * Get the class finder object.
  * This is the public version of _xautoload_finder().
+ *
+ * @return xautoload_ClassFinder_Interface
  */
 function xautoload_get_finder() {
   // Get it from the registry.
@@ -33,6 +35,8 @@ function xautoload_get_finder() {
  * @param string $key
  *   Identifier of the service within the registry.
  *   The xautoload_ServiceFactory should have a method with the same name.
+ *
+ * @return mixed
  */
 function xautoload($key = 'main') {
   static $service_registry;
@@ -83,6 +87,8 @@ function _xautoload_register() {
  *
  * @param string $name
  *   Name of the class or interface we want to load.
+ *
+ * @throws Exception
  */
 function _xautoload_autoload_temp($name) {
 
