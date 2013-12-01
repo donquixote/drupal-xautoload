@@ -106,10 +106,15 @@ class xautoload_ClassFinder_Helper_Map {
    *   First part of the path generated from the class name.
    * @param xautoload_FinderPlugin_Interface $plugin
    *   The plugin.
-   * @throws Exception
+   * @param string $base_dir
+   *   Id under which the plugin should be registered.
+   *   This may be a numeric id, or a string key.
+   *
    * @return int
+   *
+   * @throws Exception
    */
-  function registerPlugin($logical_base_path, $plugin) {
+  function registerPlugin($logical_base_path, $plugin, $base_dir = NULL) {
 
     if (!isset($plugin)) {
       throw new Exception("Second argument cannot be NULL.");
@@ -118,7 +123,10 @@ class xautoload_ClassFinder_Helper_Map {
       throw new Exception("Second argument must implement xautoload_FinderPlugin_Interface.");
     }
 
-    if (!isset($this->plugins[$logical_base_path])) {
+    if (is_string($base_dir) && !is_numeric($base_dir)) {
+      $id = $base_dir;
+    }
+    elseif (!isset($this->plugins[$logical_base_path])) {
       $id = ($this->lastPluginIds[$logical_base_path] = 1);
     }
     else {
@@ -203,8 +211,8 @@ class xautoload_ClassFinder_Helper_Map {
         /**
          * @var xautoload_FinderPlugin_Interface $plugin
          */
-        foreach ($this->plugins[$logical_base_path] as $plugin) {
-          if ($plugin->findFile($api, $logical_base_path, $relative_path)) {
+        foreach ($this->plugins[$logical_base_path] as $id => $plugin) {
+          if ($plugin->findFile($api, $logical_base_path, $relative_path, $id)) {
             return TRUE;
           }
         }

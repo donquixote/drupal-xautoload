@@ -121,10 +121,12 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    *   The namespace, e.g. "My\Library"
    * @param xautoload_FinderPlugin_Interface $plugin
    *   The plugin.
+   * @param string $base_dir
+   *   Optional base path.
    */
-  function registerNamespacePlugin($namespace, $plugin) {
+  function registerNamespacePlugin($namespace, $plugin, $base_dir = NULL) {
     $namespace_path_fragment = $this->namespacePathFragment($namespace);
-    $this->namespaceMap->registerPlugin($namespace_path_fragment, $plugin);
+    $this->namespaceMap->registerPlugin($namespace_path_fragment, $plugin, $base_dir);
   }
 
   /**

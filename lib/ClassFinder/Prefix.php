@@ -194,11 +194,12 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    * @param string $prefix
    *   The prefix, e.g. "My_Library"
    * @param xautoload_FinderPlugin_Interface $plugin
-   *   The plugin. See 
+   * @param string $base_dir
+   *   Optional base path.
    */
-  function registerPrefixPlugin($prefix, $plugin) {
+  function registerPrefixPlugin($prefix, $plugin, $base_dir = NULL) {
     $prefix_path_fragment = $this->prefixPathFragment($prefix);
-    $this->prefixMap->registerPlugin($prefix_path_fragment, $plugin);
+    $this->prefixMap->registerPlugin($prefix_path_fragment, $plugin, $base_dir);
   }
 
   /**
