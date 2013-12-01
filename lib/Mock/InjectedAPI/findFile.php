@@ -8,7 +8,7 @@
 class xautoload_Mock_InjectedAPI_findFile {
 
   /**
-   * @var Drupal\xautoload\Tests\XAutoloadUnitTestCase
+   * @var Drupal\xautoload\Tests\PublicAssertInterface
    */
   protected $testCase;
 
@@ -48,7 +48,7 @@ class xautoload_Mock_InjectedAPI_findFile {
   protected $accepted = FALSE;
 
   /**
-   * @param Drupal\xautoload\Tests\XAutoloadUnitTestCase $testCase
+   * @param Drupal\xautoload\Tests\PublicAssertInterface $testCase
    * @param string $class
    * @param array $expectedSuggestions
    * @param int $iAccept

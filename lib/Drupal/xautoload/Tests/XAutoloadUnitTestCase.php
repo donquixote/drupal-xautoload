@@ -2,7 +2,7 @@
 
 namespace Drupal\xautoload\Tests;
 
-class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
+class XAutoloadUnitTestCase extends \DrupalUnitTestCase implements PublicAssertInterface {
 
   /**
    * @return array
@@ -18,6 +18,7 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
   /**
    * @param bool $status
    * @param string $message
+   *
    * @return bool
    */
   function assertPublic($status, $message) {

@@ -2,7 +2,7 @@
 
 namespace Drupal\xautoload\Tests;
 
-class ClassFinderTest extends \PHPUnit_Framework_TestCase {
+class ClassFinderTest extends \PHPUnit_Framework_TestCase implements PublicAssertInterface {
 
   function setUp() {
     parent::setUp();
@@ -66,8 +66,11 @@ class ClassFinderTest extends \PHPUnit_Framework_TestCase {
   /**
    * @param bool $status
    * @param string $message
+   *
+   * @return bool
    */
   function assertPublic($status, $message) {
     $this->assertTrue($status, $message);
+    return $status;
   }
 }
