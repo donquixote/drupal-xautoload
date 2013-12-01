@@ -30,7 +30,7 @@ abstract class xautoload_Container_ProxyObject {
   }
 
   /**
-   * @return
+   * @return mixed
    */
   function proxyGetInstance() {
     if (!isset($this->instance)) {
@@ -46,6 +46,10 @@ abstract class xautoload_Container_ProxyObject {
     return $this->instance;
   }
 
+  /**
+   * @param string $method
+   * @param array $args
+   */
   function proxyScheduleOperation($method, $args = array()) {
     if (!isset($this->instance)) {
       $this->scheduled[] = array($method, $args);
@@ -55,5 +59,8 @@ abstract class xautoload_Container_ProxyObject {
     }
   }
 
+  /**
+   * @return mixed
+   */
   abstract protected function proxyCreateInstance();
 }
