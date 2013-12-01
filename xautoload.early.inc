@@ -36,7 +36,7 @@ function xautoload_get_finder() {
  *   Identifier of the service within the registry.
  *   The xautoload_ServiceFactory should have a method with the same name.
  *
- * @return mixed
+ * @return xautoload_Container_LazyServices|mixed
  */
 function xautoload($key = 'main') {
   static $service_registry;
@@ -44,7 +44,7 @@ function xautoload($key = 'main') {
     $service_factory = new xautoload_ServiceFactory();
     $service_registry = new xautoload_Container_LazyServices($service_factory);
   }
-  return $service_registry->get($key);
+  return isset($key) ? $service_registry->get($key) : $service_registry;
 }
 
 
