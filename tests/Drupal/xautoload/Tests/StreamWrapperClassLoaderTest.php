@@ -2,11 +2,6 @@
 
 namespace Drupal\xautoload\Tests;
 
-/**
- * @_runTestsInSeparateProcesses
- * @_backupGlobals disabled
- * @_preserveGlobalState disabled
- */
 class StreamWrapperClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
   /**
@@ -27,9 +22,6 @@ class StreamWrapperClassLoaderTest extends \PHPUnit_Framework_TestCase {
   // ---------------------------------------------------------------------------
 
   /**
-   * @_runInSeparateProcess
-   * @_preserveGlobalState disabled
-   *
    * @throws \Exception
    */
   function testNamespaces() {
@@ -46,8 +38,7 @@ class StreamWrapperClassLoaderTest extends \PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @_runInSeparateProcess
-   * @_preserveGlobalState disabled
+   * Test PEAR-like prefixes.
    */
   function testPrefixes() {
 
