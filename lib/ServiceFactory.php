@@ -84,6 +84,7 @@ class xautoload_ServiceFactory {
       && extension_loaded('apc')
       && function_exists('apc_store')
       && function_exists('apc_fetch')
+      && isset($GLOBALS['drupal_hash_salt'])
     ) {
       return new xautoload_ApcKeyManager_Enabled('drupal.xautoload.' . $GLOBALS['drupal_hash_salt'] . '.apc_prefix');
     }
