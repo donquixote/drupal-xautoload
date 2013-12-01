@@ -7,7 +7,7 @@
  * @property xautoload_ApcKeyManager_Disabled|xautoload_ApcKeyManager_Enabled $apcKeyManager
  * @property xautoload_ClassFinder_Interface $proxyFinder
  * @property xautoload_ClassFinder_Interface $classFinder
- * @property xautoload_ClassFinder_Interface $finder
+ * @property xautoload_ClassFinder_Interface|xautoload_ClassFinder_Prefix|xautoload_ClassFinder_NamespaceOrPrefix| $finder
  *   Alias for ->classFinder
  */
 class xautoload_Container_LazyServices {

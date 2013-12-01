@@ -9,7 +9,7 @@ class xautoload_ClassLoader_NoCache implements xautoload_ClassLoader_Interface {
   protected $finder;
 
   /**
-   * @param xautoload_ClassFinder $finder
+   * @param xautoload_ClassFinder_Interface $finder
    *   The object that does the actual class finding.
    */
   function __construct($finder) {
