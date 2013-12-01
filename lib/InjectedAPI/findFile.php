@@ -8,7 +8,16 @@
  */
 class xautoload_InjectedAPI_findFile {
 
+  /**
+   * @var string
+   *   The file that was found.
+   */
   protected $file;
+
+  /**
+   * @var string
+   *   The class name to look for. Set in the constructor.
+   */
   protected $className;
 
   /**
@@ -44,6 +53,10 @@ class xautoload_InjectedAPI_findFile {
    *
    * @param string $file
    *   The file that is supposed to declare the class.
+   *
+   * @return bool
+   *   TRUE, if the file exists.
+   *   FALSE, otherwise.
    */
   function suggestFile($file) {
     if (file_exists($file)) {
@@ -63,6 +76,9 @@ class xautoload_InjectedAPI_findFile {
    *
    * @param string $file
    *   The file that is supposed to declare the class.
+   *
+   * @return bool
+   *   TRUE, if the file was found - which is always.
    */
   function suggestFile_skipFileExists($file) {
     $this->file = $file;
@@ -74,6 +90,9 @@ class xautoload_InjectedAPI_findFile {
    *
    * @param string $file
    *   The file that is supposed to declare the class.
+   *
+   * @return bool
+   *   TRUE, if the file was found - which is always.
    */
   function suggestFile_checkNothing($file) {
     $this->file = $file;
@@ -85,6 +104,10 @@ class xautoload_InjectedAPI_findFile {
    *
    * @param string $file
    *   The file that is supposed to declare the class.
+   *
+   * @return bool
+   *   TRUE, if the file exists.
+   *   FALSE, otherwise.
    */
   function suggestFile_checkIncludePath($file) {
     if ($this->_fileExists_checkIncludePath($file)) {

@@ -40,6 +40,10 @@ interface xautoload_FinderPlugin_Interface {
    *   With trailing DIRECTORY_SEPARATOR.
    * @param string $path_suffix
    *   Second part of the canonical path, ending with '.php'.
+   *
+   * @return bool|NULL
+   *   TRUE, if the file was found.
+   *   FALSE, otherwise.
    */
   function findFile($api, $path_fragment, $path_suffix);
 }

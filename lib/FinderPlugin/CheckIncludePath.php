@@ -11,12 +11,16 @@ class xautoload_FinderPlugin_CheckIncludePath implements xautoload_FinderPlugin_
    * Expect a class Aaa_Bbb_Ccc_Ddd to be in Aaa/Bbb/Ccc/Ddd.php,
    * but consider the PHP include_path setting.
    *
-   * @param object $api
+   * @param xautoload_InjectedAPI_findFile $api
    *   The InjectedAPI object.
    * @param string $path_fragment
    *   First part of the path, for instance "Aaa/Bbb/".
    * @param string $path_suffix
    *   Second part of the path, for instance "Ccc/Ddd.php".
+   *
+   * @return bool|NULL
+   *   TRUE, if the file was found.
+   *   FALSE, otherwise.
    */
   function findFile($api, $path_fragment, $path_suffix) {
     $path = $path_fragment . $path_suffix;
