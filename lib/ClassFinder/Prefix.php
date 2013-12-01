@@ -254,7 +254,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
   protected function prefixPathFragment($prefix) {
     return
       strlen($prefix)
-      ? str_replace('_', DIRECTORY_SEPARATOR, $prefix . '_')
+      ? str_replace('_', DIRECTORY_SEPARATOR, rtrim($prefix, '_') . '_')
       : ''
     ;
   }

@@ -197,7 +197,7 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
   protected function namespacePathFragment($namespace) {
     return
       strlen($namespace)
-      ? str_replace('\\', DIRECTORY_SEPARATOR, $namespace . '\\')
+      ? str_replace('\\', DIRECTORY_SEPARATOR, rtrim($namespace, '\\') . '\\')
       : ''
     ;
   }
