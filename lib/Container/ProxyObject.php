@@ -25,7 +25,7 @@ abstract class xautoload_Container_ProxyObject {
       $this->observers[] = $callback;
     }
     else {
-      call_user_func_array($callback, $this->instance);
+      call_user_func($callback, $this->instance);
     }
   }
 
