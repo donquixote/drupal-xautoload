@@ -70,6 +70,9 @@ class xautoload_LoaderFactory {
 
       case 'apc':
         if (isset($this->apcPrefix)) {
+          /**
+           * @var xautoload_ClassFinder_Interface
+           */
           $finder = $this->proxyFinder->proxyGetInstance();
           return new xautoload_ClassLoader_ApcCache($finder, $this->apcPrefix);
         }
@@ -78,6 +81,9 @@ class xautoload_LoaderFactory {
       case 'default':
       case 'dev':
       default:
+        /**
+         * @var xautoload_ClassFinder_Interface
+         */
         $finder = $this->proxyFinder->proxyGetInstance();
         return new xautoload_ClassLoader_NoCache($finder);
     }
