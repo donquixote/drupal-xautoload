@@ -9,8 +9,19 @@
  */
 abstract class xautoload_FinderPlugin_WithKillswitch implements xautoload_FinderPlugin_Interface {
 
+  /**
+   * @var xautoload_ClassFinder_Helper_Map
+   */
   protected $map;
+
+  /**
+   * @var string
+   */
   protected $key;
+
+  /**
+   * @var int
+   */
   protected $id;
 
   /**
@@ -20,6 +31,8 @@ abstract class xautoload_FinderPlugin_WithKillswitch implements xautoload_Finder
    *
    * @param xautoload_ClassFinder_Helper_Map $map
    *   Object where the thing is subscribed.
+   * @param string $key
+   * @param int $id
    */
   function setKillswitch($map, $key, $id) {
     $this->map = $map;

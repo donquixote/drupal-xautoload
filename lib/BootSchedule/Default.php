@@ -3,7 +3,7 @@
 class xautoload_BootSchedule_Default implements xautoload_BootSchedule_Interface {
 
   /**
-   * @var xautoload_BootSchedule_Helper_Interface
+   * @var xautoload_BootSchedule_Helper_Interface|xautoload_BootSchedule_Helper_Base
    *   A helper object that knows how to register namespaces or prefixes for
    *   Drupal extensions (modules/themes).
    */

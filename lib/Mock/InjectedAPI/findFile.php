@@ -7,15 +7,52 @@
  */
 class xautoload_Mock_InjectedAPI_findFile {
 
+  /**
+   * @var Drupal\xautoload\Tests\XAutoloadUnitTestCase
+   */
   protected $testCase;
+
+  /**
+   * @var string
+   */
   protected $className;
+
+  /**
+   * @var array
+   */
   protected $expectedSuggestions;
+
+  /**
+   * @var array
+   */
   protected $incomingSuggestions = array();
+
+  /**
+   * @var array
+   */
   protected $expectedAssoc = array();
+
+  /**
+   * @var int
+   */
   protected $index = 0;
+
+  /**
+   * @var int
+   */
   protected $iAccept;
+
+  /**
+   * @var bool
+   */
   protected $accepted = FALSE;
 
+  /**
+   * @param Drupal\xautoload\Tests\XAutoloadUnitTestCase $testCase
+   * @param string $class
+   * @param array $expectedSuggestions
+   * @param int $iAccept
+   */
   function __construct($testCase, $class, $expectedSuggestions, $iAccept = -1) {
     $this->testCase = $testCase;
     $this->className = $class;
@@ -33,10 +70,17 @@ class xautoload_Mock_InjectedAPI_findFile {
     return TRUE;
   }
 
+  /**
+   * @return string
+   */
   function getClass() {
     return $this->className;
   }
 
+  /**
+   * @param string $file
+   * @return bool
+   */
   function suggestFile($file) {
     TRUE
       && $this->assert(isset($this->expectedAssoc[$file]),
@@ -78,6 +122,11 @@ EOT;
     $this->assert($this->incomingSuggestions === array_slice($this->expectedSuggestions, 0, $this->index), $msg);
   }
 
+  /**
+   * @param bool $status
+   * @param string $message
+   * @return bool
+   */
   protected function assert($status, $message) {
     return $this->testCase->assertPublic($status, $message);
   }

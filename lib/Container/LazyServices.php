@@ -5,7 +5,7 @@
  * @property xautoload_BootSchedule_Interface $schedule
  * @property xautoload_LoaderManager $loaderManager
  * @property xautoload_ApcKeyManager_Disabled|xautoload_ApcKeyManager_Enabled $apcKeyManager
- * @property xautoload_ClassFinder_Interface $proxyFinder
+ * @property xautoload_ClassFinder_Proxy $proxyFinder
  * @property xautoload_ClassFinder_Interface $classFinder
  * @property xautoload_ClassFinder_Interface|xautoload_ClassFinder_Prefix|xautoload_ClassFinder_NamespaceOrPrefix| $finder
  *   Alias for ->classFinder

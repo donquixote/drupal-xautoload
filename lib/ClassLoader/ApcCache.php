@@ -3,13 +3,17 @@
 
 class xautoload_ClassLoader_ApcCache extends xautoload_ClassLoader_NoCache {
 
+  /**
+   * @var string
+   */
   protected $prefix;
 
   /**
-   * @param object $finder
+   * @param xautoload_ClassFinder_Interface $finder
    *   Another ClassFinder to delegate to, if the class is not in the cache.
    * @param string $prefix
    *   A prefix for the storage key in APC.
+   * @throws Exception
    */
   function __construct($finder, $prefix) {
     if (!extension_loaded('apc') || !function_exists('apc_store')) {

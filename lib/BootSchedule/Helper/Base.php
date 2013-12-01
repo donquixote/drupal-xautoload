@@ -2,6 +2,9 @@
 
 abstract class xautoload_BootSchedule_Helper_Base implements xautoload_BootSchedule_Helper_Interface {
 
+  /**
+   * @var xautoload_ClassFinder_Interface|xautoload_ClassFinder_Prefix|xautoload_ClassFinder_NamespaceOrPrefix
+   */
   protected $finder;
 
   /**
@@ -15,6 +18,7 @@ abstract class xautoload_BootSchedule_Helper_Base implements xautoload_BootSched
   /**
    * @param xautoload_ClassFinder_Interface $finder
    *   The class finder where we register the namespaces and prefixes.
+   * @throws Exception
    */
   function verifyFinderInstance($finder) {
     if ($finder !== $this->finder) {

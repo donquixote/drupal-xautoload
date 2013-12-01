@@ -158,6 +158,10 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
       }
     }
 
+    if (!isset($index)) {
+      return;
+    }
+
     for (++$index; isset($autoload_stack[$index]); ++$index) {
       $str = $autoload_stack[$index];
       $this->fail("Autoload callback at index $index must be empty instead of $str.");

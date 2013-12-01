@@ -2,10 +2,24 @@
 
 abstract class xautoload_Container_ProxyObject {
 
+  /**
+   * @var array
+   */
   protected $observers = array();
+
+  /**
+   * @var array
+   */
   protected $scheduled = array();
+
+  /**
+   * @var object
+   */
   protected $instance;
 
+  /**
+   * @param callable $callback
+   */
   function proxyObserveInstantiation($callback) {
     if (!isset($this->instance)) {
       $this->observers[] = $callback;
@@ -15,6 +29,9 @@ abstract class xautoload_Container_ProxyObject {
     }
   }
 
+  /**
+   * @return
+   */
   function proxyGetInstance() {
     if (!isset($this->instance)) {
       $this->instance = $this->proxyCreateInstance();

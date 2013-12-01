@@ -4,6 +4,9 @@ namespace Drupal\xautoload\Tests;
 
 class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
 
+  /**
+   * @return array
+   */
   static function getInfo() {
     return array(
       'name' => 'X Autoload unit test',
@@ -12,6 +15,11 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
     );
   }
 
+  /**
+   * @param bool $status
+   * @param string $message
+   * @return bool
+   */
   function assertPublic($status, $message) {
     return $this->assert($status, $message);
   }
@@ -59,6 +67,10 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
     }
   }
 
+  /**
+   * @param mixed $callback
+   * @return string
+   */
   protected function callbackToString($callback) {
     if (is_array($callback)) {
       list($obj, $method) = $callback;
@@ -107,6 +119,11 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
     ));
   }
 
+  /**
+   * @param \xautoload_ClassFinder_Interface $finder
+   * @param string $class
+   * @param array $expectedSuggestions
+   */
   protected function assertFinderSuggestions($finder, $class, array $expectedSuggestions) {
     for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {
       $api = new \xautoload_Mock_InjectedAPI_findFile($this, $class, $expectedSuggestions, $iAccept);

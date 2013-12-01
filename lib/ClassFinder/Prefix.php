@@ -3,7 +3,14 @@
 
 class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
 
+  /**
+   * @var xautoload_ClassFinder_Helper_Map
+   */
   protected $prefixMap;
+
+  /**
+   * @var array
+   */
   protected $classes = array();
 
   function __construct() {
@@ -20,7 +27,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *   Root path, e.g. "../lib" or "../src", so that classes can be placed e.g.
    *   My_Prefix_SomeClass -> ../lib/My/Prefix/SomeClass.php
    *   My_Prefix -> ../lib/My/Prefix.php
-   * @param boolean $lazy_check
+   * @param bool|xautoload_MissingDirPlugin_Interface $lazy_check
    *   If TRUE, then we are not sure if the directory at $path actually exists.
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
@@ -54,14 +61,13 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *   Associative array, the keys are the prefixes, the values are the
    *   directories.
    *   This does NOT cover the class named $prefix itself.
-   * @param boolean $lazy_check
+   * @param bool|xautoload_MissingDirPlugin_Interface $lazy_check
    *   If TRUE, then we are not sure if the directory at $path actually exists.
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
    */
   function registerPrefixesRoot($map, $lazy_check = TRUE) {
     $deep_map = array();
-    $class_map = array();
     foreach ($map as $prefix => $path) {
       $prefix_path_fragment = $this->prefixPathFragment($prefix);
       $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
@@ -94,7 +100,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    * @param string $deep_path
    *   The deep path, e.g. "../lib/My/Prefix", for classes placed in
    *   My_Prefix_SomeClass -> ../lib/My/Prefix/SomeClass.php
-   * @param boolean $lazy_check
+   * @param bool|xautoload_MissingDirPlugin_Interface $lazy_check
    *   If TRUE, then we are not sure if the directory at $path actually exists.
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
@@ -119,7 +125,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *   Associative array, the keys are the prefixes, the values are the
    *   directories.
    *   This does NOT cover the class named $prefix itself.
-   * @param boolean $lazy_check
+   * @param bool|xautoload_MissingDirPlugin_Interface $lazy_check
    *   If TRUE, then we are not sure if the directory at $path actually exists.
    *   If during the process we find the directory to be nonexistent, we
    *   unregister the path.
@@ -179,7 +185,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    * Legacy: Plugins were called Handlers before.
    */
   function registerPrefixHandler($prefix, $plugin) {
-    return $this->registerPrefixPlugin($prefix, $plugin);
+    $this->registerPrefixPlugin($prefix, $plugin);
   }
 
   /**

@@ -75,6 +75,9 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
 
   /**
    * Register a number of "deep" namespace directories at once.
+   *
+   * @param array $map
+   * @param bool|xautoload_MissingDirPlugin_Interface $lazy_check
    */
   function registerNamespacesDeep($map, $lazy_check = TRUE) {
     $deep_map = array();
@@ -108,7 +111,7 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
    * Legacy: Plugins were called Handlers before.
    */
   function registerNamespaceHandler($prefix, $plugin) {
-    return $this->registerNamespacePlugin($prefix, $plugin);
+    $this->registerNamespacePlugin($prefix, $plugin);
   }
 
   /**

@@ -30,11 +30,21 @@
  */
 class xautoload_ClassFinder_Helper_Map {
 
+  /**
+   * @var array
+   */
   protected $paths = array();
+
+  /**
+   * @var array
+   */
   protected $plugins = array();
 
-  // Index of the last inserted plugin.
-  // We can't use count(), because plugins at some index can be unset.
+  /**
+   * @var array
+   *   Index of the last inserted plugin.
+   *   We can't use count(), because plugins at some index can be unset.
+   */
   protected $lastPluginIds = array();
 
   /**
@@ -46,16 +56,16 @@ class xautoload_ClassFinder_Helper_Map {
    * @param string $path_fragment
    *   The would-be namespace path relative to PSR-0 root.
    *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
-   * @param string $path
+   * @param string $root_path
    *   The filesystem location of the (PSR-0) root folder for the given
    *   namespace.
    * @param boolean $lazy_check
    *   If TRUE, then it is yet unknown whether the directory exists. If during
    *   the process we find that it does not exist, we unregister it.
    */
-  function registerRootPath($path_fragment, $root_path) {
+  function registerRootPath($path_fragment, $root_path, $lazy_check = TRUE) {
     $deep_path = $root_path . DIRECTORY_SEPARATOR . $path_fragment;
-    $this->registerDeepPath($path_fragment, $deep_path);
+    $this->registerDeepPath($path_fragment, $deep_path, $lazy_check);
   }
 
   /**
@@ -67,9 +77,9 @@ class xautoload_ClassFinder_Helper_Map {
    * @param string $path_fragment
    *   The would-be namespace path relative to PSR-0 root.
    *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
-   * @param string $path
+   * @param string $deep_path
    *   The filesystem location of the (PSR-0) subfolder for the given namespace.
-   * @param boolean $lazy_check
+   * @param bool $lazy_check
    *   If TRUE, then it is yet unknown whether the directory exists. If during
    *   the process we find that it does not exist, we unregister it.
    */
@@ -96,6 +106,8 @@ class xautoload_ClassFinder_Helper_Map {
    *   First part of the path generated from the class name.
    * @param xautoload_FinderPlugin_Interface $plugin
    *   The plugin.
+   * @throws Exception
+   * @return int
    */
   function registerPlugin($path_fragment, $plugin) {
 
@@ -107,7 +119,7 @@ class xautoload_ClassFinder_Helper_Map {
     }
 
     if (!isset($this->plugins[$path_fragment])) {
-      $id = $this->lastPluginIds[$path_fragment] = 1;
+      $id = ($this->lastPluginIds[$path_fragment] = 1);
     }
     else {
       $id = ++$this->lastPluginIds[$path_fragment];
@@ -126,10 +138,14 @@ class xautoload_ClassFinder_Helper_Map {
    * Find the file for a class that in PSR-0 or PEAR would be in
    * $psr_0_root . '/' . $path_fragment . $path_suffix
    *
+   * @param xautoload_InjectedAPI_findFile $api
    * @param string $path_fragment
    *   First part of the canonical path, with trailing DIRECTORY_SEPARATOR.
    * @param string $path_suffix
    *   Second part of the canonical path, ending with '.php'.
+   *
+   * @return bool|NULL
+   *   TRUE, if the class was found.
    */
   function findFile_map($api, $path_fragment, $path_suffix) {
     $path = $path_fragment . $path_suffix;
@@ -157,6 +173,9 @@ class xautoload_ClassFinder_Helper_Map {
               unset($this->paths[$path_fragment][$dir]);
               $lazy_remove = TRUE;
               if (is_object($lazy_check)) {
+                /**
+                 * @var xautoload_MissingDirPlugin_Interface $lazy_check
+                 */
                 $new_dir = $lazy_check->alternativeDir($path_fragment);
                 if ($new_dir !== $dir) {
                   $file = $new_dir . $path_suffix;
@@ -179,6 +198,9 @@ class xautoload_ClassFinder_Helper_Map {
 
       // Check any plugin registered for this fragment.
       if (isset($this->plugins[$path_fragment])) {
+        /**
+         * @var xautoload_FinderPlugin_Interface $plugin
+         */
         foreach ($this->plugins[$path_fragment] as $plugin) {
           if ($plugin->findFile($api, $path_fragment, $path_suffix)) {
             return TRUE;

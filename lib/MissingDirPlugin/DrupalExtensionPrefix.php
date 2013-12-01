@@ -2,6 +2,10 @@
 
 class xautoload_MissingDirPlugin_DrupalExtensionPrefix extends xautoload_MissingDirPlugin_DrupalExtensionAbstract {
 
+  /**
+   * @param string $path_fragment
+   * @return string
+   */
   function alternativeDir($path_fragment) {
     $extension = substr($path_fragment, 0, -1);
     if ($filepath = drupal_get_filename($this->type, $extension)) {

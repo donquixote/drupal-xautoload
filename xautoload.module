@@ -86,6 +86,7 @@ function xautoload_simpletest_alter(&$groups) {
   // This does include disabled modules.
   $system_list = db_query("SELECT name, filename FROM {system}")->fetchAllKeyed();
 
+  $classes = array();
   foreach ($system_list as $name => $filename) {
     // Build directory in which the test files would reside.
     $tests_dir = DRUPAL_ROOT . '/' . dirname($filename) . '/lib/Drupal/' . $name . '/Tests';
@@ -224,6 +225,8 @@ function xautoload_form_system_performance_settings_alter(&$form, $form_state) {
 
 /**
  * Implements hook_xautoload on behalf of libraries module
+ *
+ * @param xautoload_InjectedAPI_hookXautoload $api
  */
 function libraries_xautoload($api) {
   if (!function_exists('libraries_info')) {
