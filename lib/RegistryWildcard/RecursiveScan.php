@@ -20,19 +20,6 @@ class xautoload_RegistryWildcard_RecursiveScan {
 
   /**
    * @var array
-   *   New entries added because they were found in a file scan. Only kept for
-   *   debugging.
-   */
-  protected $plus = array();
-
-  /**
-   * @var array
-   *   Wildcard entries removed during the process. Only kept for debugging.
-   */
-  protected $minus = array();
-
-  /**
-   * @var array
    *   $files array passed to hook_registry_files_alter().
    */
   protected $filesInRegistry;
@@ -43,14 +30,6 @@ class xautoload_RegistryWildcard_RecursiveScan {
    */
   function __construct(&$files_in_registry) {
     $this->filesInRegistry =& $files_in_registry;
-  }
-
-  /**
-   * Output the current state via devel dpm().
-   */
-  function dpm() {
-    dpm($this->minus);
-    dpm($this->plus);
   }
 
   /**
@@ -65,50 +44,102 @@ class xautoload_RegistryWildcard_RecursiveScan {
    */
   function check($path, $value) {
     $this->value = $value;
-    if ($this->_check($path)) {
+    if (preg_match('#^([^\*]*)/(.*\*.*)$#', $path, $m)) {
+      list(, $base, $wildcard) = $m;
+      $this->scanDirectory($base, $wildcard);
       unset($this->filesInRegistry[$path]);
-      $this->minus[$path] = TRUE;
     }
   }
 
   /**
-   * @param string $a
-   *   Base directory, not containint any wildcard.
-   * @param string $b
-   *   First part containing wildcards.
-   * @param null $c
-   *   Second (optional) part containing wildcards.
+   * @param string $dir
+   *   Base folder, e.g. "sites/all/modules/foo/includes", which does NOT
+   *   contain any asterisk ("*").
+   * @param string $wildcard
+   *   Suffix which may contain asterisks.
    */
-  protected function _abc($a, $b, $c = NULL) {
-    if (is_dir($a)) {
-      foreach (scandir($a) as $candidate) {
-        if ($this->_validCand($candidate, $b)) {
-          if (!isset($c)) {
-            if ($b === '**') {
-              $this->_abc("$a/$candidate", '**');
-            }
-            $this->_file("$a/$candidate");
-          }
-          else{
-            if (!$this->_check("$a/$candidate/$c")) {
-              $this->_file("$a/$candidate/$c");
-            }
-            if ($b === '**') {
-              $this->_abc("$a/$candidate", '**', $c);
-            }
-          }
-        }
+  protected function scanDirectory($dir, $wildcard) {
+    if (!is_dir($dir)) {
+      return;
+    }
+    if (FALSE === strpos($wildcard, '*')) {
+      // $wildcard is a fixed string, not a wildcard.
+      $this->suggestFile($dir . '/' . $wildcard);
+    }
+    elseif ('**' === $wildcard) {
+      // Trick: "$a/**" == union of "$a/*" and "$a/*/**"
+      $this->scanDirectoryLevel($dir, '*');
+      $this->scanDirectoryLevel($dir, '*', '**');
+    }
+    elseif ('**/' === substr($wildcard, 0, 3)) {
+      // Trick: "$a/**/$b" == union of "$a/$b" and "$a/*/**/$b"
+      $remaining = substr($wildcard, 3);
+      $this->scanDirectory($dir, $remaining);
+      $this->scanDirectoryLevel($dir, '*', $wildcard);
+    }
+    elseif (FALSE !== ($slashpos = strpos($wildcard, '/'))) {
+      // $wildcard consists of more than one fragment.
+      $fragment = substr($wildcard, 0, $slashpos);
+      $remaining = substr($wildcard, $slashpos + 1);
+      if (FALSE === strpos($fragment, '*')) {
+        $this->scanDirectory($dir . '/' . $fragment, $remaining);
+      }
+      else {
+        $this->scanDirectoryLevel($dir, $fragment, $remaining);
+      }
+    }
+    else {
+      // $wildcard represents a file name.
+      $this->scanDirectoryLevel($dir, $wildcard);
+    }
+  }
+
+  /**
+   * @param string $dir
+   *   Base directory, not containing any wildcard.
+   * @param string $fragment
+   *   Wildcard path fragment to be processed now. This is never '**', but it
+   *   always contains at least one asterisk.
+   * @param null $remaining
+   *   Optional rest of the wildcard string, that may contain path fragments to
+   *   be processed later.
+   *
+   * @throws Exception
+   */
+  protected function scanDirectoryLevel($dir, $fragment, $remaining = NULL) {
+
+    if (!is_dir($dir)) {
+      return;
+    }
+
+    if ('**' === $fragment) {
+      throw new Exception("Fragment must not be '**'.");
+    }
+
+    foreach (scandir($dir) as $candidate) {
+      if (!$this->validateCandidate($candidate, $fragment)) {
+        continue;
+      }
+
+      if (!isset($remaining)) {
+        $this->suggestFile($dir . '/' . $candidate);
+      }
+      else {
+        $this->scanDirectory($dir . '/' . $candidate, $remaining);
       }
     }
   }
 
   /**
    * @param $candidate
-   * @param $b
+   *   String to be checked against the wildcard.
+   * @param $wildcard
+   *   Wildcard string like '*', '*.*' or '*.inc'.
    *
-   * @return bool|int
+   * @return bool
+   *   TRUE, if $candidate matches $wildcard.
    */
-  protected function _validCand($candidate, $b) {
+  protected function validateCandidate($candidate, $wildcard) {
 
     if ($candidate == '.' || $candidate == '..') {
       return FALSE;
@@ -116,13 +147,13 @@ class xautoload_RegistryWildcard_RecursiveScan {
     if (strpos($candidate, '*') !== FALSE) {
       return FALSE;
     }
-    if ($b == '*' || $b == '**') {
+    if ($wildcard == '*' || $wildcard == '**') {
       return TRUE;
     }
 
     // More complex wildcard string.
     $fragments = array();
-    foreach (explode('*', $b) as $fragment) {
+    foreach (explode('*', $wildcard) as $fragment) {
       $fragments[] = preg_quote($fragment);
     }
     $regex = implode('.*', $fragments);
@@ -131,49 +162,11 @@ class xautoload_RegistryWildcard_RecursiveScan {
 
   /**
    * @param string $path
-   *   File path or wildcard string.
-   *
-   * @return bool
-   *   TRUE, if $path is a wildcard string.
-   *   FALSE, if $path is a regular file path.
-   */
-  protected function _check($path) {
-    if (preg_match('#^([^\*]*)/(.*\*.*)$#', $path, $m)) {
-      /**
-       * The $path has been split into $a + "/" + $b.
-       *
-       * @var string $a
-       *   Base folder, e.g. "sites/all/modules/foo/includes", which does NOT
-       *   contain any asterisk ("*").
-       * @var string $b
-       *   Suffix which may contain one or more asterisks, but MUST contain at
-       *   least one character without an asterisk.
-       */
-      list(, $a, $b) = $m;
-      list($b, $c) = $result = explode('/', $b, 2) + array(NULL, NULL);
-      if ($b === '**' && isset($c)) {
-        /**
-         * $b has been further split into "**" + "/" + $c.
-         */
-        $this->_check("$a/$c");
-      }
-      $this->_abc($a, $b, $c);
-      return TRUE;
-    }
-    else {
-      // Not a wildcard string
-      return FALSE;
-    }
-  }
-
-  /**
-   * @param string $path
    *   Add a new file path to $this->filesInRegistry().
    */
-  protected function _file($path) {
+  protected function suggestFile($path) {
     if (is_file($path)) {
       $this->filesInRegistry[$path] = $this->value;
-      $this->plus[$path] = TRUE;
     }
   }
 }
