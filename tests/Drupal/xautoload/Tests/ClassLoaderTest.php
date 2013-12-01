@@ -2,7 +2,7 @@
 
 namespace Drupal\xautoload\Tests;
 
-class StreamWrapperClassLoaderTest extends \PHPUnit_Framework_TestCase {
+class ClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @var DummyFilesystem
@@ -16,6 +16,7 @@ class StreamWrapperClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
   function tearDown() {
     stream_wrapper_unregister('test');
+    parent::tearDown();
   }
 
   //                                                                Test methods
