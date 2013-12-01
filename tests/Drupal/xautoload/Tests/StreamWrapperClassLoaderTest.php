@@ -22,7 +22,21 @@ class StreamWrapperClassLoaderTest extends \PHPUnit_Framework_TestCase {
   // ---------------------------------------------------------------------------
 
   /**
-   * @throws \Exception
+   * Test PSR-4-like namespaces.
+   */
+  function testPsr4() {
+
+    // Prepare the class finder.
+    $finder = new \xautoload_ClassFinder_NamespaceOrPrefix();
+    $loader = new \xautoload_ClassLoader_NoCache($finder);
+
+    $finder->registerNamespacePlugin('Drupal\ex_ample\\', new \xautoload_FinderPlugin_Psr4(), 'test://base/lib');
+
+    $this->assertLoadClass($loader, 'Drupal\ex_ample\Psr4\Foo_Bar', 'test://base/lib/Psr4/Foo_Bar.php');
+  }
+
+  /**
+   * Test PSR-0-like namespaces.
    */
   function testNamespaces() {
 
@@ -33,8 +47,8 @@ class StreamWrapperClassLoaderTest extends \PHPUnit_Framework_TestCase {
     $finder->registerNamespaceDeep('Drupal\\ex_ample', 'test://base/lib');
     $finder->registerNamespaceRoot('Drupal\\ex_ample', 'test://base/vendor');
 
-    $this->assertLoadClass($loader, 'Drupal\ex_ample\Sub\Foo', 'test://base/lib/Sub/Foo.php');
-    $this->assertLoadClass($loader, 'Drupal\ex_ample\Sub\Bar', 'test://base/vendor/Drupal/ex_ample/Sub/Bar.php');
+    $this->assertLoadClass($loader, 'Drupal\ex_ample\Shallow\Foo_Bar', 'test://base/lib/Shallow/Foo/Bar.php');
+    $this->assertLoadClass($loader, 'Drupal\ex_ample\Sub\Foo_Bar', 'test://base/vendor/Drupal/ex_ample/Sub/Foo/Bar.php');
   }
 
   /**
