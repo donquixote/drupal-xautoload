@@ -10,7 +10,7 @@
  * "loader" is for the cache layer and for file inclusion, and it is plugged
  * with a "finder" to actually find the class on a cache miss.
  */
-class xautoload_LoaderFactory {
+class xautoload_LoaderFactory implements xautoload_ApcKeyManager_ObserverInterface {
 
   /**
    * @var xautoload_ClassFinder_Proxy
@@ -71,7 +71,7 @@ class xautoload_LoaderFactory {
       case 'apc':
         if (isset($this->apcPrefix)) {
           /**
-           * @var xautoload_ClassFinder_Interface
+           * @var xautoload_ClassFinder_Interface $finder
            */
           $finder = $this->proxyFinder->proxyGetInstance();
           return new xautoload_ClassLoader_ApcCache($finder, $this->apcPrefix);
@@ -82,7 +82,7 @@ class xautoload_LoaderFactory {
       case 'dev':
       default:
         /**
-         * @var xautoload_ClassFinder_Interface
+         * @var xautoload_ClassFinder_Interface $finder
          */
         $finder = $this->proxyFinder->proxyGetInstance();
         return new xautoload_ClassLoader_NoCache($finder);

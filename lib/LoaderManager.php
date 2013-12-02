@@ -10,7 +10,7 @@
  * "loader" is for the cache layer and for file inclusion, and it is plugged
  * with a "finder" to actually find the class on a cache miss.
  */
-class xautoload_LoaderManager {
+class xautoload_LoaderManager implements xautoload_ApcKeyManager_ObserverInterface {
 
   /**
    * @var xautoload_LoaderFactory
@@ -23,7 +23,9 @@ class xautoload_LoaderManager {
   protected $mode;
 
   /**
-   * @var array
+   * @var xautoload_ClassLoader_Interface[]
+   *   Array of class loaders, keyed by loader mode.
+   *   E.g. $loaders['apc'] = new xautoload_ClassLoader_ApcCache(..)
    */
   protected $loaders = array();
 
