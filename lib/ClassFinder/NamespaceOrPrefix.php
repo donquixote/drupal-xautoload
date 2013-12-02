@@ -3,6 +3,9 @@
 
 class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Prefix {
 
+  /**
+   * @var xautoload_ClassFinder_Helper_Map
+   */
   protected $namespaceMap;
 
   function __construct() {
@@ -35,7 +38,7 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
   /**
    * Register PSR-0 root folders for given namespaces.
    *
-   * @param array $map
+   * @param string[] $map
    *   Associative array, the keys are the namespaces, the values are the
    *   directories.
    * @param boolean $lazy_check
@@ -76,7 +79,7 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
   /**
    * Register a number of "deep" namespace directories at once.
    *
-   * @param array $map
+   * @param string[] $map
    * @param bool|xautoload_MissingDirPlugin_Interface $lazy_check
    */
   function registerNamespacesDeep($map, $lazy_check = TRUE) {

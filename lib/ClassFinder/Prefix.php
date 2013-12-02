@@ -9,7 +9,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
   protected $prefixMap;
 
   /**
-   * @var array
+   * @var array[]
    */
   protected $classes = array();
 
@@ -57,7 +57,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *   via
    *     $finder->registerPrefixDeep('my_library', "$library_dir/src");
    *
-   * @param array $map
+   * @param string[] $map
    *   Associative array, the keys are the prefixes, the values are the
    *   directories.
    *   This does NOT cover the class named $prefix itself.
@@ -121,7 +121,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
    *   via
    *     $finder->registerPrefixDeep('my_library', "$library_dir/src");
    *
-   * @param array $map
+   * @param string[] $map
    *   Associative array, the keys are the prefixes, the values are the
    *   directories.
    *   This does NOT cover the class named $prefix itself.
@@ -155,7 +155,7 @@ class xautoload_ClassFinder_Prefix implements xautoload_ClassFinder_Interface {
   /**
    * Register an array ("map") of classes to file paths.
    *
-   * @param array $classes
+   * @param string[] $classes
    *   The map of classes to file paths.
    */
   function registerClasses($classes) {

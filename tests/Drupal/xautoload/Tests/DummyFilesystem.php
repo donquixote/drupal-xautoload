@@ -29,7 +29,7 @@ class DummyFilesystem {
   }
 
   /**
-   * @param array $files
+   * @param string[] $files
    */
   function addKnownFiles($files) {
     foreach ($files as $file) {
@@ -66,6 +66,12 @@ class DummyFilesystem {
     $this->knownPaths[$dir] = self::DIR;
   }
 
+  /**
+   * @param string $path
+   * @return string|bool
+   *   One of self::NOTHING, self::DIR, self::FILE, or a class name for a class
+   *   that is supposed to be defined in the file.
+   */
   function resolvePath($path) {
     if (isset($this->knownPaths[$path])) {
       return $this->knownPaths[$path];

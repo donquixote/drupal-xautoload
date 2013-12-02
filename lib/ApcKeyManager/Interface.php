@@ -3,12 +3,12 @@
 interface xautoload_ApcKeyManager_Interface {
 
   /**
-   * @param xautoload_LoaderFactory|xautoload_LoaderManager $observer
+   * @param xautoload_ApcKeyManager_ObserverInterface $observer
    */
   function observeApcPrefix($observer);
 
   /**
-   * Get a fresh APC prefix.
+   * Generate a fresh APC prefix, and replace the old one.
    */
   function renewApcPrefix();
 }

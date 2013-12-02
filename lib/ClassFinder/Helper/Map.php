@@ -31,18 +31,18 @@
 class xautoload_ClassFinder_Helper_Map {
 
   /**
-   * @var array
+   * @var array[]
    */
   protected $paths = array();
 
   /**
-   * @var array
+   * @var array[]
    */
   protected $plugins = array();
 
   /**
-   * @var array
-   *   Index of the last inserted plugin.
+   * @var int[]
+   *   Index of the last inserted plugin, for each logical base path.
    *   We can't use count(), because plugins at some index can be unset.
    */
   protected $lastPluginIds = array();

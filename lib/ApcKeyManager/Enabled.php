@@ -13,7 +13,7 @@ class xautoload_ApcKeyManager_Enabled implements xautoload_ApcKeyManager_Interfa
   protected $apcPrefix;
 
   /**
-   * @var array
+   * @var xautoload_ApcKeyManager_ObserverInterface[]
    */
   protected $observers = array();
 
@@ -31,7 +31,7 @@ class xautoload_ApcKeyManager_Enabled implements xautoload_ApcKeyManager_Interfa
   }
 
   /**
-   * @param xautoload_LoaderFactory|xautoload_LoaderManager $observer
+   * {@inheritdoc}
    */
   function observeApcPrefix($observer) {
     $observer->setApcPrefix($this->apcPrefix);
@@ -39,7 +39,7 @@ class xautoload_ApcKeyManager_Enabled implements xautoload_ApcKeyManager_Interfa
   }
 
   /**
-   * Get a fresh APC prefix.
+   * {@inheritdoc}
    */
   function renewApcPrefix() {
 

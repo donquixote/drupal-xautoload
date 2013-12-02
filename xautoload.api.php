@@ -52,7 +52,7 @@ function hook_xautoload($api) {
  *
  * TODO: The $api object should be specified by an interface.
  *
- * @return array
+ * @return array[]
  *   Same as explained in libraries module, but with added key 'xautoload'.
  */
 function mymodule_libraries_info() {

@@ -50,7 +50,7 @@ class xautoload_Mock_InjectedAPI_findFile {
   /**
    * @param Drupal\xautoload\Tests\PublicAssertInterface $testCase
    * @param string $class
-   * @param array $expectedSuggestions
+   * @param string[] $expectedSuggestions
    * @param int $iAccept
    */
   function __construct($testCase, $class, $expectedSuggestions, $iAccept = -1) {

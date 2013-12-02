@@ -19,13 +19,13 @@ class xautoload_RegistryWildcard_RecursiveScan {
   protected $value;
 
   /**
-   * @var array
+   * @var array[]
    *   $files array passed to hook_registry_files_alter().
    */
   protected $filesInRegistry;
 
   /**
-   * @param array &$files_in_registry
+   * @param array[] &$files_in_registry
    *   $files array passed to hook_registry_files_alter().
    */
   function __construct(&$files_in_registry) {

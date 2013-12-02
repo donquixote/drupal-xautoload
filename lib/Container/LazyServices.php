@@ -2,7 +2,7 @@
 
 /**
  * @property xautoload_BootSchedule_Helper_PHP52|xautoload_BootSchedule_Helper_PHP53 $registrationHelper
- * @property xautoload_BootSchedule_Interface $schedule
+ * @property xautoload_BootSchedule_Proxy $schedule
  * @property xautoload_LoaderManager $loaderManager
  * @property xautoload_ApcKeyManager_Disabled|xautoload_ApcKeyManager_Enabled $apcKeyManager
  * @property xautoload_ClassFinder_Proxy $proxyFinder
@@ -18,7 +18,7 @@ class xautoload_Container_LazyServices {
   protected $factory;
 
   /**
-   * @var array
+   * @var object[]
    */
   protected $services = array();
 

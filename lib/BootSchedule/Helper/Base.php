@@ -28,6 +28,9 @@ abstract class xautoload_BootSchedule_Helper_Base implements xautoload_BootSched
 
   /**
    * Invoke hook_xautoload or another registration hook.
+   *
+   * @param string $hook
+   *   A string to identify a hook, e.g. 'xautoload' for hook_xautoload().
    */
   function invokeRegistrationHook($hook) {
     // Let other modules register stuff to the finder via hook_xautoload().
@@ -42,11 +45,17 @@ abstract class xautoload_BootSchedule_Helper_Base implements xautoload_BootSched
   /**
    * Register prefix maps, one map per extension type.
    *
-   * @param array $prefix_maps
+   * @param array[] $prefix_maps
    *   Prefix maps for different extension types. Modules and themes are
    *   registered speparately, because they need a different MissingDirPlugin.
    */
   protected function registerPrefixMaps($prefix_maps) {
+    /**
+     * @var string $type
+     *   E.g. 'module' or 'theme'.
+     * @var string[] $map
+     *   E.g. $map['system'] = 'modules/system/lib/Drupal/system'
+     */
     foreach ($prefix_maps as $type => $map) {
       $missing_dir_plugin = new xautoload_MissingDirPlugin_DrupalExtensionPrefix($type, TRUE);
       $this->finder->registerPrefixesDeep($map, $missing_dir_plugin);
@@ -56,11 +65,17 @@ abstract class xautoload_BootSchedule_Helper_Base implements xautoload_BootSched
   /**
    * Register namespace maps, one map per extension type.
    *
-   * @param array $namespace_maps
+   * @param array[] $namespace_maps
    *   Namespace maps for different extension types. Modules and themes are
    *   registered speparately, because they need a different MissingDirPlugin.
    */
   protected function registerNamespaceMaps($namespace_maps) {
+    /**
+     * @var string $type
+     *   E.g. 'module' or 'theme'.
+     * @var string[] $map
+     *   E.g. $map['Drupal\system'] = 'modules/system/lib/Drupal/system'
+     */
     foreach ($namespace_maps as $type => $map) {
       $missing_dir_plugin = new xautoload_MissingDirPlugin_DrupalExtensionNamespace($type, FALSE);
       $this->finder->registerNamespacesDeep($map, $missing_dir_plugin);

@@ -3,12 +3,12 @@
 abstract class xautoload_Container_ProxyObject {
 
   /**
-   * @var array
+   * @var callback[]
    */
   protected $observers = array();
 
   /**
-   * @var array
+   * @var array[]
    */
   protected $scheduled = array();
 
@@ -18,7 +18,7 @@ abstract class xautoload_Container_ProxyObject {
   protected $instance;
 
   /**
-   * @param callable $callback
+   * @param callback $callback
    */
   function proxyObserveInstantiation($callback) {
     if (!isset($this->instance)) {

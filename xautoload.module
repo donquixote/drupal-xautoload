@@ -141,7 +141,7 @@ function xautoload_simpletest_alter(&$groups) {
  * Support wildcard syntax in the files[] setting in your module's info file.
  * See https://drupal.org/node/1976198
  *
- * @param array &$files
+ * @param array[] &$files
  *   List of files specified in files[] array in module info files.
  *   Format:
  *
@@ -158,7 +158,7 @@ function xautoload_simpletest_alter(&$groups) {
  *   This function will remove the entry for foo/inc/**, and instead add all the
  *   individual class files found in the foo/inc/ folder.
  *
- * @param array $modules
+ * @param stdClass[] $modules
  *   Array keys are numeric.
  *   Array values are objects each representing a module.
  *   This parameter will be ignored.

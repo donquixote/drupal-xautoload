@@ -41,7 +41,7 @@ class xautoload_BootSchedule_Default implements xautoload_BootSchedule_Interface
   /**
    * Add modules after they have been enabled or installed.
    *
-   * @param array $modules
+   * @param string[] $modules
    *   Array of module names, with numeric keys.
    */
   function modulesInstalledOrEnabled(array $modules) {

@@ -5,7 +5,7 @@ namespace Drupal\xautoload\Tests;
 class XAutoloadUnitTestCase extends \DrupalUnitTestCase implements PublicAssertInterface {
 
   /**
-   * @return array
+   * {@inheritdoc}
    */
   static function getInfo() {
     return array(
@@ -123,7 +123,7 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase implements PublicAssertI
   /**
    * @param \xautoload_ClassFinder_Interface $finder
    * @param string $class
-   * @param array $expectedSuggestions
+   * @param string[] $expectedSuggestions
    */
   protected function assertFinderSuggestions($finder, $class, array $expectedSuggestions) {
     for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {

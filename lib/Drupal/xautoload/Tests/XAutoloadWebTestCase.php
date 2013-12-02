@@ -4,6 +4,9 @@ namespace Drupal\xautoload\Tests;
 
 class XAutoloadWebTestCase extends \DrupalWebTestCase {
 
+  /**
+   * {@inheritdoc}
+   */
   static function getInfo() {
     return array(
       'name' => 'X Autoload web test',
@@ -12,22 +15,38 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function setUp() {
     parent::setUp();
   }
 
+  /**
+   *
+   */
   function testNoCache() {
     $this->xautoloadCheckCacheMode('dev');
   }
 
+  /**
+   *
+   */
   function testApcCache() {
     $this->xautoloadCheckCacheMode('apc');
   }
 
+  /**
+   *
+   */
   function testApcLazyCache() {
     $this->xautoloadCheckCacheMode('apc_lazy');
   }
 
+  /**
+   * @param string $mode
+   *   The autoloader mode, like 'apc' or 'apc_lazy'.
+   */
   protected function xautoloadCheckCacheMode($mode) {
 
     variable_set('xautoload_cache_mode', $mode);
@@ -58,6 +77,11 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     }
   }
 
+  /**
+   * @param string $module
+   * @param string[] $classes
+   * @param bool $classes_on_include
+   */
   protected function xautoloadModuleEnabled($module, $classes, $classes_on_include) {
 
     $observation_function = '_' . $module . '_early_boot_observations';
@@ -85,6 +109,12 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     }
   }
 
+  /**
+   * @param string $module
+   * @param string $mode
+   *   The autoloader mode, like 'apc' or 'apc_lazy'.
+   * @param string[] $classes
+   */
   protected function xautoloadModuleCheckJson($module, $mode, $classes) {
 
     $path = "$module.json";
@@ -112,6 +142,13 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     }
   }
 
+  /**
+   * @param array $observations
+   * @param string $mode
+   *   The autoloader mode, like 'apc' or 'apc_lazy'.
+   * @param $phase
+   * @param $when
+   */
   protected function xautoloadCheckTestEnvironment($observations, $mode, $phase, $when) {
 
     // Check early-bootstrap variables.
@@ -122,6 +159,13 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     $this->assertAutoloadStackOrder($observations['spl_autoload_functions'], $mode);
   }
 
+  /**
+   * @param string $mode
+   *   The autoloader mode, like 'apc' or 'apc_lazy'.
+   * @return string[]
+   *   Expected order of class loaders on the spl autoload stack for the given
+   *   autoloader mode. Each represented by a string.
+   */
   protected function expectedAutoloadStackOrder($mode) {
 
     switch ($mode) {
@@ -141,6 +185,14 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     );
   }
 
+  /**
+   * @param string[] $autoload_stack
+   *   Actual order of class loaders on the spl autoload stack, to be compared
+   *   with those expected for the given autoloader mode. Each represented by a
+   *   string.
+   * @param string $mode
+   *   The autoloader mode, like 'apc' or 'apc_lazy'.
+   */
   protected function assertAutoloadStackOrder($autoload_stack, $mode) {
 
     $expected = $this->expectedAutoloadStackOrder($mode);
@@ -173,14 +225,29 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     }
   }
 
+  /**
+   * Assert that a module is disabled.
+   *
+   * @param string $module
+   */
   protected function assertModuleDisabled($module) {
     $this->assertFalse(module_exists($module), "Module $module is disabled.");
   }
 
+  /**
+   * Assert that a module is enabled.
+   *
+   * @param string $module
+   */
   protected function assertModuleEnabled($module) {
     $this->assertTrue(module_exists($module), "Module $module is enabled.");
   }
 
+  /**
+   * Assert that a class is defined.
+   *
+   * @param string $class
+   */
   protected function assertClassExists($class) {
     $this->assertTrue(class_exists($class), "Class '$class' must exist.");
   }

@@ -5,7 +5,7 @@ class xautoload_BootSchedule_Helper_PHP52 extends xautoload_BootSchedule_Helper_
   /**
    * Register prefixes for enabled Drupal extensions (modules/themes).
    *
-   * @param array $extensions
+   * @param stdClass[] $extensions
    *   Info about extensions.
    */
   function registerExtensions($extensions) {

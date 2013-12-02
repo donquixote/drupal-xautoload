@@ -14,7 +14,7 @@ interface xautoload_BootSchedule_Helper_Interface {
   /**
    * Register prefixes for enabled Drupal extensions (modules/themes).
    *
-   * @param array $extensions
+   * @param stdClass[] $extensions
    *   Info about extensions.
    */
   function registerExtensions($extensions);

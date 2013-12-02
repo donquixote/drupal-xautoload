@@ -4,6 +4,9 @@ namespace Drupal\xautoload\Tests;
 
 class RegistryFilesAlterTest extends \PHPUnit_Framework_TestCase {
 
+  /**
+   * {@inheritdoc}
+   */
   public static function getInfo() {
     return array(
       'name' => 'X Autoload RegistryFilesAlterTest',
@@ -12,6 +15,9 @@ class RegistryFilesAlterTest extends \PHPUnit_Framework_TestCase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function setUp() {
     parent::setUp();
   }

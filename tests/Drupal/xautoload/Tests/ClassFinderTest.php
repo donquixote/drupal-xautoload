@@ -49,7 +49,7 @@ class ClassFinderTest extends \PHPUnit_Framework_TestCase implements PublicAsser
   /**
    * @param \xautoload_ClassFinder_Interface $finder
    * @param string $class
-   * @param array $expectedSuggestions
+   * @param string[] $expectedSuggestions
    */
   protected function assertFinderSuggestions($finder, $class, array $expectedSuggestions) {
     for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {
