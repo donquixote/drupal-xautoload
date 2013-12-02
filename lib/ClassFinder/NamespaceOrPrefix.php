@@ -133,6 +133,22 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
   }
 
   /**
+   * Register a plugin for a bunch of namespaces mapped to base directories.
+   *
+   * @param string[] $map
+   *   The namespaces mapped to base directories or NULL.
+   *   E.g. $map['Drupal\system'] = 'modules/system/lib'.
+   * @param xautoload_FinderPlugin_Interface $plugin
+   *   The plugin, e.g. for PSR-4.
+   */
+  function registerNamespacesPlugin($map, $plugin) {
+    foreach ($map as $namespace => $base_dir) {
+      $namespace_path_fragment = $this->namespacePathFragment($namespace);
+      $this->namespaceMap->registerPlugin($namespace_path_fragment, $plugin, $base_dir);
+    }
+  }
+
+  /**
    * Finds the path to the file where the class is defined.
    *
    * @param xautoload_InjectedAPI_findFile $api

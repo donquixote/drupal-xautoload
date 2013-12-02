@@ -81,4 +81,24 @@ abstract class xautoload_BootSchedule_Helper_Base implements xautoload_BootSched
       $this->finder->registerNamespacesDeep($map, $missing_dir_plugin);
     }
   }
+
+  /**
+   * Register namespace maps for PSR-4, one map per extension type.
+   *
+   * @param array[] $psr4_maps
+   *   Namespace maps for different extension types. Modules and themes are
+   *   registered speparately, because they need a different MissingDirPlugin.
+   */
+  protected function registerPsr4Maps($psr4_maps) {
+    /**
+     * @var string $type
+     *   E.g. 'module' or 'theme'.
+     * @var string[] $map
+     *   E.g. $map['Drupal\system'] = 'modules/system/lib/Drupal/system'
+     */
+    foreach ($psr4_maps as $type => $map) {
+      $plugin = new xautoload_FinderPlugin_Psr4();
+      $this->finder->registerNamespacesPlugin($map, $plugin);
+    }
+  }
 }
