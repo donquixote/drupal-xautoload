@@ -26,7 +26,6 @@ class xautoload_FinderPlugin_Psr4 implements xautoload_FinderPlugin_ExtendedInte
     // So we need to re-calculate it.
     $relative_path = str_replace('\\', '/', substr($api->getClass(), strlen($logical_base_path))) . '.php';
 
-    print "($base_dir + $relative_path)\n";
     return $api->suggestFile($base_dir . '/' . $relative_path);
   }
 }
