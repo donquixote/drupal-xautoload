@@ -1,173 +1,344 @@
 <?php
 
 
-class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Prefix {
+class xautoload_ClassFinder_NamespaceOrPrefix
+  extends xautoload_ClassLoader_Abstract
+  implements xautoload_ClassFinder_ExtendedInterface {
+
+  /**
+   * @var array[]
+   */
+  protected $classes = array();
+
+  /**
+   * @var xautoload_ClassFinder_Helper_Map
+   */
+  protected $prefixMap;
 
   /**
    * @var xautoload_ClassFinder_Helper_Map
    */
   protected $namespaceMap;
 
+  /**
+   * @var xautoload_DirectoryBehavior_Default
+   */
+  protected $defaultBehavior;
+
+  /**
+   * @var xautoload_DirectoryBehavior_Psr0
+   */
+  protected $psr0Behavior;
+
   function __construct() {
-    parent::__construct();
-    $this->namespaceMap = new xautoload_ClassFinder_Helper_Map();
+    $this->prefixMap = new xautoload_ClassFinder_Helper_Map('_');
+    $this->namespaceMap = new xautoload_ClassFinder_Helper_Map('\\');
+    $this->defaultBehavior = new xautoload_DirectoryBehavior_Default();
+    $this->psr0Behavior = new xautoload_DirectoryBehavior_Psr0();
   }
 
   /**
-   * Register a PSR-0 root folder for a given namespace.
-   *
-   * @param string $namespace
-   *   The namespace, e.g. "My\Namespace", to cover all classes within that,
-   *   e.g. My\Namespace\SomeClass, or My\Namespace\Xyz\SomeClass. This does not
-   *   cover the root-level class, e.g. My\Namespace
-   * @param string $path
-   *   The deep path, e.g. "../lib", if classes reside in e.g.
-   *   My\Namespace\SomeClass -> ../lib/My/Namespace/SomeClass.php
-   * @param boolean $lazy_check
-   *   If TRUE, then we are not sure if the directory at $path actually exists.
-   *   If during the process we find the directory to be nonexistent, we
-   *   unregister the path.
+   * {@inheritdoc}
    */
-  function registerNamespaceRoot($namespace, $path, $lazy_check = TRUE) {
-    $namespace_path_fragment = $this->namespacePathFragment($namespace);
-    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-    $deep_path .= $namespace_path_fragment;
-    $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
+  function getPrefixMap() {
+    return $this->prefixMap;
   }
 
   /**
-   * Register PSR-0 root folders for given namespaces.
-   *
-   * @param string[] $map
-   *   Associative array, the keys are the namespaces, the values are the
-   *   directories.
-   * @param boolean $lazy_check
-   *   If TRUE, then we are not sure if the directory at $path actually exists.
-   *   If during the process we find the directory to be nonexistent, we
-   *   unregister the path.
+   * {@inheritdoc}
    */
-  function registerNamespacesRoot($map, $lazy_check = TRUE) {
+  function getNamespaceMap() {
+    return $this->namespaceMap;
+  }
+
+  //                                                      Composer compatibility
+  // ---------------------------------------------------------------------------
+
+  /**
+   * {@inheritdoc}
+   */
+  function addClassMap(array $classMap) {
+    $this->registerClasses($classMap);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function add($prefix, $paths) {
+    if (FALSE === strpos($prefix, '\\')) {
+      // Due to the ambiguity of PSR-0, this could be either PEAR-like or namespaced.
+      $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
+      foreach ((array)$paths as $root_path) {
+        $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+        $this->prefixMap->registerDeepPath($logical_base_path, $deep_path, $this->defaultBehavior);
+      }
+    }
+    // Namespaced PSR-0
+    $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
+    foreach ((array)$paths as $root_path) {
+      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+      $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $this->psr0Behavior);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function addPsr4($prefix, $paths) {
+    // Namespaced PSR-4
+    $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
+    foreach ((array)$paths as $deep_path) {
+      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $this->defaultBehavior);
+    }
+  }
+
+  //                                                      More convenience stuff
+  // ---------------------------------------------------------------------------
+
+  /**
+   * {@inheritdoc}
+   */
+  function addNamespacePsr0($prefix, $paths) {
+    $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
+    foreach ((array)$paths as $root_path) {
+      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+      $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $this->psr0Behavior);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function addPear($prefix, $paths) {
+    $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
+    foreach ((array)$paths as $root_path) {
+      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+      $this->prefixMap->registerDeepPath($logical_base_path, $deep_path, $this->defaultBehavior);
+    }
+  }
+
+  //                                                             Class map stuff
+  // ---------------------------------------------------------------------------
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerClass($class, $file_path) {
+    $this->classes[$class][$file_path] = TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerClasses($classes) {
+    foreach ($classes as $class => $file_path) {
+      $this->classes[$class][$file_path] = TRUE;
+    }
+  }
+
+  //                                                                Prefix stuff
+  // ---------------------------------------------------------------------------
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerPrefixRoot($prefix, $root_path, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
+    $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
+    $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+    $this->prefixMap->registerDeepPath($logical_base_path, $deep_path, $behavior);
+
+    if (strlen($prefix)) {
+      // We assume that the class named $prefix is also found at this path.
+      $filepath = substr($deep_path, 0, -1) . '.php';
+      $this->registerClass($prefix, $filepath);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerPrefixesRoot($map, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
     $deep_map = array();
-    foreach ($map as $namespace => $path) {
-      $namespace_path_fragment = $this->namespacePathFragment($namespace);
-      $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-      $deep_path .= $namespace_path_fragment;
-      $deep_map[$namespace_path_fragment][$deep_path] = $lazy_check;
+    foreach ($map as $prefix => $root_path) {
+      $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
+      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+      $deep_map[$logical_base_path][$deep_path] = $behavior;
+
+      // Register the class with name $prefix.
+      if (strlen($prefix)) {
+        $filepath = substr($deep_path, 0, -1) . '.php';
+        $this->classes[$prefix][$filepath] = TRUE;
+      }
+    }
+    $this->prefixMap->registerDeepPaths($deep_map);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerPrefixDeep($prefix, $deep_path, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
+    $this->registerPrefixDeepLocation($prefix, $deep_path, $behavior);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerPrefixesDeep($map, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
+    $deep_map = array();
+    foreach ($map as $prefix => $deep_path) {
+      $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
+      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $deep_map[$logical_base_path][$deep_path] = $behavior;
+    }
+    $this->prefixMap->registerDeepPaths($deep_map);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerPrefixDeepLocation($prefix, $deep_path, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
+    $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
+    $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+    $this->prefixMap->registerDeepPath($logical_base_path, $deep_path, $behavior);
+  }
+
+  //                                                             Namespace stuff
+  // ---------------------------------------------------------------------------
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerNamespaceRoot($namespace, $root_path, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
+    $logical_base_path = xautoload_Util::namespaceLogicalPath($namespace);
+    $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+    $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $behavior);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function registerNamespacesRoot($map, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
+    $deep_map = array();
+    foreach ($map as $namespace => $root_path) {
+      $logical_base_path = xautoload_Util::namespaceLogicalPath($namespace);
+      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+      $deep_map[$logical_base_path][$deep_path] = $behavior;
     }
     $this->namespaceMap->registerDeepPaths($deep_map);
   }
 
   /**
-   * Alias for registerNamespaceDeepLocation()
-   *
-   * @param string $namespace
-   *   The namespace, e.g. "My\Namespace"
-   * @param string $path
-   *   The deep path, e.g. "../lib/My/Namespace"
-   * @param boolean $lazy_check
-   *   If TRUE, then we are not sure if the directory at $path actually exists.
-   *   If during the process we find the directory to be nonexistent, we
-   *   unregister the path.
+   * {@inheritdoc}
    */
-  function registerNamespaceDeep($namespace, $path, $lazy_check = TRUE) {
-    strlen($namespace);
-    $namespace_path_fragment = $this->namespacePathFragment($namespace);
+  function registerNamespaceDeep($namespace, $path, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
+    $logical_base_path = xautoload_Util::namespaceLogicalPath($namespace);
     $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-    $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
+    $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $behavior);
   }
 
   /**
-   * Register a number of "deep" namespace directories at once.
-   *
-   * @param string[] $map
-   * @param bool|xautoload_MissingDirPlugin_Interface $lazy_check
+   * {@inheritdoc}
    */
-  function registerNamespacesDeep($map, $lazy_check = TRUE) {
+  function registerNamespacesDeep($map, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
+    }
     $deep_map = array();
-    foreach ($map as $namespace => $path) {
-      $namespace_path_fragment = $this->namespacePathFragment($namespace);
-      $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-      $deep_map[$namespace_path_fragment][$deep_path] = $lazy_check;
+    foreach ($map as $namespace => $deep_path) {
+      $logical_base_path = xautoload_Util::namespaceLogicalPath($namespace);
+      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $deep_map[$logical_base_path][$deep_path] = $behavior;
     }
     $this->namespaceMap->registerDeepPaths($deep_map);
   }
 
   /**
-   * Register a deep filesystem location for a given namespace.
-   *
-   * @param string $namespace
-   *   The namespace, e.g. "My\Namespace"
-   * @param string $path
-   *   The deep path, e.g. "../lib/My/Namespace"
-   * @param boolean $lazy_check
-   *   If TRUE, then we are not sure if the directory at $path actually exists.
-   *   If during the process we find the directory to be nonexistent, we
-   *   unregister the path.
+   * {@inheritdoc}
    */
-  function registerNamespaceDeepLocation($namespace, $path, $lazy_check = TRUE) {
-    $namespace_path_fragment = $this->namespacePathFragment($namespace);
-    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
-    $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $lazy_check);
-  }
-
-  /**
-   * Legacy: Plugins were called Handlers before.
-   */
-  function registerNamespaceHandler($prefix, $plugin) {
-    $this->registerNamespacePlugin($prefix, $plugin);
-  }
-
-  /**
-   * Register a plugin for a namespace.
-   *
-   * @param string $namespace
-   *   The namespace, e.g. "My\Library"
-   * @param xautoload_FinderPlugin_Interface $plugin
-   *   The plugin.
-   * @param string $base_dir
-   *   Optional base path.
-   */
-  function registerNamespacePlugin($namespace, $plugin, $base_dir = NULL) {
-    $namespace_path_fragment = $this->namespacePathFragment($namespace);
-    $this->namespaceMap->registerPlugin($namespace_path_fragment, $plugin, $base_dir);
-  }
-
-  /**
-   * Register a plugin for a bunch of namespaces mapped to base directories.
-   *
-   * @param string[] $map
-   *   The namespaces mapped to base directories or NULL.
-   *   E.g. $map['Drupal\system'] = 'modules/system/lib'.
-   * @param xautoload_FinderPlugin_Interface $plugin
-   *   The plugin, e.g. for PSR-4.
-   */
-  function registerNamespacesPlugin($map, $plugin) {
-    foreach ($map as $namespace => $base_dir) {
-      $namespace_path_fragment = $this->namespacePathFragment($namespace);
-      $this->namespaceMap->registerPlugin($namespace_path_fragment, $plugin, $base_dir);
+  function registerNamespaceDeepLocation($namespace, $path, $behavior = NULL) {
+    if (!isset($behavior)) {
+      $behavior = $this->defaultBehavior;
     }
+    $namespace_path_fragment = xautoload_Util::namespaceLogicalPath($namespace);
+    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
+    $this->namespaceMap->registerDeepPath($namespace_path_fragment, $deep_path, $behavior);
+  }
+
+  // ---------------------------------------------------------------------------
+
+  /**
+   * {@inheritdoc}
+   */
+  function loadClass($class) {
+
+    // Fix the behavior of some PHP versions that prepend '\\' to the class name.
+    if ('\\' === $class[0]) {
+      $class = substr($class, 1);
+    }
+
+    // First check if the literal class name is registered.
+    if (!empty($this->classes[$class])) {
+      foreach ($this->classes[$class] as $filepath => $true) {
+        if (file_exists($filepath)) {
+          require $filepath;
+          return TRUE;
+        }
+      }
+    }
+
+    // Check if the class has a namespace.
+    if (FALSE !== $pos = strrpos($class, '\\')) {
+
+      // Build the "logical path" based on PSR-4 replacement rules.
+      $logical_path = str_replace('\\', '/', $class) . '.php';
+      return $this->namespaceMap->loadClass($class, $logical_path, $pos);
+    }
+
+    // Build the "logical path" based on PEAR replacement rules.
+    $pear_logical_path = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+
+    // Clean up surplus '/' resulting from duplicate underscores, or an
+    // underscore at the beginning of the class.
+    while (FALSE !== $pos = strrpos('/' . $pear_logical_path, '//')) {
+      $pear_logical_path{$pos} = '_';
+    }
+
+    // Check if the class has any underscore.
+    $pos = strrpos($pear_logical_path, DIRECTORY_SEPARATOR);
+    return $this->prefixMap->loadClass($class, $pear_logical_path, $pos);
   }
 
   /**
-   * Finds the path to the file where the class is defined.
-   *
-   * @param xautoload_InjectedAPI_findFile $api
-   *   API object with a suggestFile() method.
-   *   We are supposed to call $api->suggestFile($file) with all suggestions we
-   *   can find, until it returns TRUE. Once suggestFile() returns TRUE, we stop
-   *   and return TRUE as well. The $file will be in the $api object, so we
-   *   don't need to return it.
-   * @param string $class
-   *   The name of the class, with all namespaces prepended.
-   *   E.g. Some\Namespace\Some\Class
-   *
-   * @return TRUE|NULL
-   *   TRUE, if we found the file for the class.
-   *   That is, if the $api->suggestFile($file) method returned TRUE one time.
-   *   NULL, if we have no more suggestions.
+   * {@inheritdoc}
    */
-  function findFile($api, $class) {
+  function apiFindFile($api, $class) {
 
+    // Fix the behavior of some PHP versions that prepend '\\' to the class name.
     if ('\\' === $class[0]) {
       $class = substr($class, 1);
     }
@@ -181,43 +352,25 @@ class xautoload_ClassFinder_NamespaceOrPrefix extends xautoload_ClassFinder_Pref
       }
     }
 
+    // Check if the class has a namespace.
     if (FALSE !== $pos = strrpos($class, '\\')) {
 
-      // Loop through positions of '\\', backwards.
-      $namespace_path_fragment = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, 0, $pos + 1));
-      $path_suffix = str_replace('_', DIRECTORY_SEPARATOR, substr($class, $pos + 1)) . '.php';
-      if ($this->namespaceMap->findFile_map($api, $namespace_path_fragment, $path_suffix)) {
-        return TRUE;
-      }
+      // Build the "logical path" based on PSR-4 replacement rules.
+      $logical_path = str_replace('\\', '/', $class) . '.php';
+      return $this->namespaceMap->apiFindFile($api, $logical_path, $pos);
     }
-    else {
 
-      // The class is not within a namespace.
-      // Fall back to the prefix-based finder.
-      $prefix_path_fragment = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-      if ('_' === $class{0}) {
-        $prefix_path_fragment{0} = '_';
-      }
-      if ($this->prefixMap->findFile_map($api, $prefix_path_fragment, '')) {
-        return TRUE;
-      }
+    // Build the "logical path" based on PEAR replacement rules.
+    $pear_logical_path = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+
+    // Clean up surplus '/' resulting from duplicate underscores, or an
+    // underscore at the beginning of the class.
+    while (FALSE !== $pos = strrpos('/' . $pear_logical_path, '//')) {
+      $pear_logical_path{$pos} = '_';
     }
-  }
 
-  /**
-   * Replace the namespace separator with directory separator.
-   *
-   * @param string $namespace
-   *   Namespace without trailing namespace separator.
-   *
-   * @return string
-   *   Path fragment representing the namespace, with trailing DIRECTORY_SEPARATOR.
-   */
-  protected function namespacePathFragment($namespace) {
-    return
-      strlen($namespace)
-      ? str_replace('\\', DIRECTORY_SEPARATOR, rtrim($namespace, '\\') . '\\')
-      : ''
-    ;
+    // Check if the class has any underscore.
+    $pos = strrpos($pear_logical_path, DIRECTORY_SEPARATOR);
+    return $this->prefixMap->apiFindFile($api, $pear_logical_path, $pos);
   }
 }

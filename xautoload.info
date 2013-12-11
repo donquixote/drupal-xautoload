@@ -1,4 +1,4 @@
 name = "X Autoload"
-description = "Autoload based on pseudo PSR-0 folder structure and module prefix."
+description = "Autoload based on PSR-0, PSR-4 and a custom PHP 5.2 compatibility mode."
 core = 7.x
 php = 5.2

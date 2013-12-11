@@ -1,12 +1,12 @@
 <?php
 
 
-interface xautoload_ClassFinder_Interface {
+interface xautoload_ClassFinder_Interface extends xautoload_ClassLoader_Interface {
 
   /**
    * Finds the path to the file where the class is defined.
    *
-   * @param xautoload_InjectedAPI_findFile|xautoload_Mock_InjectedAPI_findFile $api
+   * @param xautoload_InjectedAPI_ClassFinder_Interface $api
    *   API object with a suggestFile() method.
    *   We are supposed to call $api->suggestFile($file) with all suggestions we
    *   can find, until it returns TRUE. Once suggestFile() returns TRUE, we stop
@@ -21,5 +21,5 @@ interface xautoload_ClassFinder_Interface {
    *   That is, if the $api->suggestFile($file) method returned TRUE one time.
    *   NULL, if we have no more suggestions.
    */
-  function findFile($api, $class);
+  function apiFindFile($api, $class);
 }

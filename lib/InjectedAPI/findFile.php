@@ -6,7 +6,7 @@
  * The injected API can be mocked to provide a mocked file_exists(), and to
  * monitor all suggested candidates, not just the correct return value.
  */
-class xautoload_InjectedAPI_findFile {
+class xautoload_InjectedAPI_findFile extends xautoload_InjectedAPI_ClassFinder_Abstract {
 
   /**
    * @var string
@@ -15,35 +15,13 @@ class xautoload_InjectedAPI_findFile {
   protected $file;
 
   /**
-   * @var string
-   *   The class name to look for. Set in the constructor.
-   */
-  protected $className;
-
-  /**
-   * @param $class_name
-   *   Name of the class or interface we are trying to load.
-   */
-  function __construct($class_name) {
-    $this->className = $class_name;
-  }
-
-  /**
-   * This is done in the injected api object, so we can easily provide a mock
-   * implementation.
-   */
-  function is_dir($dir) {
-    return is_dir($dir);
-  }
-
-  /**
-   * Get the name of the class we are looking for.
+   * When the process has finished, use this to return the result.
    *
    * @return string
-   *   The class we are looking for.
+   *   The file that is supposed to declare the class.
    */
-  function getClass() {
-    return $this->className;
+  function getFile() {
+    return $this->file;
   }
 
   /**
@@ -110,7 +88,7 @@ class xautoload_InjectedAPI_findFile {
    *   FALSE, otherwise.
    */
   function suggestFile_checkIncludePath($file) {
-    if ($this->_fileExists_checkIncludePath($file)) {
+    if (FALSE !== $file = xautoload_Util::findFileInIncludePath($file)) {
       $this->file = $file;
       return TRUE;
     }
@@ -120,40 +98,46 @@ class xautoload_InjectedAPI_findFile {
   }
 
   /**
-   * When the process has finished, use this to return the result.
-   *
-   * @return string
-   *   The file that is supposed to declare the class.
+   * {@inheritdoc}
    */
-  function getFile() {
-    return $this->file;
+  function guessFile($file) {
+    // The file must be included, or else we can't know if it defines the class.
+    require_once $file;
+    if (xautoload_Util::classIsDefined($this->className)) {
+      $this->file = $file;
+      return TRUE;
+    }
   }
 
   /**
-   * Check if a file exists, considering the full include path.
-   *
-   * @param string $file
-   *   The filepath
-   * @return boolean
-   *   TRUE, if the file exists somewhere in include path.
+   * {@inheritdoc}
    */
-  protected function _fileExists_checkIncludePath($file) {
-    if (function_exists('stream_resolve_include_path')) {
-      // Use the PHP 5.3.1+ way of doing this.
-      return (FALSE !== stream_resolve_include_path($file));
-    }
-    elseif ($file{0} === DIRECTORY_SEPARATOR) {
-      // That's an absolute path already.
-      return file_exists($file);
-    }
-    else {
-      // Manually loop all candidate paths.
-      foreach (explode(PATH_SEPARATOR, get_include_path()) as $base_dir) {
-        if (file_exists($base_dir . DIRECTORY_SEPARATOR . $file)) {
-          return TRUE;
-        }
+  function guessPath($file) {
+    if (file_exists($file)) {
+      // The file must be included, or else we can't know if it defines the class.
+      require_once $file;
+      if (xautoload_Util::classIsDefined($this->className)) {
+        $this->file = $file;
+        return TRUE;
       }
-      return FALSE;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function claimFile($file) {
+    $this->file = $file;
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function claimPath($file) {
+    if (file_exists($file)) {
+      $this->file = $file;
+      return TRUE;
     }
   }
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Helper class for the class finder.
  * This is not part of ClassFinder, because we want to use the same logic for
@@ -36,36 +35,16 @@ class xautoload_ClassFinder_Helper_Map {
   protected $paths = array();
 
   /**
-   * @var array[]
+   * @var string
+   *   Either '\\' or '_'.
    */
-  protected $plugins = array();
+  protected $separator;
 
   /**
-   * @var int[]
-   *   Index of the last inserted plugin, for each logical base path.
-   *   We can't use count(), because plugins at some index can be unset.
+   * @param string $separator
    */
-  protected $lastPluginIds = array();
-
-  /**
-   * If a class file would be in
-   *   $psr0_root . '/' . $path_fragment . $path_suffix
-   * then instead, we look in
-   *   $root_path . '/' . $path_fragment . $path_suffix
-   *
-   * @param string $logical_base_path
-   *   The would-be namespace path relative to PSR-0 root.
-   *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
-   * @param string $root_path
-   *   The filesystem location of the (PSR-0) root folder for the given
-   *   namespace.
-   * @param boolean $lazy_check
-   *   If TRUE, then it is yet unknown whether the directory exists. If during
-   *   the process we find that it does not exist, we unregister it.
-   */
-  function registerRootPath($logical_base_path, $root_path, $lazy_check = TRUE) {
-    $deep_path = $root_path . DIRECTORY_SEPARATOR . $logical_base_path;
-    $this->registerDeepPath($logical_base_path, $deep_path, $lazy_check);
+  function __construct($separator) {
+    $this->separator = $separator;
   }
 
   /**
@@ -79,18 +58,38 @@ class xautoload_ClassFinder_Helper_Map {
    *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
    * @param string $deep_path
    *   The filesystem location of the (PSR-0) subfolder for the given namespace.
-   * @param bool $lazy_check
-   *   If TRUE, then it is yet unknown whether the directory exists. If during
-   *   the process we find that it does not exist, we unregister it.
+   * @param xautoload_DirectoryBehavior_Interface $behavior
+   *   Behavior in this directory.
    */
-  function registerDeepPath($logical_base_path, $deep_path, $lazy_check = TRUE) {
-    $this->paths[$logical_base_path][$deep_path] = $lazy_check;
+  function registerDeepPath($logical_base_path, $deep_path, $behavior) {
+    $this->paths[$logical_base_path][$deep_path] = $behavior;
+  }
+
+  /**
+   * @param string $logical_base_path
+   *   The would-be namespace path relative to PSR-0 root.
+   *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
+   * @param string $deep_path
+   *   The filesystem location of the (PSR-0) subfolder for the given namespace.
+   * @param xautoload_DirectoryBehavior_Interface $behavior
+   *   Behavior in this directory.
+   */
+  function prependDeepPath($logical_base_path, $deep_path, $behavior) {
+    $this->paths[$logical_base_path]
+      = isset($this->paths[$logical_base_path])
+      ? array($deep_path => $behavior) + $this->paths[$logical_base_path]
+      : array($deep_path => $behavior)
+    ;
   }
 
   /**
    * Register a bunch of those paths ..
+   *
+   * @param array[] $map
+   *
+   * @throws Exception
    */
-  function registerDeepPaths($map) {
+  function registerDeepPaths(array $map) {
     foreach ($map as $key => $paths) {
       if (isset($this->paths[$key])) {
         $paths += $this->paths[$key];
@@ -100,141 +99,123 @@ class xautoload_ClassFinder_Helper_Map {
   }
 
   /**
-   * Register a plugin for a namespace or prefix.
+   * Delete a registered path mapping.
    *
    * @param string $logical_base_path
-   *   First part of the path generated from the class name.
-   * @param xautoload_FinderPlugin_Interface $plugin
-   *   The plugin.
-   * @param string $base_dir
-   *   Id under which the plugin should be registered.
-   *   This may be a numeric id, or a string key.
-   *
-   * @return int
-   *
-   * @throws Exception
+   * @param string $deep_path
    */
-  function registerPlugin($logical_base_path, $plugin, $base_dir = NULL) {
+  function unregisterDeepPath($logical_base_path, $deep_path) {
+    unset($this->paths[$logical_base_path][$deep_path]);
+  }
 
-    if (!isset($plugin)) {
-      throw new Exception("Second argument cannot be NULL.");
-    }
-    elseif (!is_a($plugin, 'xautoload_FinderPlugin_Interface')) {
-      throw new Exception("Second argument must implement xautoload_FinderPlugin_Interface.");
-    }
 
-    if (is_string($base_dir) && !is_numeric($base_dir)) {
-      $id = $base_dir;
-    }
-    elseif (!isset($this->plugins[$logical_base_path])) {
-      $id = ($this->lastPluginIds[$logical_base_path] = 1);
-    }
-    else {
-      $id = ++$this->lastPluginIds[$logical_base_path];
-    }
-    $this->plugins[$logical_base_path][$id] = $plugin;
+  /**
+   * @param string $class
+   * @param string $logical_path
+   *   Class name translated into a logical path, either with PSR-4 or with PEAR
+   *   translation rules.
+   * @param int|bool $lastpos
+   *   Position of the last directory separator in $logical_path.
+   *   FALSE, if there is no directory separator in $logical_path.
+   *
+   * @return bool|NULL
+   *   TRUE, if the class was found.
+   */
+  function loadClass($class, $logical_path, $lastpos) {
+    $pos = $lastpos;
+    while (TRUE) {
+      $logical_base_path = (FALSE === $pos) ? '' : substr($logical_path, 0, $pos + 1);
 
-    if (method_exists($plugin, 'setKillswitch')) {
-      // Give the plugin a red button to unregister or replace itself.
-      $plugin->setKillswitch($plugin, $logical_base_path, $id);
-    }
+      if (isset($this->paths[$logical_base_path])) {
+        foreach ($this->paths[$logical_base_path] as $dir => $behavior) {
+          if ($behavior instanceof xautoload_DirectoryBehavior_Default) {
+            // PSR-4 and PEAR
+            if (file_exists($file = $dir . substr($logical_path, $pos + 1))) {
+              require $file;
+              return TRUE;
+            }
+          }
+          elseif ($behavior instanceof xautoload_DirectoryBehavior_Psr0) {
+            // PSR-0
+            if (file_exists($file = $dir
+              . substr($logical_path, $pos + 1, $lastpos - $pos)
+              . str_replace('_' , '/', substr($logical_path, $lastpos + 1))
+            )) {
+              require $file;
+              return TRUE;
+            }
+          }
+          elseif ($behavior instanceof xautoload_FinderPlugin_Interface) {
+            // Legacy "FinderPlugin".
+            $api = new xautoload_InjectedAPI_ClassFinder_LoadClass($class);
+            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1), $dir)) {
+              return TRUE;
+            }
+          }
+        }
+      }
 
-    return $id;
+      // Continue with parent fragment.
+      if (FALSE === $pos) {
+        return;
+      }
+
+      $pos = strrpos($logical_base_path, DIRECTORY_SEPARATOR, -2);
+    }
   }
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
    * $psr_0_root . '/' . $path_fragment . $path_suffix
    *
-   * @param xautoload_InjectedAPI_findFile $api
-   * @param string $logical_base_path
-   *   Longest possible logical base path for the given class.
-   *   Includes a trailing directory separator.
-   * @param string $relative_path
-   *   Remaining part of the logical path, following the $logical_base_path.
-   *   Ending with '.php'.
+   * @param xautoload_InjectedAPI_ClassFinder_Interface $api
+   * @param string $logical_path
+   *   Class name translated into a logical path, either with PSR-4 or with PEAR
+   *   translation rules.
+   * @param int|bool $lastpos
+   *   Position of the last directory separator in $logical_path.
+   *   FALSE, if there is no directory separator in $logical_path.
    *
    * @return bool|NULL
    *   TRUE, if the class was found.
    */
-  function findFile_map($api, $logical_base_path, $relative_path) {
-    $path = $logical_base_path . $relative_path;
+  function apiFindFile($api, $logical_path, $lastpos) {
+    $pos = $lastpos;
     while (TRUE) {
-      if (isset($this->paths[$logical_base_path])) {
-        $lazy_remove = FALSE;
-        foreach ($this->paths[$logical_base_path] as $dir => &$lazy_check) {
-          $file = $dir . $relative_path;
-          if ($api->suggestFile($file)) {
-            // Next time we can skip the check, because now we know that the
-            // directory exists.
-            $lazy_check = FALSE;
-            return TRUE;
-          }
-          // Now we know the file does not exist. Does the directory?
-          if ($lazy_check) {
-            // Lazy-check whether the registered directory exists.
-            if ($api->is_dir($dir)) {
-              // Next time we can skip the check, because now we know that the
-              // directory exists.
-              $lazy_check = FALSE;
-            }
-            else {
-              // The registered directory does not exist, so we can unregister it.
-              unset($this->paths[$logical_base_path][$dir]);
-              $lazy_remove = TRUE;
-              if (is_object($lazy_check)) {
-                /**
-                 * @var xautoload_MissingDirPlugin_Interface $lazy_check
-                 */
-                $new_dir = $lazy_check->alternativeDir($logical_base_path);
-                if ($new_dir !== $dir) {
-                  $file = $new_dir . $relative_path;
-                  if ($api->suggestFile($file)) {
-                    $this->paths[$logical_base_path][$new_dir] = FALSE;
-                    return TRUE;
-                  }
-                  elseif ($api->is_dir($new_dir)) {
-                    $this->paths[$logical_base_path][$new_dir] = FALSE;
-                  }
-                }
-              }
-            }
-          }
-        }
-        if ($lazy_remove && empty($this->paths[$logical_base_path])) {
-          unset($this->paths[$logical_base_path]);
-        }
-      }
+      $logical_base_path = (FALSE === $pos) ? '' : substr($logical_path, 0, $pos + 1);
 
-      // Check any plugin registered for this fragment.
-      if (isset($this->plugins[$logical_base_path])) {
-        /**
-         * @var xautoload_FinderPlugin_Interface $plugin
-         */
-        foreach ($this->plugins[$logical_base_path] as $id => $plugin) {
-          if ($plugin->findFile($api, $logical_base_path, $relative_path, $id)) {
-            return TRUE;
+      if (isset($this->paths[$logical_base_path])) {
+        foreach ($this->paths[$logical_base_path] as $dir => $behavior) {
+          if ($behavior instanceof xautoload_DirectoryBehavior_Default) {
+            // PSR-4 and PEAR
+            if ($api->suggestFile($dir . substr($logical_path, $pos + 1))) {
+              return TRUE;
+            }
+          }
+          elseif ($behavior instanceof xautoload_DirectoryBehavior_Psr0) {
+            // PSR-0
+            if ($api->suggestFile($dir
+              . substr($logical_path, $pos + 1, $lastpos - $pos)
+              . str_replace('_' , '/', substr($logical_path, $lastpos + 1))
+            )) {
+              return TRUE;
+            }
+          }
+          elseif ($behavior instanceof xautoload_FinderPlugin_Interface) {
+            // Legacy "FinderPlugin".
+            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1), $dir)) {
+              return TRUE;
+            }
           }
         }
       }
 
       // Continue with parent fragment.
-      if ('' === $logical_base_path) {
-        break;
+      if (FALSE === $pos) {
+        return;
       }
-      elseif (DIRECTORY_SEPARATOR === $logical_base_path) {
-        // This happens if a class begins with an underscore.
-        $logical_base_path = '';
-        $relative_path = $path;
-      }
-      elseif (FALSE !== $pos = strrpos($logical_base_path, DIRECTORY_SEPARATOR, -2)) {
-        $logical_base_path = substr($logical_base_path, 0, $pos + 1);
-        $relative_path = substr($path, $pos + 1);
-      }
-      else {
-        $logical_base_path = '';
-        $relative_path = $path;
-      }
+
+      $pos = strrpos($logical_base_path, DIRECTORY_SEPARATOR, -2);
     }
   }
 }

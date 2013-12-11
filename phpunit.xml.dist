@@ -13,8 +13,7 @@
 >
   <testsuites>
     <testsuite name="XAutoload Test Suite">
-      <directory>./tests/Drupal/xautoload/Tests</directory>
-      <directory>./lib/Drupal/xautoload/Tests</directory>
+      <directory>./tests/lib</directory>
     </testsuite>
   </testsuites>
 </phpunit>

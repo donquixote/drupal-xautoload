@@ -5,48 +5,20 @@
  * An instance of this class is passed around to implementations of
  * hook_xautoload(). It acts as a wrapper around the ClassFinder, to register
  * stuff.
+ *
+ * Most of the methods here are deprecated. You should use the methods inherited
+ * from xautoload_Adapter_ClassFinderAdapter instead.
  */
-class xautoload_InjectedAPI_hookXautoload {
+class xautoload_InjectedAPI_hookXautoload extends xautoload_Adapter_LocalDirectoryAdapter {
 
-  /**
-   * @var xautoload_ClassFinder_Prefix|xautoload_ClassFinder_NamespaceOrPrefix
-   */
-  protected $finder;
-
-  /**
-   * @var string
-   */
-  protected $extensionDir;
-
-  /**
-   * @param xautoload_ClassFinder_Interface $finder
-   *   The class finder object.
-   */
-  function __construct($finder) {
-    $this->finder = $finder;
-  }
-
-  /**
-   * Register an additional namespace for this module.
-   * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
-   *
-   * @param string $namespace
-   *   The namespace
-   * @param string $psr_0_root_dir
-   *   PSR-0 root dir.
-   *   If $relative is TRUE, this is relative to the current module dir.
-   *   If $relative is FALSE, this is an absolute path.
-   * @param boolean $relative
-   *   Whether or not the path is relative to the current extension dir.
-   */
-  function namespaceRoot($namespace, $psr_0_root_dir = NULL, $relative = TRUE) {
-    $psr_0_root_dir = $this->processDir($psr_0_root_dir, $relative);
-    $this->finder->registerNamespaceRoot($namespace, $psr_0_root_dir);
-  }
+  //                                                                Prefix stuff
+  // ---------------------------------------------------------------------------
 
   /**
    * Register an additional prefix for this module.
    * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
+   *
+   * @deprecated
    *
    * @param string $prefix
    *   The prefix.
@@ -66,6 +38,87 @@ class xautoload_InjectedAPI_hookXautoload {
    * Register an additional namespace for this module.
    * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
    *
+   * @deprecated
+   *
+   * @param string $prefix
+   *   The namespace
+   * @param string $prefix_deep_dir
+   *   PSR-0 root dir.
+   *   If $relative is TRUE, this is relative to the current extension dir.
+   *   If $relative is FALSE, this is an absolute path.
+   * @param boolean $relative
+   *   Whether or not the path is relative to the current extension dir.
+   */
+  function prefixDeep($prefix, $prefix_deep_dir = NULL, $relative = TRUE) {
+    $prefix_deep_dir = $this->processDir($prefix_deep_dir, $relative);
+    $this->finder->registerPrefixDeep($prefix, $prefix_deep_dir);
+  }
+
+  /**
+   * Legacy: Plugins were called "Handler" before.
+   *
+   * @deprecated
+   *
+   * @param string $prefix
+   * @param xautoload_FinderPlugin_Interface $plugin
+   *
+   * @return string
+   *   The key under which the plugin was registered. This can later be used to
+   *   unregister the plugin again.
+   */
+  function prefixHandler($prefix, $plugin) {
+    $key = xautoload_Util::randomString();
+    $this->finder->registerPrefixDeep($prefix, $key, $plugin);
+    return $key;
+  }
+
+  /**
+   * Register a prefix plugin object
+   *
+   * @deprecated
+   *
+   * @param string $prefix
+   * @param xautoload_FinderPlugin_Interface $plugin
+   *
+   * @return string
+   *   The key under which the plugin was registered. This can later be used to
+   *   unregister the plugin again.
+   */
+  function prefixPlugin($prefix, $plugin) {
+    $key = xautoload_Util::randomString();
+    $this->finder->registerPrefixDeep($prefix, $key, $plugin);
+    return $key;
+  }
+
+  //                                                             Namespace stuff
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Register an additional namespace for this module.
+   * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
+   *
+   * @deprecated
+   *
+   * @param string $namespace
+   *   The namespace
+   * @param string $psr_0_root_dir
+   *   PSR-0 root dir.
+   *   If $relative is TRUE, this is relative to the current module dir.
+   *   If $relative is FALSE, this is an absolute path.
+   * @param boolean $relative
+   *   Whether or not the path is relative to the current extension dir.
+   */
+  function namespaceRoot($namespace, $psr_0_root_dir = NULL, $relative = TRUE) {
+    $psr_0_root_dir = $this->processDir($psr_0_root_dir, $relative);
+    $this->finder->registerNamespaceRoot($namespace, $psr_0_root_dir);
+  }
+
+  /**
+   * Register an additional namespace for this module.
+   * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
+   *
+   * @deprecated
+   *
    * @param string $namespace
    *   The namespace
    * @param string $namespace_deep_dir
@@ -81,66 +134,46 @@ class xautoload_InjectedAPI_hookXautoload {
   }
 
   /**
-   * Register an additional namespace for this module.
-   * Note: Drupal\<module name>\ is already registered for <module dir>/lib.
-   *
-   * @param string $prefix
-   *   The namespace
-   * @param string $prefix_deep_dir
-   *   PSR-0 root dir.
-   *   If $relative is TRUE, this is relative to the current extension dir.
-   *   If $relative is FALSE, this is an absolute path.
-   * @param boolean $relative
-   *   Whether or not the path is relative to the current extension dir.
-   */
-  function prefixDeep($prefix, $prefix_deep_dir = NULL, $relative = TRUE) {
-    $prefix_root_dir = $this->processDir($prefix_deep_dir, $relative);
-    $this->finder->registerPrefixDeep($prefix, $prefix_deep_dir);
-  }
-
-  /**
-   * Legacy: Plugins were called "Handler" before.
-   *
-   * @param string $namespace
-   * @param xautoload_FinderPlugin_Interface $plugin
-   */
-  function namespaceHandler($namespace, $plugin) {
-    $this->finder->registerNamespacePlugin($namespace, $plugin);
-  }
-
-  /**
-   * Legacy: Plugins were called "Handler" before.
-   *
-   * @param string $prefix
-   * @param xautoload_FinderPlugin_Interface $plugin
-   */
-  function prefixHandler($prefix, $plugin) {
-    $this->finder->registerPrefixPlugin($prefix, $plugin);
-  }
-
-  /**
    * Register a namespace plugin object
    *
+   * @deprecated
+   *
    * @param string $namespace
    * @param xautoload_FinderPlugin_Interface $plugin
+   *
+   * @return string
+   *   The key under which the plugin was registered. This can later be used to
+   *   unregister the plugin again.
    */
   function namespacePlugin($namespace, $plugin) {
-    $this->finder->registerNamespacePlugin($namespace, $plugin);
+    $key = xautoload_Util::randomString();
+    $this->finder->registerNamespaceDeep($namespace, $key, $plugin);
+    return $key;
   }
 
   /**
-   * Register a prefix plugin object
+   * Legacy: Plugins were called "Handler" before.
    *
-   * @param string $prefix
+   * @deprecated
+   *
+   * @param string $namespace
    * @param xautoload_FinderPlugin_Interface $plugin
+   *
+   * @return string
+   *   The key under which the plugin was registered. This can later be used to
+   *   unregister the plugin again.
    */
-  function prefixPlugin($prefix, $plugin) {
-    $this->finder->registerPrefixPlugin($prefix, $plugin);
+  function namespaceHandler($namespace, $plugin) {
+    $key = xautoload_Util::randomString();
+    $this->finder->registerNamespaceDeep($namespace, $key, $plugin);
+    return $key;
   }
 
   /**
    * Process a given directory to make it relative to Drupal root,
    * instead of relative to the current extension dir.
+   *
+   * @deprecated
    *
    * @param string $dir
    *   The directory path that we want to make absolute.
@@ -153,66 +186,14 @@ class xautoload_InjectedAPI_hookXautoload {
    */
   protected function processDir($dir, $relative) {
     if (!isset($dir)) {
-      $dir = $this->extensionDir . '/lib';
+      return $this->localDirectory . 'lib/';
     }
-    elseif ($relative) {
-      // Root dir is relative to module root.
-      if (empty($dir)) {
-        $dir = $this->extensionDir;
-      }
-      else {
-        $dir = $this->extensionDir . '/' . $dir;
-      }
-    }
-    else {
-      // Leave the $dir as it is.
-    }
-    return $dir;
-  }
-
-  /**
-   * Set a module to use as base for relative paths.
-   * This is typically called before each invocation of hook_xautoload() on a
-   * module.
-   * It can also be called by a module or theme that implements hook_xautoload(),
-   * to register class loading information on behalf of another module.
-   *
-   * @param string $module
-   *   Machine name of the module.
-   */
-  function setModule($module) {
-    $this->extensionDir = drupal_get_path('module', $module);
-  }
-
-  /**
-   * Set a theme to use as base for relative paths.
-   * This is typically called before each invocation of hook_xautoload() on a
-   * theme.
-   * It can also be called by a module or theme that implements hook_xautoload(),
-   * to register class loading information on behalf of another theme.
-   *
-   * @param string $theme
-   *   Machine name of the theme.
-   */
-  function setTheme($theme) {
-    $this->extensionDir = drupal_get_path('theme', $theme);
-  }
-
-  /**
-   * Set a library to use as base for relative paths.
-   * This is called e.g. in libraries_xautoload(), before passing the $api
-   * object to library xautoload callbacks.
-   *
-   * @param string $library
-   *   Machine name of the library.
-   *
-   * @throws Exception
-   */
-  function setLibrary($library) {
-    if (!module_exists('libraries')) {
-      throw new Exception('Libraries module not installed.');
-    }
-    $this->extensionDir = libraries_get_path($library);
+    $dir = strlen($dir)
+      ? rtrim($dir, '/') . '/'
+      : '';
+    return $relative
+      ? $this->localDirectory . $dir
+      : $dir;
   }
 
   /**
@@ -222,6 +203,8 @@ class xautoload_InjectedAPI_hookXautoload {
    *   New relative base path.
    */
   function setExtensionDir($dir) {
-    $this->extensionDir = $dir;
+    $this->localDirectory = strlen($dir)
+      ? rtrim($dir, '/') . '/'
+      : '';
   }
 }

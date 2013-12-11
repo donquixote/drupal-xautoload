@@ -1,26 +1,89 @@
 <?php
 
-class xautoload_ClassFinder_Proxy extends xautoload_Container_IdentityProxyObject implements xautoload_ClassFinder_Interface {
+/**
+ * A placeholder class finder. Used to postpone expensive operations until they
+ * are actually needed.
+ */
+class xautoload_ClassFinder_Proxy
+  extends xautoload_ClassLoader_Abstract
+  implements xautoload_ClassFinder_Interface {
 
   /**
-   * Finds the path to the file where the class is defined.
-   *
-   * @param xautoload_InjectedAPI_findFile $api
-   *   API object with a suggestFile() method.
-   *   We are supposed to call $api->suggestFile($file) with all suggestions we
-   *   can find, until it returns TRUE. Once suggestFile() returns TRUE, we stop
-   *   and return TRUE as well. The $file will be in the $api object, so we
-   *   don't need to return it.
-   * @param string $class
-   *   The name of the class, with all namespaces prepended.
-   *   E.g. Some\Namespace\Some\Class
-   *
-   * @return TRUE|NULL
-   *   TRUE, if we found the file for the class.
-   *   That is, if the $api->suggestFile($file) method returned TRUE one time.
-   *   NULL, if we have no more suggestions.
+   * @var xautoload_ClassFinder_ExtendedInterface
+   *   The actual class finder.
    */
-  function findFile($api, $class) {
-    return $this->proxyGetInstance()->findFile($api, $class);
+  protected $finder;
+
+  /**
+   * @var xautoload_Adapter_DrupalExtensionAdapter
+   */
+  protected $helper;
+
+  /**
+   * @var xautoload_FinderOperation_Interface[]
+   *   Operations to run when the actual finder is initialized.
+   */
+  protected $scheduledOperations = array();
+
+  /**
+   * @var bool
+   */
+  protected $initialized = FALSE;
+
+  /**
+   * @param xautoload_ClassFinder_ExtendedInterface $finder
+   * @param xautoload_Adapter_DrupalExtensionAdapter $helper
+   */
+  function __construct($finder, $helper) {
+    $this->finder = $finder;
+    $this->helper = $helper;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function loadClass($class) {
+    $this->initFinder();
+    $this->finder->loadClass($class);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function apiFindFile($api, $class) {
+    $this->initFinder();
+    return $this->finder->apiFindFile($api, $class);
+  }
+
+  /**
+   * @param xautoload_FinderOperation_Interface $operation
+   */
+  function onFinderInit($operation) {
+    if (!$this->initialized) {
+      $this->scheduledOperations[] = $operation;
+    }
+    else {
+      $operation->operateOnFinder($this->finder, $this->helper);
+    }
+  }
+
+  /**
+   * @return xautoload_ClassFinder_Interface
+   */
+  function getFinder() {
+    $this->initFinder();
+    return $this->finder;
+  }
+
+  /**
+   * Initialize the finder and run scheduled operations.
+   */
+  protected function initFinder() {
+    if (!$this->initialized) {
+      foreach ($this->scheduledOperations as $operation) {
+        $operation->operateOnFinder($this->finder, $this->helper);
+      }
+      $this->initialized = TRUE;
+    }
   }
 }

@@ -7,7 +7,7 @@
  *   - Situations where we don't want to register a ton of namespaces, and using
  *     a plugin instead gives us performance benefits.
  */
-interface xautoload_FinderPlugin_Interface {
+interface xautoload_FinderPlugin_Interface extends xautoload_DirectoryBehavior_Interface {
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
@@ -31,7 +31,7 @@ interface xautoload_FinderPlugin_Interface {
    *       return TRUE;
    *     }
    *
-   * @param xautoload_InjectedAPI_findFile $api
+   * @param xautoload_InjectedAPI_ClassFinder_Interface $api
    *   An object with a suggestFile() method.
    *   We are supposed to suggest files until suggestFile() returns TRUE, or we
    *   have no more suggestions.

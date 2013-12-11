@@ -31,7 +31,7 @@ interface xautoload_FinderPlugin_ExtendedInterface extends xautoload_FinderPlugi
    *       return TRUE;
    *     }
    *
-   * @param xautoload_InjectedAPI_findFile $api
+   * @param xautoload_InjectedAPI_ClassFinder_Interface $api
    *   An object with a suggestFile() method.
    *   We are supposed to suggest files until suggestFile() returns TRUE, or we
    *   have no more suggestions.

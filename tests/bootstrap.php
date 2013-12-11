@@ -1,6 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../xautoload.early.inc';
+require_once dirname(__DIR__) . '/xautoload.early.lib.inc';
 
-xautoload(NULL)->finder->registerNamespaceRoot('Drupal\xautoload\Tests', __DIR__);
-xautoload(NULL)->finder->registerNamespaceRoot('Drupal\xautoload\Tests', dirname(__DIR__) . '/lib');
+_xautoload_register();
+
+xautoload()->finder->addPsr4('Drupal\xautoload\Tests\\', __DIR__ . '/lib/');
+
+// Use a non-cached class map generator.
+xautoload()->getServiceContainer()->set('classMapGenerator', new xautoload_Discovery_ClassMapGenerator());

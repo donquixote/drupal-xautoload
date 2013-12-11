@@ -21,7 +21,7 @@ function _xautoload_test_2_early_boot_observations($phase = NULL) {
 
   if (!isset($phase)) {
     $return = $all;
-    foreach ($return as $phase => &$observations) {
+    foreach ($return as &$observations) {
       // Turn callbacks into strings, so they survive json_decode().
       foreach ($observations['spl_autoload_functions'] as &$callback) {
         // At this point in time we can be fairly sure
@@ -34,7 +34,6 @@ function _xautoload_test_2_early_boot_observations($phase = NULL) {
 
   // Test that all classes are available immediately at boot time.
   foreach (array(
-    'Drupal\xautoload_test_2\ExampleClass',
     'xautoload_test_2_ExampleClass',
   ) as $class) {
     $observations[$class] = class_exists($class);

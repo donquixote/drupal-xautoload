@@ -1,16 +1,6 @@
 <?php
 
-/**
- * @property xautoload_BootSchedule_Helper_PHP52|xautoload_BootSchedule_Helper_PHP53 $registrationHelper
- * @property xautoload_BootSchedule_Proxy $schedule
- * @property xautoload_LoaderManager $loaderManager
- * @property xautoload_ApcKeyManager_Disabled|xautoload_ApcKeyManager_Enabled $apcKeyManager
- * @property xautoload_ClassFinder_Proxy $proxyFinder
- * @property xautoload_ClassFinder_Interface $classFinder
- * @property xautoload_ClassFinder_Interface|xautoload_ClassFinder_Prefix|xautoload_ClassFinder_NamespaceOrPrefix| $finder
- *   Alias for ->classFinder
- */
-class xautoload_Container_LazyServices {
+class xautoload_Container_LazyServices implements xautoload_Container_LazyServicesInterface {
 
   /**
    * @var xautoload_ServiceFactory
@@ -28,13 +18,10 @@ class xautoload_Container_LazyServices {
    * @return mixed
    */
   function get($key) {
-    if (!isset($this->services[$key])) {
-      $this->services[$key] = $this->factory->$key($this);
-      if (!isset($this->services[$key])) {
-        $this->services[$key] = FALSE;
-      }
-    }
-    return $this->services[$key];
+    return isset($this->services[$key])
+      ? $this->services[$key]
+      : $this->services[$key] = $this->factory->$key($this) ?: FALSE
+    ;
   }
 
   /**
@@ -62,9 +49,17 @@ class xautoload_Container_LazyServices {
    * @param string $key
    *
    * @return mixed
+   *
+   * @throws Exception
    */
   function __get($key) {
-    return $this->get($key);
+    if (isset($this->services[$key])) {
+      return $this->services[$key];
+    }
+    if (!method_exists($this->factory, $key)) {
+      throw new Exception("Unsupported key '$key' for service factory.");
+    }
+    return $this->services[$key] = $this->factory->$key($this) ?: FALSE;
   }
 
   /**

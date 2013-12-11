@@ -15,82 +15,46 @@ class xautoload_ServiceFactory {
   /**
    * @param xautoload_Container_LazyServices $services
    *
-   * @return xautoload_BootSchedule_Helper_PHP52|xautoload_BootSchedule_Helper_PHP53
+   * @return xautoload_Adapter_ClassFinderAdapter
    */
-  function registrationHelper($services) {
-    // Build the helper object.
-    if (version_compare(PHP_VERSION, '5.3') >= 0) {
-      $helper = new xautoload_BootSchedule_Helper_PHP53($services->classFinder);
-    }
-    else {
-      $helper = new xautoload_BootSchedule_Helper_PHP52($services->classFinder);
-    }
-    return $helper;
-  }
-
-  /**
-   * Drupal bootstrap registration schedule.
-   *
-   * @param xautoload_Container_LazyServices $services
-   *
-   * @return xautoload_BootSchedule_Interface
-   *   Object that will register Drupal-related namespaces and prefixes at
-   *   applicable moments during the request.
-   */
-  function schedule($services) {
-
-    // Build the registration schedule.
-    $schedule = new xautoload_BootSchedule_Default($services->registrationHelper);
-
-    // To avoid duplicate registration, Drupal hooks always operate on the proxy
-    // schedule, never the real one.
-    return new xautoload_BootSchedule_Proxy($schedule);
-  }
-
-  /**
-   * Loader manager
-   *
-   * @param xautoload_Container_LazyServices $services
-   *
-   * @return xautoload_LoaderManager
-   *   Object that can
-   *   - create class loaders with different cache mechanics,
-   *   - register the one for the currently configured cache method, and also
-   *   - switch between cache methods.
-   */
-  function loaderManager($services) {
-
-    // Build the loader manager.
-    $proxyFinder = $services->proxyFinder;
-
-    $loaderFactory = new xautoload_LoaderFactory($proxyFinder);
-    $services->apcKeyManager->observeApcPrefix($loaderFactory);
-
-    $loaderManager = new xautoload_LoaderManager($loaderFactory);
-    $services->apcKeyManager->observeApcPrefix($loaderManager);
-
-    return $loaderManager;
+  function adapter($services) {
+    return new xautoload_Adapter_ClassFinderAdapter($services->finder, $services->classMapGenerator);
   }
 
   /**
    * @param xautoload_Container_LazyServices $services
    *
-   * @return xautoload_ApcKeyManager_Disabled|xautoload_ApcKeyManager_Enabled
+   * @return xautoload_Discovery_ClassMapGenerator
    */
-  function apcKeyManager($services) {
+  function classMapGenerator($services) {
+    return new xautoload_Discovery_CachedClassMapGenerator($services->classMapGeneratorRaw);
+  }
 
-    // Check if the system supports APC cache method.
-    if (1
-      && extension_loaded('apc')
-      && function_exists('apc_store')
-      && function_exists('apc_fetch')
-      && isset($GLOBALS['drupal_hash_salt'])
-    ) {
-      return new xautoload_ApcKeyManager_Enabled('drupal.xautoload.' . $GLOBALS['drupal_hash_salt'] . '.apc_prefix');
-    }
-    else {
-      return new xautoload_ApcKeyManager_Disabled();
-    }
+  /**
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_Discovery_ClassMapGenerator
+   */
+  function classMapGeneratorRaw($services) {
+    return new xautoload_Discovery_ClassMapGenerator();
+  }
+
+  /**
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_Adapter_DrupalExtensionAdapter
+   */
+  function extensionRegistrationService($services) {
+    return new xautoload_Adapter_DrupalExtensionAdapter($services->system, $services->finder);
+  }
+
+  /**
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_CacheManager
+   */
+  function cacheManager($services) {
+    return xautoload_CacheManager::create();
   }
 
   /**
@@ -105,11 +69,8 @@ class xautoload_ServiceFactory {
    *   (which might never happen thanks to the APC cache)
    */
   function proxyFinder($services) {
-    // The class finder is cheap to create,
-    // so it can use an identity proxy.
-    $proxy = new xautoload_ClassFinder_Proxy($services->finder);
-    $proxy->proxyObserveInstantiation(array($services->schedule, 'setFinder'));
-    return $proxy;
+    // The class finder is cheap to create, so it can use an identity proxy.
+    return new xautoload_ClassFinder_Proxy($services->finder, $services->extensionRegistrationService);
   }
 
   /**
@@ -139,15 +100,16 @@ class xautoload_ServiceFactory {
    *   - namespaces are only supported since PHP 5.3
    */
   function finder($services) {
+    return new xautoload_ClassFinder_NamespaceOrPrefix();
+  }
 
-    if (version_compare(PHP_VERSION, '5.3') >= 0) {
-      // Create a finder with namespace support.
-      return new xautoload_ClassFinder_NamespaceOrPrefix();
-    }
-    else {
-      // Create a finder without namespaces support.
-      return new xautoload_ClassFinder_Prefix();
-    }
+  /**
+   * @param xautoload_Container_LazyServices $services
+   *
+   * @return xautoload_DrupalSystem_Interface
+   */
+  function system($services) {
+    return new xautoload_DrupalSystem_Real();
   }
 }
 

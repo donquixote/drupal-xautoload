@@ -26,15 +26,4 @@ interface xautoload_ClassLoader_Interface {
    *   The class to load.
    */
   function loadClass($class);
-
-  /**
-   * For compatibility, it is possible to use the class loader as a finder.
-   *
-   * @param string $class
-   *   The class to find.
-   *
-   * @return string
-   *   File where the class is assumed to be.
-   */
-  function findFile($class);
 }

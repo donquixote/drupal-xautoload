@@ -57,24 +57,16 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
 
     // At this time the xautoload_cache_mode setting is not in effect yet,
     // so we have to clear old cached values from APC cache.
-    xautoload('apcKeyManager')->renewApcPrefix();
+    xautoload()->cacheManager->renewCachePrefix();
 
-    $modules = array(
-      'xautoload_test_1' => FALSE,
-      'xautoload_test_2' => TRUE,
-    );
-
-    module_enable(array_keys($modules));
+    module_enable(array('xautoload_test_1', 'xautoload_test_2'), FALSE);
     menu_rebuild();
 
-    foreach ($modules as $module => $classes_on_include) {
-      $classes = array(
-        'Drupal\\' . $module . '\\ExampleClass',
-        $module . '_ExampleClass',
-      );
-      $this->xautoloadModuleEnabled($module, $classes, $classes_on_include);
-      $this->xautoloadModuleCheckJson($module, $mode, $classes);
-    }
+    $this->xautoloadModuleEnabled('xautoload_test_1', array('Drupal\xautoload_test_1\ExampleClass'), FALSE);
+    $this->xautoloadModuleCheckJson('xautoload_test_1', $mode, array('Drupal\xautoload_test_1\ExampleClass'));
+
+    $this->xautoloadModuleEnabled('xautoload_test_2', array('xautoload_test_2_ExampleClass'), TRUE);
+    $this->xautoloadModuleCheckJson('xautoload_test_2', $mode, array('xautoload_test_2_ExampleClass'));
   }
 
   /**
@@ -132,7 +124,7 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
         ($phase === 'boot')  ? 'during hook_boot()' : (
         'at an undefined time'
       ));
-      $this->xautoloadCheckTestEnvironment($observations, $mode, $phase, $when);
+      $this->xautoloadCheckTestEnvironment($observations, $mode, $when);
 
       // Test the classes of the example module.
       foreach ($classes as $class) {
@@ -146,10 +138,9 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
    * @param array $observations
    * @param string $mode
    *   The autoloader mode, like 'apc' or 'apc_lazy'.
-   * @param $phase
    * @param $when
    */
-  protected function xautoloadCheckTestEnvironment($observations, $mode, $phase, $when) {
+  protected function xautoloadCheckTestEnvironment($observations, $mode, $when) {
 
     // Check early-bootstrap variables.
     $this->assertEqual($observations['xautoload_cache_mode'], $mode,
@@ -174,7 +165,7 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
         $loader = 'xautoload_ClassLoader_ApcCache->loadClass()';
         break;
       default:
-        $loader = 'xautoload_ClassLoader_NoCache->loadClass()';
+        $loader = 'xautoload_ClassFinder_NamespaceOrPrefix->loadClass()';
     }
 
     return array(
