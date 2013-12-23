@@ -1,4 +1,5 @@
 <?php
+use Drupal\xautoload\Util;
 
 /**
  * Implements hook_boot()
@@ -25,7 +26,7 @@ function _xautoload_test_1_early_boot_observations($phase = NULL) {
       foreach ($observations['spl_autoload_functions'] as &$callback) {
         // At this point in time we can be fairly sure
         // that xautoload_Util is available.
-        $callback = xautoload_Util::callbackToString($callback);
+        $callback = Util::callbackToString($callback);
       }
     }
     return $return;

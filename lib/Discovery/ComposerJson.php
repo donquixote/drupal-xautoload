@@ -1,6 +1,10 @@
 <?php
 
-class xautoload_Discovery_ComposerJson {
+namespace Drupal\xautoload\Discovery;
+
+use Drupal\xautoload\Adapter\ClassFinderAdapter;
+
+class ComposerJson {
 
   /**
    * @var array
@@ -15,18 +19,18 @@ class xautoload_Discovery_ComposerJson {
   /**
    * @param string $file
    *
-   * @return xautoload_Discovery_ComposerJson
+   * @return self
    *
-   * @throws Exception
+   * @throws \Exception
    */
   static function createFromFile($file) {
     if (!file_exists($file)) {
-      throw new Exception("File '$file' does not exist.");
+      throw new \Exception("File '$file' does not exist.");
     }
     $json = file_get_contents($file);
     $data = json_decode($json);
     if (NULL === $data && JSON_ERROR_NONE !== json_last_error()) {
-      throw new Exception("Invalid json in '$file'.");
+      throw new \Exception("Invalid json in '$file'.");
     }
     return self::createFromData($data, dirname($file));
   }
@@ -35,14 +39,14 @@ class xautoload_Discovery_ComposerJson {
    * @param array $data
    * @param string $path_prefix
    *
-   * @return xautoload_Discovery_ComposerJson
+   * @return self
    *
-   * @throws Exception
+   * @throws \Exception
    */
   static function createFromData($data, $path_prefix) {
     return empty($data['target-dir'])
       ? new self($data, $path_prefix)
-      : new xautoload_Discovery_ComposerJsonTargetDir($data, $path_prefix)
+      : new ComposerJsonTargetDir($data, $path_prefix)
       ;
   }
 
@@ -56,7 +60,7 @@ class xautoload_Discovery_ComposerJson {
   }
 
   /**
-   * @param xautoload_Adapter_ClassFinderAdapter $adapter
+   * @param ClassFinderAdapter $adapter
    */
   function writeToAdapter($adapter) {
 
@@ -114,7 +118,7 @@ class xautoload_Discovery_ComposerJson {
   }
 
   /**
-   * @param xautoload_Adapter_ClassFinderAdapter $adapter
+   * @param ClassFinderAdapter $adapter
    * @param string[] $sources_raw
    *   Array of files and folders to scan for class implementations.
    */

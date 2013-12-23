@@ -1,5 +1,14 @@
 <?php
 
+use Drupal\xautoload\ClassFinder\ClassFinderInterface;
+use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
+use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassGetFileInjectedApi;
+use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassInjectedAPI;
+use Drupal\xautoload\DIC\ServiceContainer;
+use Drupal\xautoload\DIC\ServiceFactory;
+use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
+use Drupal\xautoload\Main;
+
 define('XAUTOLOAD_LIB_DIR', dirname(__FILE__) . '/lib');
 
 
@@ -10,7 +19,7 @@ define('XAUTOLOAD_LIB_DIR', dirname(__FILE__) . '/lib');
  * Get the class finder object.
  * This is the public version of _xautoload_finder().
  *
- * @return xautoload_ClassFinder_Interface
+ * @return ClassFinderInterface
  */
 function xautoload_get_finder() {
   // Get it from the registry.
@@ -27,14 +36,14 @@ function xautoload_get_finder() {
  *   The recommended way (esp if you ask your IDE) is to omit this parameter and
  *   use xautoload()->$key instead.
  *
- * @return xautoload_Main|xautoload_Container_LazyServices|object
+ * @return Main|object
  */
 function xautoload($key = 'main') {
   static $service_registry;
   static $main;
   if (!isset($service_registry)) {
-    $service_factory = new xautoload_ServiceFactory();
-    $service_registry = new xautoload_Container_LazyServices($service_factory);
+    $service_factory = new ServiceFactory();
+    $service_registry = new ServiceContainer($service_factory);
     $main = $service_registry->main;
   }
   switch ($key) {
@@ -67,17 +76,24 @@ function _xautoload_register() {
   spl_autoload_register('_xautoload_autoload_temp');
 
   // Some classes need to be loaded manually. Believe it!
-  _xautoload_autoload_temp('xautoload_InjectedAPI_ClassFinder_LoadClass');
-  _xautoload_autoload_temp('xautoload_InjectedAPI_ClassFinder_LoadClassGetFile');
-  // _xautoload_autoload_temp('xautoload_InjectedAPI_findFile');
+  LoadClassInjectedAPI::forceAutoload();
+  LoadClassGetFileInjectedApi::forceAutoload();
+  \Drupal\xautoload\Util::forceAutoload();
 
-  xautoload()->finder->register();
+  /**
+   * @var ExtendedClassFinderInterface $finder
+   */
+  $finder = xautoload()->finder;
+  $finder->register();
+
+  // Register the 'Drupal\xautoload\\' namespace.
+  $finder->addPsr4('Drupal\xautoload\\', XAUTOLOAD_LIB_DIR . '/');
 
   // Register the "xautoload_" prefix.
-  xautoload()->finder->getPrefixMap()->registerDeepPath(
+  $finder->getPrefixMap()->registerDeepPath(
     'xautoload/',
-    XAUTOLOAD_LIB_DIR . '/',
-    new xautoload_DirectoryBehavior_Default())
+    __DIR__ . '/legacy/lib/',
+    new DefaultDirectoryBehavior())
   ;
 
   // Unregister the temporary loader.
@@ -91,16 +107,18 @@ function _xautoload_register() {
  * @param string $name
  *   Name of the class or interface we want to load.
  *
- * @throws Exception
+ * @throws \Exception
  */
 function _xautoload_autoload_temp($name) {
 
-  if (preg_match('#^xautoload_(.*)$#', $name, $m)) {
-    // This is boot time, drupal_get_path() is not available yet.
-    $file = XAUTOLOAD_LIB_DIR . '/' . strtr($m[1], '_', '/') . '.php';
+  if ('Drupal\xautoload\\' === substr($name, 0, 17)) {
+    // PSR-4 case
+    $file = XAUTOLOAD_LIB_DIR . '/' . str_replace('\\', '/', substr($name, 17)) . '.php';
     require_once $file;
-    if (!class_exists($name, FALSE) && !interface_exists($name, FALSE)) {
-      throw new Exception("Class $name not found in $file.");
-    }
+  }
+  elseif ('xautoload_' === substr($name, 0, 10) && FALSE === strpos($name, '\\')) {
+    // Legacy case
+    $file = XAUTOLOAD_LIB_DIR . '/' . str_replace('_', '/', substr($name, 10)) . '.php';
+    require_once $file;
   }
 }

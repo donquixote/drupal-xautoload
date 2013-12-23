@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\xautoload\Discovery\WildcardFileFinder;
+
 /**
  * Implements hook_modules_enabled()
  *
@@ -47,7 +49,7 @@ function xautoload_modules_installed($modules) {
  *   This parameter will be ignored.
  */
 function xautoload_registry_files_alter(&$files, $modules) {
-  $file_finder = new xautoload_Discovery_WildcardFileFinder();
+  $file_finder = new WildcardFileFinder();
   $file_finder->addDrupalPaths($files);
   $files = $file_finder->getDrupalFiles();
 }

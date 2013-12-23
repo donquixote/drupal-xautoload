@@ -1,6 +1,10 @@
 <?php
 
-class xautoload_Discovery_ComposerDir {
+namespace Drupal\xautoload\Discovery;
+
+use Drupal\xautoload\Adapter\ClassFinderAdapter;
+
+class ComposerDir {
 
   /**
    * @var string
@@ -10,13 +14,13 @@ class xautoload_Discovery_ComposerDir {
   /**
    * @param string $dir
    *
-   * @return xautoload_Discovery_ComposerDir
+   * @return self
    *
-   * @throws Exception
+   * @throws \Exception
    */
   static function create($dir) {
     if (!is_dir($dir)) {
-      throw new Exception("Composer directory '$dir' does not exist.");
+      throw new \Exception("Composer directory '$dir' does not exist.");
     }
     return new self($dir);
   }
@@ -29,7 +33,7 @@ class xautoload_Discovery_ComposerDir {
   }
 
   /**
-   * @param xautoload_Adapter_ClassFinderAdapter $adapter
+   * @param ClassFinderAdapter $adapter
    */
   function writeToAdapter($adapter) {
 

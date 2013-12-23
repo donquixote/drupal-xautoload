@@ -4,6 +4,7 @@
 namespace Drupal\xautoload\Tests;
 
 
+use Drupal\xautoload\DrupalSystem\MockDrupalSystem;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
 
@@ -48,7 +49,7 @@ class DrupalBootTest extends \PHPUnit_Framework_TestCase {
 
     // Mock out DrupalSystem in the service container.
     $extensions = $this->getExampleExtensions();
-    $system = new \xautoload_DrupalSystem_Mock(array(), $extensions);
+    $system = new MockDrupalSystem(array(), $extensions);
     $services->set('system', $system);
 
     // Simulate _xautoload_register_drupal().

@@ -4,10 +4,12 @@
  */
 
 
+namespace Drupal\xautoload\Discovery;
+
 /**
  * Scan directories for wildcard files[] instructions in a module's info file.
  */
-class xautoload_Discovery_WildcardFileFinder {
+class WildcardFileFinder {
 
   /**
    * @var array
@@ -140,7 +142,7 @@ class xautoload_Discovery_WildcardFileFinder {
    *   Optional rest of the wildcard string, that may contain path fragments to
    *   be processed later.
    *
-   * @throws Exception
+   * @throws \Exception
    */
   protected function scanDirectoryLevel($dir, $fragment, $remaining = NULL) {
 
@@ -149,7 +151,7 @@ class xautoload_Discovery_WildcardFileFinder {
     }
 
     if ('**' === $fragment) {
-      throw new Exception("Fragment must not be '**'.");
+      throw new \Exception("Fragment must not be '**'.");
     }
 
     foreach (scandir($dir) as $candidate) {
@@ -193,6 +195,7 @@ class xautoload_Discovery_WildcardFileFinder {
       $fragments[] = preg_quote($fragment);
     }
     $regex = implode('.*', $fragments);
+
     return preg_match("/^$regex$/", $candidate);
   }
 

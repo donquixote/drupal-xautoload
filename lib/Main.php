@@ -1,22 +1,27 @@
 <?php
 
-class xautoload_Main implements xautoload_Container_LazyServicesInterface {
+namespace Drupal\xautoload;
+
+use Drupal\xautoload\DIC\ServiceContainer;
+use Drupal\xautoload\DIC\ServiceContainerInterface;
+
+class Main implements ServiceContainerInterface {
 
   /**
-   * @var xautoload_Container_LazyServices
+   * @var ServiceContainer
    *   The service container, similar to a DIC.
    */
   protected $services;
 
   /**
-   * @param xautoload_Container_LazyServices $services
+   * @param ServiceContainer $services
    */
   function __construct($services) {
     $this->services = $services;
   }
 
   /**
-   * @return xautoload_Container_LazyServices
+   * @return ServiceContainer
    */
   function getServiceContainer() {
     return $this->services;
@@ -39,7 +44,11 @@ class xautoload_Main implements xautoload_Container_LazyServicesInterface {
     $info = pathinfo($file);
     $name = $info['filename'];
     $dir = $info['dirname'];
-    $this->extensionRegistrationService->registerExtension($name, 'module', $dir);
+    $this->extensionRegistrationService->registerExtension(
+      $name,
+      'module',
+      $dir
+    );
   }
 
   /**
@@ -56,7 +65,11 @@ class xautoload_Main implements xautoload_Container_LazyServicesInterface {
   function registerModulePsr4($file, $subdir) {
     $info = pathinfo($file);
     $name = $info['filename'];
-    $this->services->extensionRegistrationService->registerExtensionPsr4($name, $info['dirname'], $subdir);
+    $this->services->extensionRegistrationService->registerExtensionPsr4(
+      $name,
+      $info['dirname'],
+      $subdir
+    );
   }
 
   /**

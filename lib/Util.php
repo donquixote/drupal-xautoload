@@ -1,9 +1,11 @@
 <?php
 
+namespace Drupal\xautoload;
+
 /**
  * A number of static methods that don't interact with any global state.
  */
-class xautoload_Util {
+class Util {
 
   /**
    * Generate a random string made of uppercase and lowercase characters and numbers.
@@ -18,7 +20,11 @@ class xautoload_Util {
    * @return string
    *   Random string of the specified length
    */
-  static function randomString($length = 30, $chars = NULL, $chars_first = NULL) {
+  static function randomString(
+    $length = 30,
+    $chars = NULL,
+    $chars_first = NULL
+  ) {
 
     if (!isset($chars)) {
       $chars = 'abcdefghijklmnopqrstuvwxyz' .
@@ -31,7 +37,7 @@ class xautoload_Util {
     }
 
     // Initialize the randomizer.
-    srand((double)microtime() * 1000000);
+    srand((double) microtime() * 1000000);
 
     $str = substr($chars_first, rand() % strlen($chars_first), 1);
     for ($i = 0; $i < $length; ++$i) {
@@ -55,6 +61,7 @@ class xautoload_Util {
     // Since PHP is case insensitive, we only user lowercase characters.
     $chars_first = 'abcdefghijklmnopqrstuvwxyz_';
     $chars = 'abcdefghijklmnopqrstuvwxyz_1234567890';
+
     return self::randomString($length, $chars, $chars_first);
   }
 
@@ -72,6 +79,7 @@ class xautoload_Util {
     // Since PHP is case insensitive, we only user lowercase characters.
     $chars_first = 'abcdefghijklmnopqrstuvwxyz_';
     $chars = 'abcdefghijklmnopqrstuvwxyz_1234567890';
+
     return self::randomString($length, $chars, $chars_first);
   }
 
@@ -99,6 +107,7 @@ class xautoload_Util {
     else {
       $str = $callback;
     }
+
     return $str;
   }
 
@@ -115,12 +124,17 @@ class xautoload_Util {
     if (!strlen($prefix)) {
       return '';
     }
-    $pear_logical_path = str_replace('_', DIRECTORY_SEPARATOR, rtrim($prefix, '_') . '_');
+    $pear_logical_path = str_replace(
+      '_',
+      DIRECTORY_SEPARATOR,
+      rtrim($prefix, '_') . '_'
+    );
     // Clean up surplus '/' resulting from duplicate underscores, or an
     // underscore at the beginning of the class.
     while (FALSE !== $pos = strrpos('/' . $pear_logical_path, '//')) {
       $pear_logical_path{$pos} = '_';
     }
+
     return $pear_logical_path;
   }
 
@@ -137,8 +151,7 @@ class xautoload_Util {
     return
       strlen($namespace)
         ? str_replace('\\', DIRECTORY_SEPARATOR, rtrim($namespace, '\\') . '\\')
-        : ''
-      ;
+        : '';
   }
 
   /**
@@ -167,6 +180,7 @@ class xautoload_Util {
           return $base_dir . DIRECTORY_SEPARATOR . $file;
         }
       }
+
       return FALSE;
     }
   }
@@ -180,9 +194,15 @@ class xautoload_Util {
    */
   static function classIsDefined($class) {
     return class_exists($class, FALSE)
-      || interface_exists($class, FALSE)
-      || (PHP_VERSION_ID >= 50400 && trait_exists($class, FALSE))
-    ;
+    || interface_exists($class, FALSE)
+    || (PHP_VERSION_ID >= 50400 && trait_exists($class, FALSE));
+  }
+
+  /**
+   * Dummy method to force autoloading this class (or an ancestor).
+   */
+  static function forceAutoload() {
+    // Do nothing.
   }
 }
 

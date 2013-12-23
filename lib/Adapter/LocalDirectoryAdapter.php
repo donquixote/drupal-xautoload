@@ -1,12 +1,16 @@
 <?php
 
+namespace Drupal\xautoload\Adapter;
+
+use Drupal\xautoload\Discovery\ComposerDir;
+use Drupal\xautoload\Discovery\ComposerJson;
 
 /**
  * An instance of this class is passed around to implementations of
  * hook_xautoload(). It acts as a wrapper around the ClassFinder, to register
  * stuff.
  */
-class xautoload_Adapter_LocalDirectoryAdapter extends xautoload_Adapter_ClassFinderAdapter {
+class LocalDirectoryAdapter extends ClassFinderAdapter {
 
   /**
    * @var string
@@ -14,14 +18,14 @@ class xautoload_Adapter_LocalDirectoryAdapter extends xautoload_Adapter_ClassFin
   protected $localDirectory;
 
   /**
-   * @var xautoload_Adapter_ClassFinderAdapter
+   * @var ClassFinderAdapter
    */
   protected $master;
 
   /**
-   * @param xautoload_Adapter_ClassFinderAdapter $adapter
+   * @param ClassFinderAdapter $adapter
    *   The class finder object.
-   * @param string $localDirectory;
+   * @param string $localDirectory ;
    */
   function __construct($adapter, $localDirectory) {
     parent::__construct($adapter->finder, $adapter->getClassmapGenerator());
@@ -30,7 +34,7 @@ class xautoload_Adapter_LocalDirectoryAdapter extends xautoload_Adapter_ClassFin
   }
 
   /**
-   * @return xautoload_Adapter_ClassFinderAdapter
+   * @return ClassFinderAdapter
    */
   function absolute() {
     return $this->master;
@@ -58,11 +62,11 @@ class xautoload_Adapter_LocalDirectoryAdapter extends xautoload_Adapter_ClassFin
    * @param string $file
    * @param bool $relative
    *
-   * @throws Exception
+   * @throws \Exception
    */
   function composerJson($file, $relative = TRUE) {
     $relative && $file = $this->localDirectory . $file;
-    $json = xautoload_Discovery_ComposerJson::createFromFile($file);
+    $json = ComposerJson::createFromFile($file);
     $json->writeToAdapter($this->master);
   }
 
@@ -76,7 +80,7 @@ class xautoload_Adapter_LocalDirectoryAdapter extends xautoload_Adapter_ClassFin
    */
   function composerDir($dir, $relative = TRUE) {
     $relative && $dir = $this->localDirectory . $dir;
-    $dir = xautoload_Discovery_ComposerDir::create($dir);
+    $dir = ComposerDir::create($dir);
     $dir->writeToAdapter($this->master);
   }
 
@@ -178,7 +182,7 @@ class xautoload_Adapter_LocalDirectoryAdapter extends xautoload_Adapter_ClassFin
    */
   protected function prependMultiple(array &$map) {
     foreach ($map as &$paths) {
-      $paths = (array)$paths;
+      $paths = (array) $paths;
       foreach ($paths as &$path) {
         $path = $this->localDirectory . $path;
       }
@@ -192,8 +196,10 @@ class xautoload_Adapter_LocalDirectoryAdapter extends xautoload_Adapter_ClassFin
     if (!is_array($paths)) {
       $paths = $this->localDirectory . $paths;
     }
-    else foreach ($paths as &$path) {
-      $path = $this->localDirectory . $path;
+    else {
+      foreach ($paths as &$path) {
+        $path = $this->localDirectory . $path;
+      }
     }
   }
 }

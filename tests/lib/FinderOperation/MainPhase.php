@@ -2,7 +2,12 @@
 
 namespace Drupal\xautoload\Tests\FinderOperation;
 
-class MainPhase implements \xautoload_FinderOperation_Interface {
+use Drupal\xautoload\Adapter\ClassFinderAdapter;
+use Drupal\xautoload\Discovery\ClassMapGenerator;
+use Drupal\xautoload\Adapter\xautoload_InjectedAPI_hookXautoload;
+use Drupal\xautoload\FinderOperation\FinderOperationInterface;
+
+class MainPhase implements FinderOperationInterface {
 
   /**
    * @var \stdClass[]
@@ -21,9 +26,9 @@ class MainPhase implements \xautoload_FinderOperation_Interface {
    */
   function operateOnFinder($finder, $helper) {
     // Let other modules register stuff to the finder via hook_xautoload().
-    $classmap_generator = new \xautoload_Discovery_ClassMapGenerator();
-    $adapter = new \xautoload_Adapter_ClassFinderAdapter($finder, $classmap_generator);
-    $api = new \xautoload_InjectedAPI_hookXautoload($adapter, '');
+    $classmap_generator = new ClassMapGenerator();
+    $adapter = new ClassFinderAdapter($finder, $classmap_generator);
+    $api = new xautoload_InjectedAPI_hookXautoload($adapter, '');
     foreach ($this->extensions as $info) {
       // The simplest module dir is enough for this simulation.
       $api->setExtensionDir('test://modules/' . $info->name);

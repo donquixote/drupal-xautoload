@@ -1,7 +1,9 @@
 <?php
 
 
-class xautoload_Discovery_ClassMapGenerator implements xautoload_Discovery_ClassMapGeneratorInterface {
+namespace Drupal\xautoload\Discovery;
+
+class ClassMapGenerator implements ClassMapGeneratorInterface {
 
   /**
    * @param string[] $paths
@@ -10,6 +12,7 @@ class xautoload_Discovery_ClassMapGenerator implements xautoload_Discovery_Class
    */
   function wildcardPathsToClassmap($paths) {
     $files = $this->wildcardPathsToFiles($paths);
+
     return $this->filesToClassmap($files);
   }
 
@@ -21,11 +24,12 @@ class xautoload_Discovery_ClassMapGenerator implements xautoload_Discovery_Class
   protected function filesToClassmap($files) {
     $map = array();
     foreach ($files as $file) {
-      $classes = xautoload_Discovery_FileInspector::inspectPhpFile($file);
+      $classes = FileInspector::inspectPhpFile($file);
       foreach ($classes as $class) {
         $map[$class] = $file;
       }
     }
+
     return $map;
   }
 
@@ -35,8 +39,9 @@ class xautoload_Discovery_ClassMapGenerator implements xautoload_Discovery_Class
    * @return string[]
    */
   protected function wildcardPathsToFiles($paths) {
-    $wildcardFinder = new xautoload_Discovery_WildcardFileFinder();
+    $wildcardFinder = new WildcardFileFinder();
     $wildcardFinder->addPaths($paths);
+
     return $wildcardFinder->getFiles();
   }
 } 

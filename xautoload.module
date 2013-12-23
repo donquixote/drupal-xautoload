@@ -7,6 +7,16 @@
  * We can not rely on hook_boot() to fire, and instead register the autoloader
  * on inclusion of this *.module file.
  */
+use
+  Drupal\xautoload\Adapter\xautoload_InjectedAPI_hookXautoload;
+use Drupal\xautoload\ClassLoader\AbstractCachedClassLoader;
+use Drupal\xautoload\ClassLoader\ApcClassLoader;
+use Drupal\xautoload\ClassLoader\WinCacheClassLoader;
+use Drupal\xautoload\ClassLoader\XCacheClassLoader;
+use Drupal\xautoload\FinderOperation\RegisterActiveExtensionsOperation;
+use Drupal\xautoload\FinderOperation\LoaderSetFinderOperation;
+use Drupal\xautoload\FinderOperation\HookXautoloadOperation;
+
 _xautoload_register_drupal();
 
 
@@ -35,7 +45,7 @@ function xautoload_custom_theme() {
   $first_run = FALSE;
 
   // Trigger invocation of hook_xautoload().
-  $operation = new xautoload_FinderOperation_MainPhase();
+  $operation = new HookXautoloadOperation();
   xautoload()->proxyFinder->onFinderInit($operation);
 }
 
@@ -58,9 +68,31 @@ function xautoload_init() {
 
 /**
  * Implements hook_module_implements_alter()
+ *
+ * @param array &$implementations
+ * @param string $hook
  */
 function xautoload_module_implements_alter(&$implementations, $hook) {
 
+  static $modules;
+  if (!isset($modules)) {
+    $modules = module_list();
+  }
+
+  // Some crazy stuff (like using l() in hook_enable()) can trigger hook
+  // invocation on just-enabled modules, before xautoload has a chance to
+  // register their namespaces. The only place to register these modules is
+  // here.
+  foreach ($implementations as $module => $group) {
+    if (empty($modules[$module])) {
+      // This module needs to be registered, to avoid a missing class error.
+      xautoload()->extensionRegistrationService->registerExtensionsByName(array($module));
+      xautoload()->cacheManager->renewCachePrefix();
+      $modules[$module] = $module;
+    }
+  }
+
+  // Most hook implementations are in dedicated files.
   switch ($hook) {
     case 'init':
     case 'custom_theme':
@@ -88,7 +120,7 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
 /**
  * Implements hook_xautoload on behalf of libraries module
  *
- * @param xautoload_InjectedAPI_hookXautoload $api
+ * @param \xautoload_InjectedAPI_hookXautoload $api
  *   An adapter object that can register stuff into the class loader.
  */
 function libraries_xautoload($api) {
@@ -130,28 +162,26 @@ function _xautoload_register_drupal() {
 
   $cache_types = variable_get('xautoload_cache_types', array());
 
+  $decorated = $lazy
+    ? $services->proxyFinder
+    : $services->proxyFinder->getFinder()
+  ;
+
   if (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
-    $decorator_class = 'xautoload_ClassLoader_ApcCache';
+    $cached_loader = ApcClassLoader::create($decorated, $services->cacheManager);
   }
   elseif (!empty($cache_types['wincache']) && extension_loaded('wincache') && function_exists('wincache_ucache_get')) {
-    $decorator_class = 'xautoload_ClassLoader_WinCache';
+    $cached_loader = WinCacheClassLoader::create($decorated, $services->cacheManager);
   }
   elseif (!empty($cache_types['xcache']) && extension_loaded('Xcache') && function_exists('xcache_get')) {
-    $decorator_class = 'xautoload_ClassLoader_XCache';
+    $cached_loader = XCacheClassLoader::create($decorated, $services->cacheManager);
   }
 
-  /**
-   * @var xautoload_ClassLoader_AbstractCache $decorator_class
-   *   A class name of a subclass of xautoload_ClassLoader_AbstractCache.
-   *   The IDE likes it this way.
-   */
-  if (isset($decorator_class)) {
-    $decorated = $lazy ? $services->proxyFinder : $services->proxyFinder->getFinder();
-    $loader = $decorator_class::create($decorated, $services->cacheManager);
+  if (isset($cached_loader)) {
     if ($lazy) {
-      $decorated->onFinderInit(new xautoload_FinderOperation_LoaderSetFinder($loader));
+      $decorated->onFinderInit(new LoaderSetFinderOperation($cached_loader));
     }
-    $loader->register();
+    $cached_loader->register();
     $services->finder->unregister();
   }
   else {
@@ -161,6 +191,6 @@ function _xautoload_register_drupal() {
   }
 
   // Register prefixes and namespaces for enabled extensions.
-  $operation = new xautoload_FinderOperation_BootPhase();
+  $operation = new RegisterActiveExtensionsOperation();
   xautoload()->proxyFinder->onFinderInit($operation);
 }

@@ -1,6 +1,13 @@
 <?php
 
-class xautoload_Discovery_ComposerJsonTargetDir extends xautoload_Discovery_ComposerJson {
+namespace Drupal\xautoload\Discovery;
+
+use Drupal\xautoload\Adapter\ClassFinderAdapter;
+use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
+use Drupal\xautoload\DirectoryBehavior\Psr0DirectoryBehavior;
+use Drupal\xautoload\Util;
+
+class ComposerJsonTargetDir extends ComposerJson {
 
   /**
    * @var string
@@ -11,20 +18,20 @@ class xautoload_Discovery_ComposerJsonTargetDir extends xautoload_Discovery_Comp
    * @param array $data
    * @param string $path_prefix
    */
-  protected function __construct(array $data, $path_prefix) {
+  function __construct(array $data, $path_prefix) {
     parent::__construct($data, $path_prefix);
     $this->targetDir = rtrim($data['target-dir'], '/') . '/';
   }
 
   /**
-   * @param xautoload_Adapter_ClassFinderAdapter $adapter
+   * @param ClassFinderAdapter $adapter
    *
-   * @throws Exception
+   * @throws \Exception
    */
   function writeToAdapter($adapter) {
 
     if (!empty($data['include-path'])) {
-      $paths = $this->pathsResolveTargetDir((array)$data['include-path']);
+      $paths = $this->pathsResolveTargetDir((array) $data['include-path']);
       $this->addIncludePaths($paths, $this->pathPrefix);
     }
 
@@ -33,7 +40,7 @@ class xautoload_Discovery_ComposerJsonTargetDir extends xautoload_Discovery_Comp
     }
 
     if (!empty($data['autoload']['psr-4'])) {
-      throw new Exception("PSR-4 is incompatible with target-dir.");
+      throw new \Exception("PSR-4 is incompatible with target-dir.");
     }
 
     if (!empty($data['autoload']['classmap'])) {
@@ -61,35 +68,45 @@ class xautoload_Discovery_ComposerJsonTargetDir extends xautoload_Discovery_Comp
         $path = substr($path, $strlen);
       }
     }
+
     return $paths;
   }
 
   /**
-   * @param xautoload_Adapter_ClassFinderAdapter $adapter
+   * @param ClassFinderAdapter $adapter
    * @param array $prefixes
    */
   protected function addMultipleWithTargetDir($adapter, array $prefixes) {
-    $default_behavior = new xautoload_DirectoryBehavior_Default();
-    $psr0_behavior = new xautoload_DirectoryBehavior_Psr0();
+    $default_behavior = new DefaultDirectoryBehavior();
+    $psr0_behavior = new Psr0DirectoryBehavior();
     $namespace_map = array();
     $prefix_map = array();
     $target_dir_strlen = strlen($this->targetDir);
     foreach ($prefixes as $prefix => $paths) {
       if (FALSE === strpos($prefix, '\\')) {
-        $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
-        foreach ((array)$paths as $root_path) {
-          $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
-          if (0 !== strpos($deep_path, $this->targetDir))  {
+        $logical_base_path = Util::prefixLogicalPath($prefix);
+        foreach ((array) $paths as $root_path) {
+          $deep_path = strlen($root_path) ? (rtrim(
+              $root_path,
+              '/'
+            ) . '/' . $logical_base_path) : $logical_base_path;
+          if (0 !== strpos($deep_path, $this->targetDir)) {
             continue;
           }
-          $deep_path = $this->pathPrefix . substr($deep_path, $target_dir_strlen);
+          $deep_path = $this->pathPrefix . substr(
+              $deep_path,
+              $target_dir_strlen
+            );
           $prefix_map[$logical_base_path][$deep_path] = $default_behavior;
         }
       }
-      $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
-      foreach ((array)$paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
-        if (0 !== strpos($deep_path, $this->targetDir))  {
+      $logical_base_path = Util::namespaceLogicalPath($prefix);
+      foreach ((array) $paths as $root_path) {
+        $deep_path = strlen($root_path) ? (rtrim(
+            $root_path,
+            '/'
+          ) . '/' . $logical_base_path) : $logical_base_path;
+        if (0 !== strpos($deep_path, $this->targetDir)) {
           continue;
         }
         $deep_path = $this->pathPrefix . substr($deep_path, $target_dir_strlen);

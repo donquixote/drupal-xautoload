@@ -1,18 +1,26 @@
 <?php
 
+namespace Drupal\xautoload\Adapter;
+
+use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
+use xautoload_FinderPlugin_Interface;
+use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
+use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionNamespaceFinderPlugin;
+use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionUnderscoreFinderPlugin;
+
 /**
  * Service that knows how to register module namespaces and prefixes into the
  * class loader, and that remembers which modules have already been registered.
  */
-class xautoload_Adapter_DrupalExtensionAdapter {
+class DrupalExtensionAdapter {
 
   /**
-   * @var xautoload_DrupalSystem_Interface
+   * @var \Drupal\xautoload\DrupalSystem\DrupalSystemInterface
    */
   protected $system;
 
   /**
-   * @var xautoload_ClassFinder_ExtendedInterface
+   * @var ExtendedClassFinderInterface
    */
   protected $finder;
 
@@ -27,12 +35,12 @@ class xautoload_Adapter_DrupalExtensionAdapter {
   protected $prefixBehaviors = array();
 
   /**
-   * @var xautoload_ClassFinder_Helper_Map
+   * @var \Drupal\xautoload\ClassFinder\GenericPrefixMap
    */
   protected $namespaceMap;
 
   /**
-   * @var xautoload_ClassFinder_Helper_Map
+   * @var \Drupal\xautoload\ClassFinder\GenericPrefixMap
    */
   protected $prefixMap;
 
@@ -43,13 +51,13 @@ class xautoload_Adapter_DrupalExtensionAdapter {
   protected $registered = array();
 
   /**
-   * @var xautoload_DirectoryBehavior_Default
+   * @var DefaultDirectoryBehavior
    */
   protected $defaultBehavior;
 
   /**
-   * @param xautoload_DrupalSystem_Interface $system
-   * @param xautoload_ClassFinder_ExtendedInterface $finder
+   * @param \Drupal\xautoload\DrupalSystem\DrupalSystemInterface $system
+   * @param ExtendedClassFinderInterface $finder
    */
   function __construct($system, $finder) {
     $this->system = $system;
@@ -57,20 +65,18 @@ class xautoload_Adapter_DrupalExtensionAdapter {
     $this->namespaceMap = $finder->getNamespaceMap();
     $this->prefixMap = $finder->getPrefixMap();
     foreach (array('module', 'theme') as $extension_type) {
-      $this->namespaceBehaviors[$extension_type] = new xautoload_FinderPlugin_DrupalExtensionNamespace(
+      $this->namespaceBehaviors[$extension_type] = new DrupalExtensionNamespaceFinderPlugin(
         $extension_type,
         $this->namespaceMap,
         $this->prefixMap,
-        $this->system)
-      ;
-      $this->prefixBehaviors[$extension_type] = new xautoload_FinderPlugin_DrupalExtensionUnderscore(
+        $this->system);
+      $this->prefixBehaviors[$extension_type] = new DrupalExtensionUnderscoreFinderPlugin(
         $extension_type,
         $this->namespaceMap,
         $this->prefixMap,
-        $this->system)
-      ;
+        $this->system);
     }
-    $this->defaultBehavior = new xautoload_DirectoryBehavior_Default();
+    $this->defaultBehavior = new DefaultDirectoryBehavior();
   }
 
   /**
@@ -81,7 +87,9 @@ class xautoload_Adapter_DrupalExtensionAdapter {
    *   Extension names.
    */
   function registerExtensionsByName($extension_names) {
-    $this->registerExtensions($this->system->getExtensionTypes($extension_names));
+    $this->registerExtensions(
+      $this->system->getExtensionTypes($extension_names)
+    );
   }
 
   function registerActiveExtensions() {
@@ -106,7 +114,11 @@ class xautoload_Adapter_DrupalExtensionAdapter {
         continue;
       }
       $namespace_map['Drupal/' . $name . '/'][$name] = $this->namespaceBehaviors[$type];
-      $prefix_map[str_replace('_', '/', $name) . '/'][$name] = $this->prefixBehaviors[$type];
+      $prefix_map[str_replace(
+        '_',
+        '/',
+        $name
+      ) . '/'][$name] = $this->prefixBehaviors[$type];
       $this->registered[$name] = TRUE;
     }
     $this->namespaceMap->registerDeepPaths($namespace_map);
@@ -125,8 +137,16 @@ class xautoload_Adapter_DrupalExtensionAdapter {
       // The extension has already been processed.
       return;
     }
-    $this->namespaceMap->registerDeepPath('Drupal/' . $name . '/', $name, $this->namespaceBehaviors[$type]);
-    $this->prefixMap->registerDeepPath(str_replace('_', '/', $name) . '/', $name, $this->prefixBehaviors[$type]);
+    $this->namespaceMap->registerDeepPath(
+      'Drupal/' . $name . '/',
+      $name,
+      $this->namespaceBehaviors[$type]
+    );
+    $this->prefixMap->registerDeepPath(
+      str_replace('_', '/', $name) . '/',
+      $name,
+      $this->prefixBehaviors[$type]
+    );
     $this->registered[$name] = TRUE;
   }
 
@@ -150,16 +170,29 @@ class xautoload_Adapter_DrupalExtensionAdapter {
       }
       // Unregister the lazy plugins.
       $this->namespaceMap->unregisterDeepPath('Drupal/' . $name . '/', $name);
-      $this->prefixMap->unregisterDeepPath(str_replace('_', '/', $name) . '/', $name);
+      $this->prefixMap->unregisterDeepPath(
+        str_replace('_', '/', $name) . '/',
+        $name
+      );
     }
     $dir = strlen($subdir)
       ? $extension_dir . '/' . trim($subdir, '/') . '/'
-      : $extension_dir . '/'
-    ;
-    $this->namespaceMap->registerDeepPath('Drupal/' . $name . '/', $dir, $this->defaultBehavior);
+      : $extension_dir . '/';
+    $this->namespaceMap->registerDeepPath(
+      'Drupal/' . $name . '/',
+      $dir,
+      $this->defaultBehavior
+    );
     // Re-add the PSR-0 test directory, for consistency's sake.
-    if (is_dir($psr0_tests_dir = $extension_dir . '/lib/Drupal/' . $name . '/Tests')) {
-      $this->namespaceMap->registerDeepPath('Drupal/' . $name . '/Tests/', $psr0_tests_dir, $this->defaultBehavior);
+    if (is_dir(
+      $psr0_tests_dir = $extension_dir . '/lib/Drupal/' . $name . '/Tests'
+    )
+    ) {
+      $this->namespaceMap->registerDeepPath(
+        'Drupal/' . $name . '/Tests/',
+        $psr0_tests_dir,
+        $this->defaultBehavior
+      );
     }
   }
 }

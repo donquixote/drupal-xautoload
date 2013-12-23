@@ -2,6 +2,8 @@
 
 namespace Drupal\xautoload\Tests;
 
+use Drupal\xautoload\Discovery\WildcardFileFinder;
+
 class DiscoveryTest extends \PHPUnit_Framework_TestCase {
 
   /**
@@ -24,7 +26,7 @@ class DiscoveryTest extends \PHPUnit_Framework_TestCase {
     }
 
     // The class file is loaded using the regular uncached xautoload autoload.
-    $file_finder = new \xautoload_Discovery_WildcardFileFinder();
+    $file_finder = new WildcardFileFinder();
     $file_finder->addDrupalPaths($files, TRUE);
     $files = $file_finder->getDrupalFiles();
 

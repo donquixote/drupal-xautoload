@@ -2,6 +2,8 @@
 
 namespace Drupal\xautoload\Tests;
 
+use Drupal\xautoload\Util;
+
 class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
 
   /**
@@ -36,7 +38,7 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
     );
 
     foreach (spl_autoload_functions() as $index => $callback) {
-      $str = \xautoload_Util::callbackToString($callback);
+      $str = Util::callbackToString($callback);
       if (!isset($expected[$index])) {
         $this->fail("Autoload callback at index $index must be empty instead of $str.");
       }

@@ -1,7 +1,9 @@
 <?php
 
 
-interface xautoload_Discovery_ClassMapGeneratorInterface {
+namespace Drupal\xautoload\Discovery;
+
+interface ClassMapGeneratorInterface {
 
   /**
    * @param string[] $paths

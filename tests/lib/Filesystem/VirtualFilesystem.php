@@ -4,6 +4,8 @@
 namespace Drupal\xautoload\Tests\Filesystem;
 
 
+use Drupal\xautoload\Util;
+
 class VirtualFilesystem {
 
   /**
@@ -41,7 +43,7 @@ class VirtualFilesystem {
   const FILE = '(file)';
 
   function __construct() {
-    $this->instanceKey = \xautoload_Util::randomString();
+    $this->instanceKey = Util::randomString();
     self::$instances[$this->instanceKey] = $this;
   }
 

@@ -1,63 +1,74 @@
 <?php
 
 
+namespace Drupal\xautoload\Adapter;
+
+use Drupal\xautoload\Util;
+use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
+use Drupal\xautoload\Discovery\ComposerDir;
+use Drupal\xautoload\Discovery\ComposerJson;
+use Drupal\xautoload\ClassFinder\GenericPrefixMap;
+use Drupal\xautoload\DirectoryBehavior\Psr0DirectoryBehavior;
+use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
+use Drupal\xautoload\Discovery\ClassMapGeneratorInterface;
+
 /**
  * An instance of this class is passed around to implementations of
  * hook_xautoload(). It acts as a wrapper around the ClassFinder, to register
  * stuff.
  */
-class xautoload_Adapter_ClassFinderAdapter {
+class ClassFinderAdapter {
 
   /**
-   * @var xautoload_ClassFinder_ExtendedInterface
+   * @var ExtendedClassFinderInterface
    */
   protected $finder;
 
   /**
-   * @var xautoload_ClassFinder_Helper_Map
+   * @var GenericPrefixMap
    */
   protected $prefixMap;
 
   /**
-   * @var xautoload_ClassFinder_Helper_Map
+   * @var GenericPrefixMap
    */
   protected $namespaceMap;
 
   /**
-   * @var xautoload_Discovery_ClassMapGeneratorInterface
+   * @var ClassMapGeneratorInterface
    */
   protected $classMapGenerator;
 
   /**
-   * @param xautoload_ClassFinder_ExtendedInterface $finder
+   * @param ExtendedClassFinderInterface $finder
    *   The class finder object.
-   * @param xautoload_Discovery_ClassMapGeneratorInterface $classmap_generator
+   * @param ClassMapGeneratorInterface $classmap_generator
    */
   function __construct($finder, $classmap_generator) {
     $this->finder = $finder;
     $this->prefixMap = $finder->getPrefixMap();
     $this->namespaceMap = $finder->getNamespaceMap();
-    $this->defaultBehavior = new xautoload_DirectoryBehavior_Default();
-    $this->psr0Behavior = new xautoload_DirectoryBehavior_Psr0();
+    $this->defaultBehavior = new DefaultDirectoryBehavior();
+    $this->psr0Behavior = new Psr0DirectoryBehavior();
     $this->classMapGenerator = $classmap_generator;
   }
 
   /**
-   * @return xautoload_ClassFinder_Helper_Map
+   * @return \Drupal\xautoload\ClassFinder\GenericPrefixMap
    */
   function getNamespaceMap() {
     return $this->namespaceMap;
   }
 
   /**
-   * @return xautoload_ClassFinder_Helper_Map
+   * @return GenericPrefixMap
    */
   function getPrefixMap() {
     return $this->prefixMap;
   }
 
   /**
-   * @return xautoload_Discovery_ClassMapGeneratorInterface
+   * @return ClassMapGeneratorInterface
    */
   function getClassmapGenerator() {
     return $this->classMapGenerator;
@@ -83,10 +94,10 @@ class xautoload_Adapter_ClassFinderAdapter {
    *
    * @param string $file
    *
-   * @throws Exception
+   * @throws \Exception
    */
   function composerJson($file) {
-    $json = xautoload_Discovery_ComposerJson::createFromFile($file);
+    $json = ComposerJson::createFromFile($file);
     $json->writeToAdapter($this);
   }
 
@@ -98,7 +109,7 @@ class xautoload_Adapter_ClassFinderAdapter {
    *   ../vendor/composer dir.
    */
   function composerDir($dir) {
-    $dir = xautoload_Discovery_ComposerDir::create($dir);
+    $dir = ComposerDir::create($dir);
     $dir->writeToAdapter($this);
   }
 
@@ -115,15 +126,21 @@ class xautoload_Adapter_ClassFinderAdapter {
     $prefix_map = array();
     foreach ($prefixes as $prefix => $paths) {
       if (FALSE === strpos($prefix, '\\')) {
-        $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
-        foreach ((array)$paths as $root_path) {
-          $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+        $logical_base_path = Util::prefixLogicalPath($prefix);
+        foreach ((array) $paths as $root_path) {
+          $deep_path = strlen($root_path) ? (rtrim(
+              $root_path,
+              '/'
+            ) . '/' . $logical_base_path) : $logical_base_path;
           $prefix_map[$logical_base_path][$deep_path] = $this->defaultBehavior;
         }
       }
-      $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
-      foreach ((array)$paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
+      $logical_base_path = Util::namespaceLogicalPath($prefix);
+      foreach ((array) $paths as $root_path) {
+        $deep_path = strlen($root_path) ? (rtrim(
+            $root_path,
+            '/'
+          ) . '/' . $logical_base_path) : $logical_base_path;
         $namespace_map[$logical_base_path][$deep_path] = $this->psr0Behavior;
       }
     }
@@ -141,7 +158,7 @@ class xautoload_Adapter_ClassFinderAdapter {
   function addMultiplePsr4(array $map) {
     $namespace_map = array();
     foreach ($map as $namespace => $paths) {
-      $logical_base_path = xautoload_Util::namespaceLogicalPath($namespace);
+      $logical_base_path = Util::namespaceLogicalPath($namespace);
       foreach ($paths as $root_path) {
         $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/') : '';
         $namespace_map[$logical_base_path][$deep_path] = $this->defaultBehavior;
@@ -169,17 +186,31 @@ class xautoload_Adapter_ClassFinderAdapter {
   function add($prefix, $paths) {
     if (FALSE === strpos($prefix, '\\')) {
       // Due to the ambiguity of PSR-0, this could be either PEAR-like or namespaced.
-      $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
-      foreach ((array)$paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
-        $this->prefixMap->registerDeepPath($logical_base_path, $deep_path, $this->defaultBehavior);
+      $logical_base_path = Util::prefixLogicalPath($prefix);
+      foreach ((array) $paths as $root_path) {
+        $deep_path = strlen($root_path) ? (rtrim(
+            $root_path,
+            '/'
+          ) . '/' . $logical_base_path) : $logical_base_path;
+        $this->prefixMap->registerDeepPath(
+          $logical_base_path,
+          $deep_path,
+          $this->defaultBehavior
+        );
       }
     }
     // Namespaced PSR-0
-    $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
-    foreach ((array)$paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
-      $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $this->psr0Behavior);
+    $logical_base_path = Util::namespaceLogicalPath($prefix);
+    foreach ((array) $paths as $root_path) {
+      $deep_path = strlen($root_path) ? (rtrim(
+          $root_path,
+          '/'
+        ) . '/' . $logical_base_path) : $logical_base_path;
+      $this->namespaceMap->registerDeepPath(
+        $logical_base_path,
+        $deep_path,
+        $this->psr0Behavior
+      );
     }
   }
 
@@ -189,10 +220,14 @@ class xautoload_Adapter_ClassFinderAdapter {
    */
   function addPsr4($prefix, $paths) {
     // Namespaced PSR-4
-    $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
-    foreach ((array)$paths as $deep_path) {
+    $logical_base_path = Util::namespaceLogicalPath($prefix);
+    foreach ((array) $paths as $deep_path) {
       $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
-      $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $this->defaultBehavior);
+      $this->namespaceMap->registerDeepPath(
+        $logical_base_path,
+        $deep_path,
+        $this->defaultBehavior
+      );
     }
   }
 
@@ -208,10 +243,17 @@ class xautoload_Adapter_ClassFinderAdapter {
    * @param string[]|string $paths
    */
   function addNamespacePsr0($prefix, $paths) {
-    $logical_base_path = xautoload_Util::namespaceLogicalPath($prefix);
-    foreach ((array)$paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
-      $this->namespaceMap->registerDeepPath($logical_base_path, $deep_path, $this->psr0Behavior);
+    $logical_base_path = Util::namespaceLogicalPath($prefix);
+    foreach ((array) $paths as $root_path) {
+      $deep_path = strlen($root_path) ? (rtrim(
+          $root_path,
+          '/'
+        ) . '/' . $logical_base_path) : $logical_base_path;
+      $this->namespaceMap->registerDeepPath(
+        $logical_base_path,
+        $deep_path,
+        $this->psr0Behavior
+      );
     }
   }
 
@@ -224,10 +266,17 @@ class xautoload_Adapter_ClassFinderAdapter {
    * @param $paths
    */
   function addPear($prefix, $paths) {
-    $logical_base_path = xautoload_Util::prefixLogicalPath($prefix);
-    foreach ((array)$paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/' . $logical_base_path) : $logical_base_path;
-      $this->prefixMap->registerDeepPath($logical_base_path, $deep_path, $this->defaultBehavior);
+    $logical_base_path = Util::prefixLogicalPath($prefix);
+    foreach ((array) $paths as $root_path) {
+      $deep_path = strlen($root_path) ? (rtrim(
+          $root_path,
+          '/'
+        ) . '/' . $logical_base_path) : $logical_base_path;
+      $this->prefixMap->registerDeepPath(
+        $logical_base_path,
+        $deep_path,
+        $this->defaultBehavior
+      );
     }
   }
 }

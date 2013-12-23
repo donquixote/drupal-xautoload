@@ -1,15 +1,19 @@
 <?php
 
 
-class xautoload_Discovery_CachedClassMapGenerator implements xautoload_Discovery_ClassMapGeneratorInterface {
+namespace Drupal\xautoload\Discovery;
+
+use Drupal\xautoload\Discovery\ClassMapGeneratorInterface;
+
+class CachedClassMapGenerator implements ClassMapGeneratorInterface {
 
   /**
-   * @var xautoload_Discovery_ClassMapGeneratorInterface
+   * @var ClassMapGeneratorInterface
    */
   protected $decorated;
 
   /**
-   * @param xautoload_Discovery_ClassMapGeneratorInterface $decorated
+   * @param ClassMapGeneratorInterface $decorated
    */
   function __construct($decorated) {
     $this->decorated = $decorated;
@@ -30,6 +34,7 @@ class xautoload_Discovery_CachedClassMapGenerator implements xautoload_Discovery
     // Resolve cache miss and save.
     $map = $this->decorated->wildcardPathsToClassmap($paths);
     cache_set($cid, $map);
+
     return $map;
   }
 } 

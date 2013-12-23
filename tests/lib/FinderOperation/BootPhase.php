@@ -1,10 +1,10 @@
 <?php
 
-
 namespace Drupal\xautoload\Tests\FinderOperation;
 
+use Drupal\xautoload\FinderOperation\FinderOperationInterface;
 
-class BootPhase implements \xautoload_FinderOperation_Interface {
+class BootPhase implements FinderOperationInterface {
 
   /**
    * @var string[]
