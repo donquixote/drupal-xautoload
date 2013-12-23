@@ -1,6 +1,4 @@
 <?php
-use
-  Drupal\xautoload\Adapter\xautoload_InjectedAPI_hookXautoload;
 
 /**
  * @file
@@ -24,7 +22,7 @@ function EXAMPLE_foo() {
  * Register additional classes, namespaces, autoload patterns, that are not
  * already registered by default.
  *
- * @param \Drupal\xautoload\Adapter\xautoload_InjectedAPI_hookXautoload $api
+ * @param \xautoload_InjectedAPI_hookXautoload $api
  *   An adapter object that can register stuff into the class loader.
  */
 function hook_xautoload($api) {
@@ -76,7 +74,7 @@ function mymodule_libraries_info() {
       'version' => '1.0',
       'xautoload' => function($api) {
           /**
-           * @var \Drupal\xautoload\Adapter\xautoload_InjectedAPI_hookXautoload $api
+           * @var \xautoload_InjectedAPI_hookXautoload $api
            *   An adapter object that can register stuff into the class loader.
            */
           // Register a namespace with PSR-0 root in
@@ -87,7 +85,7 @@ function mymodule_libraries_info() {
     'gurkentraum' => array(
       'name' => 'Gurkentraum library',
       'xautoload' => function($api) {
-          /** @var \Drupal\xautoload\Adapter\xautoload_InjectedAPI_hookXautoload $api */
+          /** @var \xautoload_InjectedAPI_hookXautoload $api */
           // Scan sites/all/libraries/ruebenkraut/composer.json to look for
           // autoload information.
           $api->composerJson('composer.json');

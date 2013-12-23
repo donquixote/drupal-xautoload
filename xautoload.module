@@ -1,15 +1,5 @@
 <?php
 
-/*
- * When the module has just been installed,
- * Drupal does not know yet this is a boot-level module.
- *
- * We can not rely on hook_boot() to fire, and instead register the autoloader
- * on inclusion of this *.module file.
- */
-use
-  Drupal\xautoload\Adapter\xautoload_InjectedAPI_hookXautoload;
-use Drupal\xautoload\ClassLoader\AbstractCachedClassLoader;
 use Drupal\xautoload\ClassLoader\ApcClassLoader;
 use Drupal\xautoload\ClassLoader\WinCacheClassLoader;
 use Drupal\xautoload\ClassLoader\XCacheClassLoader;
@@ -17,6 +7,13 @@ use Drupal\xautoload\FinderOperation\RegisterActiveExtensionsOperation;
 use Drupal\xautoload\FinderOperation\LoaderSetFinderOperation;
 use Drupal\xautoload\FinderOperation\HookXautoloadOperation;
 
+/*
+ * When the module has just been installed,
+ * Drupal does not know yet this is a boot-level module.
+ *
+ * We can not rely on hook_boot() to fire, and instead register the autoloader
+ * on inclusion of this *.module file.
+ */
 _xautoload_register_drupal();
 
 
