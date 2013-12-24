@@ -4,7 +4,6 @@ namespace Drupal\xautoload\Tests;
 
 use Drupal\xautoload\ClassFinder\ClassFinder;
 use Drupal\xautoload\ClassFinder\InjectedApi\CollectFilesInjectedApi;
-use Drupal\xautoload\ClassFinder\InjectedApi\FindFileInjectedApi;
 use Drupal\xautoload\ClassLoader\AbstractCachedClassLoader;
 use Drupal\xautoload\Util;
 
@@ -42,7 +41,6 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
         xautoload()->finder->register(TRUE);
       }
     }
-    // xautoload()->loaderManager->register('default', TRUE);
 
     // Do the regular setUp().
     parent::setUp();
@@ -61,7 +59,7 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
       $actual[] = Util::callbackToString($callback);
     }
 
-    $this->assertEqual($expected, $actual);
+    $this->assertEqualBlock($expected, $actual, "SPL autoload stack:");
   }
 
   function testNamespaces() {
@@ -102,19 +100,25 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
    * @param array $expectedSuggestions
    */
   protected function assertFinderSuggestions($finder, $class, array $expectedSuggestions) {
-    $message_raw = 'Class <code>@class</code>.<br/>Expected suggestions: <pre>@expected</pre>. Actual suggestions: <pre>@actual</pre>';
     for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {
       list($method_name, $file) = $expectedSuggestions[$iAccept];
       $api = new CollectFilesInjectedApi($class, $method_name, $file);
       $finder->apiFindFile($api, $class);
       $suggestions = $api->getSuggestions();
       $expected = array_slice($expectedSuggestions, 0, $iAccept + 1);
-      $message = t($message_raw, array(
-        '@class' => $class,
-        '@expected' => print_r($expected, TRUE),
-        '@actual' => print_r($suggestions, TRUE),
-      ));
-      $this->assertEqual($expected, $suggestions, $message);
+      $this->assertEqualBlock($expected, $suggestions, "Finder suggestions for class <code>$class</code>:");
     }
+  }
+
+  /**
+   * @param mixed $expected
+   * @param mixed $actual
+   * @param string $label
+   */
+  protected function assertEqualBlock($expected, $actual, $label) {
+    $label .=
+      'Expected: <pre>' . var_export($expected, TRUE) . '</pre>' .
+      'Actual: <pre>' . var_export($actual, TRUE) . '</pre>';
+    $this->assertEqual($expected, $actual, $label);
   }
 }
