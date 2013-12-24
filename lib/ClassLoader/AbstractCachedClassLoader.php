@@ -29,9 +29,8 @@ abstract class AbstractCachedClassLoader
     /** @var self $loader */
     $loader = new static($finder);
     if (!$loader->checkRequirements()) {
-      throw new \Exception('Unable to use ' . get_class(
-          $loader
-        ) . ', because the extension is not enabled.');
+      $class = get_class($loader);
+      throw new CacheNotSupportedException("Unable to use $class, because the respetive PHP extension is not enabled.");
     }
     $cacheManager->observeCachePrefix($loader);
 
