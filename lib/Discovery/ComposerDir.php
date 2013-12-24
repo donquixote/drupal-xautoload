@@ -41,7 +41,7 @@ class ComposerDir {
     if (is_file($this->dir . '/autoload_namespaces.php')) {
       $prefixes = require $this->dir . '/autoload_namespaces.php';
       if (!empty($prefixes)) {
-        $adapter->addMultiple($prefixes);
+        $adapter->addMultiplePsr0($prefixes);
       }
     }
 

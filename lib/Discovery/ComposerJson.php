@@ -70,7 +70,7 @@ class ComposerJson {
 
     if (!empty($data['autoload']['psr-0'])) {
       $map = $this->transformMultiple($data['autoload']['psr-0']);
-      $adapter->addMultiple($map);
+      $adapter->addMultiplePsr0($map);
     }
 
     if (!empty($data['autoload']['psr-4'])) {

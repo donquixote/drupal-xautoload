@@ -4,7 +4,6 @@
 namespace Drupal\xautoload\ClassFinder;
 
 use Drupal\xautoload\ClassLoader\ClassLoaderInterface;
-use Drupal\xautoload\ClassFinder\InjectedApi\InjectedApiInterface;
 
 interface ClassFinderInterface extends ClassLoaderInterface {
 

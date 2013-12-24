@@ -3,8 +3,6 @@
 
 namespace Drupal\xautoload\Discovery;
 
-use Drupal\xautoload\Discovery\ClassMapGeneratorInterface;
-
 class CachedClassMapGenerator implements ClassMapGeneratorInterface {
 
   /**

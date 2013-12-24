@@ -103,6 +103,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
   /**
    * {@inheritdoc}
    */
+  function addPsr0($prefix, $paths) {
+    $this->add($prefix, $paths);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   function addPsr4($prefix, $paths) {
     // Namespaced PSR-4
     $logical_base_path = Util::namespaceLogicalPath($prefix);

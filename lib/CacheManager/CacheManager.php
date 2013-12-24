@@ -2,7 +2,6 @@
 
 namespace Drupal\xautoload\CacheManager;
 
-use Drupal\xautoload\CacheManager\CacheManagerObserverInterface;
 use Drupal\xautoload\Util;
 
 class CacheManager {

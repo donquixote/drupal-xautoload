@@ -10,7 +10,7 @@ use Drupal\xautoload\Discovery\ComposerJson;
  * hook_xautoload(). It acts as a wrapper around the ClassFinder, to register
  * stuff.
  */
-class LocalDirectoryAdapter extends ClassFinderAdapter {
+class LocalDirectoryAdapter implements ClassFinderAdapterInterface {
 
   /**
    * @var string
@@ -28,7 +28,7 @@ class LocalDirectoryAdapter extends ClassFinderAdapter {
    * @param string $localDirectory ;
    */
   function __construct($adapter, $localDirectory) {
-    parent::__construct($adapter->finder, $adapter->getClassmapGenerator());
+    // parent::__construct($adapter->finder, $adapter->getClassmapGenerator());
     $this->master = $adapter;
     $this->localDirectory = $localDirectory;
   }
@@ -93,85 +93,83 @@ class LocalDirectoryAdapter extends ClassFinderAdapter {
    * @param array $prefixes
    * @param bool $relative
    */
-  function addMultiple(array $prefixes, $relative = TRUE) {
+  function addMultiplePsr0(array $prefixes, $relative = TRUE) {
     $relative && $this->prependMultiple($prefixes);
-    parent::addMultiplePsr4($prefixes);
+    $this->master->addMultiplePsr4($prefixes);
   }
 
   /**
-   * Add multiple PSR-4 namespaces
-   *
    * @param array $map
    * @param bool $relative
    */
   function addMultiplePsr4(array $map, $relative = TRUE) {
     $relative && $this->prependMultiple($map);
-    parent::addMultiplePsr4($map);
+    $this->master->addMultiplePsr4($map);
   }
 
   //                                                        Composer ClassLoader
   // ---------------------------------------------------------------------------
 
   /**
-   * @param string[] $classMap
+   * @param array $classMap
    * @param bool $relative
    */
   function addClassMap(array $classMap, $relative = TRUE) {
     $relative && $this->prependToPaths($classMap);
-    $this->finder->registerClasses($classMap);
+    $this->master->addClassMap($classMap);
   }
 
   /**
-   * Add PSR-0 style prefixes.
-   *
    * @param string $prefix
-   * @param string[]|string $paths
+   * @param string|\string[] $paths
    * @param bool $relative
    */
   function add($prefix, $paths, $relative = TRUE) {
     $relative && $this->prependToPaths($paths);
-    parent::add($prefix, $paths);
+    $this->master->add($prefix, $paths);
   }
 
   /**
    * @param string $prefix
-   * @param string[]|string $paths
+   * @param string|\string[] $paths
+   * @param bool $relative
+   */
+  function addPsr0($prefix, $paths, $relative = TRUE) {
+    $relative && $this->prependToPaths($paths);
+    $this->master->add($prefix, $paths);
+  }
+
+  /**
+   * @param string $prefix
+   * @param string|\string[] $paths
    * @param bool $relative
    */
   function addPsr4($prefix, $paths, $relative = TRUE) {
     $relative && $this->prependToPaths($paths);
-    parent::addPsr4($prefix, $paths);
+    $this->master->addPsr4($prefix, $paths);
   }
 
   //                                                      More convenience stuff
   // ---------------------------------------------------------------------------
 
   /**
-   * Add PSR-0 style namespace.
-   * This will assume that we are really dealing with a namespace, even if it
-   * has no '\\' included.
-   *
    * @param string $prefix
-   * @param string[]|string $paths
+   * @param string|\string[] $paths
    * @param bool $relative
    */
   function addNamespacePsr0($prefix, $paths, $relative = TRUE) {
     $relative && $this->prependToPaths($paths);
-    parent::addNamespacePsr0($prefix, $paths);
+    $this->master->addNamespacePsr0($prefix, $paths);
   }
 
   /**
-   * Add PEAR-like prefix.
-   * This will assume with no further checks that $prefix contains no namespace
-   * separator.
-   *
    * @param $prefix
    * @param $paths
    * @param bool $relative
    */
   function addPear($prefix, $paths, $relative = TRUE) {
     $relative && $this->prependToPaths($paths);
-    parent::addPear($prefix, $paths);
+    $this->master->addPear($prefix, $paths);
   }
 
   //                                                      Relative path handling

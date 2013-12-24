@@ -2,6 +2,8 @@
 
 use Drupal\xautoload\Adapter\LocalDirectoryAdapter;
 use Drupal\xautoload\Util;
+use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
+use Drupal\xautoload\Adapter\ClassFinderAdapter;
 
 /**
  * An instance of this class is passed around to implementations of
@@ -12,6 +14,21 @@ use Drupal\xautoload\Util;
  * from xautoload_Adapter_ClassFinderAdapter instead.
  */
 class xautoload_InjectedAPI_hookXautoload extends LocalDirectoryAdapter {
+
+  /**
+   * @var ExtendedClassFinderInterface
+   */
+  protected $finder;
+
+  /**
+   * @param ClassFinderAdapter $adapter
+   *   The class finder object.
+   * @param string $localDirectory ;
+   */
+  function __construct($adapter, $localDirectory) {
+    parent::__construct($adapter, $localDirectory);
+    $this->finder = $adapter->getFinder();
+  }
 
   //                                                                Prefix stuff
   // ---------------------------------------------------------------------------

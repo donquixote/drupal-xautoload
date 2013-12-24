@@ -17,7 +17,7 @@ use Drupal\xautoload\Discovery\ClassMapGeneratorInterface;
  * hook_xautoload(). It acts as a wrapper around the ClassFinder, to register
  * stuff.
  */
-class ClassFinderAdapter {
+class ClassFinderAdapter implements ClassFinderAdapterInterface {
 
   /**
    * @var ExtendedClassFinderInterface
@@ -74,12 +74,18 @@ class ClassFinderAdapter {
     return $this->classMapGenerator;
   }
 
+  /**
+   * @return ClassMapGeneratorInterface
+   */
+  function getFinder() {
+    return $this->finder;
+  }
+
   //                                                                   Discovery
   // ---------------------------------------------------------------------------
 
   /**
-   * @param string[] $paths
-   *   File paths or wildcard paths for class discovery.
+   * {@inheritdoc}
    */
   function addClassmapSources($paths) {
     $map = $this->classMapGenerator->wildcardPathsToClassmap($paths);
@@ -90,11 +96,7 @@ class ClassFinderAdapter {
   // ---------------------------------------------------------------------------
 
   /**
-   * Scan a composer.json file provided by a Composer package.
-   *
-   * @param string $file
-   *
-   * @throws \Exception
+   * {@inheritdoc}
    */
   function composerJson($file) {
     $json = ComposerJson::createFromFile($file);
@@ -102,11 +104,7 @@ class ClassFinderAdapter {
   }
 
   /**
-   * Scan a directory containing Composer-generated autoload files.
-   *
-   * @param string $dir
-   *   Directory to look for Composer-generated files. Typically this is the
-   *   ../vendor/composer dir.
+   * {@inheritdoc}
    */
   function composerDir($dir) {
     $dir = ComposerDir::create($dir);
@@ -117,11 +115,9 @@ class ClassFinderAdapter {
   // ---------------------------------------------------------------------------
 
   /**
-   * Add multiple PSR-0 namespaces
-   *
-   * @param array $prefixes
+   * {@inheritdoc}
    */
-  function addMultiple(array $prefixes) {
+  function addMultiplePsr0(array $prefixes) {
     $namespace_map = array();
     $prefix_map = array();
     foreach ($prefixes as $prefix => $paths) {
@@ -151,9 +147,7 @@ class ClassFinderAdapter {
   }
 
   /**
-   * Add multiple PSR-4 namespaces
-   *
-   * @param array $map
+   * {@inheritdoc}
    */
   function addMultiplePsr4(array $map) {
     $namespace_map = array();
@@ -178,10 +172,7 @@ class ClassFinderAdapter {
   }
 
   /**
-   * Add PSR-0 style prefixes.
-   *
-   * @param string $prefix
-   * @param string[]|string $paths
+   * {@inheritdoc}
    */
   function add($prefix, $paths) {
     if (FALSE === strpos($prefix, '\\')) {
@@ -215,8 +206,14 @@ class ClassFinderAdapter {
   }
 
   /**
-   * @param string $prefix
-   * @param string[]|string $paths
+   * {@inheritdoc}
+   */
+  function addPsr0($prefix, $paths) {
+    $this->add($prefix, $paths);
+  }
+
+  /**
+   * {@inheritdoc}
    */
   function addPsr4($prefix, $paths) {
     // Namespaced PSR-4
@@ -235,12 +232,7 @@ class ClassFinderAdapter {
   // ---------------------------------------------------------------------------
 
   /**
-   * Add PSR-0 style namespace.
-   * This will assume that we are really dealing with a namespace, even if it
-   * has no '\\' included.
-   *
-   * @param string $prefix
-   * @param string[]|string $paths
+   * {@inheritdoc}
    */
   function addNamespacePsr0($prefix, $paths) {
     $logical_base_path = Util::namespaceLogicalPath($prefix);
@@ -258,12 +250,7 @@ class ClassFinderAdapter {
   }
 
   /**
-   * Add PEAR-like prefix.
-   * This will assume with no further checks that $prefix contains no namespace
-   * separator.
-   *
-   * @param $prefix
-   * @param $paths
+   * {@inheritdoc}
    */
   function addPear($prefix, $paths) {
     $logical_base_path = Util::prefixLogicalPath($prefix);

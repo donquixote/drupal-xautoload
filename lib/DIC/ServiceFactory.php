@@ -10,8 +10,8 @@ use Drupal\xautoload\CacheManager\CacheManager;
 use Drupal\xautoload\ClassFinder\ProxyClassFinder;
 use Drupal\xautoload\Discovery\CachedClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
-use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 use Drupal\xautoload\DrupalSystem\DrupalSystem;
+use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 use Drupal\xautoload\Main;
 
 class ServiceFactory {
@@ -37,7 +37,7 @@ class ServiceFactory {
   /**
    * @param ServiceContainer $services
    *
-   * @return \Drupal\xautoload\Discovery\ClassMapGenerator
+   * @return ClassMapGenerator
    */
   function classMapGenerator($services) {
     return new CachedClassMapGenerator($services->classMapGeneratorRaw);
@@ -46,7 +46,7 @@ class ServiceFactory {
   /**
    * @param ServiceContainer $services
    *
-   * @return \Drupal\xautoload\Discovery\ClassMapGenerator
+   * @return ClassMapGenerator
    */
   function classMapGeneratorRaw($services) {
     return new ClassMapGenerator();
@@ -119,7 +119,7 @@ class ServiceFactory {
   /**
    * @param ServiceContainer $services
    *
-   * @return \Drupal\xautoload\DrupalSystem\DrupalSystemInterface
+   * @return DrupalSystemInterface
    */
   function system($services) {
     return new DrupalSystem();
