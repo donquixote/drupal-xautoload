@@ -52,6 +52,7 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
 
     variable_set('xautoload_cache_types', $cache_types);
     $this->pass("Set cache types: " . var_export($cache_types, TRUE));
+
     variable_set('xautoload_cache_lazy', $cache_lazy);
     $this->pass("Set cache lazy mode: " . var_export($cache_lazy, TRUE));
 
@@ -62,14 +63,18 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     // so we have to clear old cached values from APC cache.
     xautoload()->cacheManager->renewCachePrefix();
 
-    module_enable(array('xautoload_test_1', 'xautoload_test_2'), FALSE);
+    module_enable(array('xautoload_test_1', 'xautoload_test_2', 'xautoload_test_3'), FALSE);
     menu_rebuild();
 
-    $this->xautoloadModuleEnabled('xautoload_test_1', array('Drupal\xautoload_test_1\ExampleClass'), FALSE);
-    $this->xautoloadModuleCheckJson('xautoload_test_1', $cache_types, $cache_lazy, array('Drupal\xautoload_test_1\ExampleClass'));
-
-    $this->xautoloadModuleEnabled('xautoload_test_2', array('xautoload_test_2_ExampleClass'), TRUE);
-    $this->xautoloadModuleCheckJson('xautoload_test_2', $cache_types, $cache_lazy, array('xautoload_test_2_ExampleClass'));
+    foreach (array(
+      'xautoload_test_1' => array('Drupal\xautoload_test_1\ExampleClass'),
+      'xautoload_test_2' => array('xautoload_test_2_ExampleClass'),
+      'xautoload_test_3' => array('Drupal\xautoload_test_3\ExampleClass'),
+    ) as $module => $classes) {
+      $classes_on_include = in_array($module, array('xautoload_test_2', 'xautoload_test_3'));
+      $this->xautoloadModuleEnabled($module, $classes, $classes_on_include);
+      $this->xautoloadModuleCheckJson($module, $cache_types, $cache_lazy, $classes);
+    }
   }
 
   /**
