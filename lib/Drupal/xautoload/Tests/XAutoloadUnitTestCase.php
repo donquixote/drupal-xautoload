@@ -94,27 +94,35 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
    * @param ClassFinder $finder
    * @param string $class
    * @param array $expectedSuggestions
+   *
+   * @return bool
+   *   Result of the assertion
    */
   protected function assertFinderSuggestions($finder, $class, array $expectedSuggestions) {
+    $success = TRUE;
     for ($iAccept = 0; $iAccept < count($expectedSuggestions); ++$iAccept) {
       list($method_name, $file) = $expectedSuggestions[$iAccept];
       $api = new CollectFilesInjectedApi($class, $method_name, $file);
       $finder->apiFindFile($api, $class);
       $suggestions = $api->getSuggestions();
       $expected = array_slice($expectedSuggestions, 0, $iAccept + 1);
-      $this->assertEqualBlock($expected, $suggestions, "Finder suggestions for class <code>$class</code>:");
+      $success = $success && $this->assertEqualBlock($expected, $suggestions, "Finder suggestions for class <code>$class</code>:");
     }
+    return $success;
   }
 
   /**
    * @param mixed $expected
    * @param mixed $actual
    * @param string $label
+   *
+   * @return bool
+   *   Result of the assertion
    */
   protected function assertEqualBlock($expected, $actual, $label) {
-    $label .=
+    $label .= '<br/>' .
       'Expected: <pre>' . var_export($expected, TRUE) . '</pre>' .
       'Actual: <pre>' . var_export($actual, TRUE) . '</pre>';
-    $this->assertEqual($expected, $actual, $label);
+    return $this->assertEqual($expected, $actual, $label);
   }
 }
