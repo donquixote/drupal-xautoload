@@ -5,6 +5,7 @@ namespace Drupal\xautoload\Tests;
 use Drupal\xautoload\ClassFinder\ClassFinder;
 use Drupal\xautoload\ClassFinder\InjectedApi\CollectFilesInjectedApi;
 use Drupal\xautoload\ClassLoader\AbstractCachedClassLoader;
+use Drupal\xautoload\ClassLoader\ClassLoaderInterface;
 use Drupal\xautoload\Util;
 
 class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
@@ -31,12 +32,12 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
     foreach (spl_autoload_functions() as $callback) {
       if (is_array($callback)
         && ($loader = $callback[0])
-        && $loader instanceof AbstractCachedClassLoader
+        && $loader instanceof ClassLoaderInterface
       ) {
         $loader->unregister();
-        xautoload()->finder->register(TRUE);
       }
     }
+    xautoload()->finder->register(TRUE);
 
     // Do the regular setUp().
     parent::setUp();
