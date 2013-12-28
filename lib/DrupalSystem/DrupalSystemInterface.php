@@ -15,12 +15,13 @@ interface DrupalSystemInterface {
   function variableGet($name, $default = NULL);
 
   /**
-   * Replacement of drupal_get_filename().
+   * Replacement of drupal_get_filename(), but returning an absolute path.
    *
    * @param string $type
    * @param string $name
    *
    * @return string
+   *   The result of drupal_get_filename() with DRUPAL_ROOT . '/' prepended.
    */
   function drupalGetFilename($type, $name);
 

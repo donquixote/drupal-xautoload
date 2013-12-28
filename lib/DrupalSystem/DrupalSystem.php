@@ -23,7 +23,7 @@ class DrupalSystem implements DrupalSystemInterface {
    * {@inheritdoc}
    */
   function drupalGetFilename($type, $name) {
-    return drupal_get_filename($type, $name);
+    return DRUPAL_ROOT . '/' . drupal_get_filename($type, $name);
   }
 
   /**
