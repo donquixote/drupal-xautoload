@@ -17,10 +17,6 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
     );
   }
 
-  function assertPublic($status, $message) {
-    return $this->assert($status, $message);
-  }
-
   function setUp() {
 
     // drupal_load('module', 'xautoload') would register namespaces for all
