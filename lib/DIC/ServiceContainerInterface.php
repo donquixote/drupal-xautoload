@@ -25,4 +25,14 @@ use Drupal\xautoload\Main;
  * @property DrupalExtensionAdapter $extensionRegistrationService
  */
 interface ServiceContainerInterface {
+
+  /**
+   * Retrieves a lazy-instantiated service.
+   *
+   * @param string $key
+   *   A key to specify a service.
+   * @return mixed
+   *   The service for the given key. Usually an object.
+   */
+  function __get($key);
 }
