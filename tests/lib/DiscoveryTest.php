@@ -35,19 +35,19 @@ class DiscoveryTest extends \PHPUnit_Framework_TestCase {
     ksort($files);
 
     $expected = array (
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/foo/bar.inc',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/handlers/bar.inc',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/handlers/foo.inc',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/misc/abc',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/misc/foo.bar',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/misc/sub/xyz',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/modules/sub/foo.inc',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/modules/sub/sub/foo.inc',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/modules/sub/sub/sub/foo.inc',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/tests/foo.test',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/tests/sub/foo.test',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/tests/sub/sub/foo.test',
-      '/home/lemonhead/projects/d7/git-modules/xautoload/tests/fixtures/WildcardFileFinder/tests/sub/sub/sub/foo.test',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/foo/bar.inc',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/handlers/bar.inc',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/handlers/foo.inc',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/misc/abc',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/misc/foo.bar',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/misc/sub/xyz',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/modules/sub/foo.inc',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/modules/sub/sub/foo.inc',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/modules/sub/sub/sub/foo.inc',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/tests/foo.test',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/tests/sub/foo.test',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/tests/sub/sub/foo.test',
+      dirname(__DIR__) . '/fixtures/WildcardFileFinder/tests/sub/sub/sub/foo.test',
     );
 
     $expected = array_fill_keys($expected, array (
