@@ -109,6 +109,12 @@ class DrupalExtensionAdapter {
     $prefix_map = array();
     $namespace_map = array();
     foreach ($extensions as $name => $type) {
+      if (empty($this->namespaceBehaviors[$type])) {
+        // Unsupported extension type, e.g. "theme_engine".
+        // This can happen if a site was upgraded from Drupal 6.
+        // See https://drupal.org/comment/8503979#comment-8503979
+        continue;
+      }
       if (!empty($this->registered[$name])) {
         // The extension has already been processed.
         continue;
