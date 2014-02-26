@@ -4,7 +4,7 @@ namespace Drupal\xautoload\ClassFinder\Plugin;
 
 use Drupal\xautoload\ClassFinder\InjectedApi\FindFileInjectedApi;
 
-class Psr4FinderPlugin implements FinderPluginInterface {
+class Psr4FinderPlugin extends FinderPlugin {
 
   /**
    * @param FindFileInjectedApi $api

@@ -12,7 +12,7 @@ use xautoload_FinderPlugin_Interface;
  *   - Situations where we don't want to register a ton of namespaces, and using
  *     a plugin instead gives us performance benefits.
  */
-interface FinderPluginInterface extends xautoload_FinderPlugin_Interface {
+abstract class FinderPlugin implements xautoload_FinderPlugin_Interface {
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
@@ -53,5 +53,5 @@ interface FinderPluginInterface extends xautoload_FinderPlugin_Interface {
    *   TRUE, if the file was found.
    *   FALSE, otherwise.
    */
-  function findFile($api, $path_fragment, $path_suffix, $id = NULL);
+  abstract function findFile($api, $path_fragment, $path_suffix, $id = NULL);
 }

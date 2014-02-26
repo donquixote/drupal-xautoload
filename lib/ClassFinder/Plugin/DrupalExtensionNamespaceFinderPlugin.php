@@ -29,7 +29,7 @@ use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
  * due to another autoloader instance being fired during a file inclusion, e.g.
  * for a base class.
  */
-class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
+class DrupalExtensionNamespaceFinderPlugin extends FinderPlugin {
 
   /**
    * @var string
