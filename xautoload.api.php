@@ -35,15 +35,22 @@ function hook_xautoload($api) {
     'shrubbery/lib');
 
   // Register a namespace with PSR-4.
-  $api->absolute()->addPsr4(
-    // The namespace.
-    'Acme\ShrubGardens\\',
-    // Absolute path to the PSR-4 base directory.
-    '/home/karnouffle/php/shrub-gardens/src');
+  $api
+    // Get a variation of the $api object where paths are not relative to the
+    // current module directory.
+    ->absolute()
+    ->addPsr4(
+      // The namespace.
+      'Acme\ShrubGardens\\',
+      // Absolute path to the PSR-4 base directory.
+      '/home/karnouffle/php/shrub-gardens/src');
 
   // Scan sites/all/vendor/composer for Composer-generated autoload files, e.g.
   // 'sites/all/vendor/composer/autoload_namespaces.php', etc.
-  $api->absolute()->composerDir('sites/all/vendor/composer');
+  $api
+    // Get a variation of the $api object where paths are not relative.
+    ->absolute()
+    ->composerDir('sites/all/vendor/composer');
 }
 
 
@@ -80,6 +87,9 @@ function mymodule_libraries_info() {
           // Register a namespace with PSR-0 root in
           // 'sites/all/libraries/ruebenkraut/src'.
           $api->add('Rueben\Kraut\\', 'src');
+          // Scan the 'includes' subfolder of this library, to build a classmap.
+          // This classmap will be cached.
+          $api->addClassmapSources(array('includes'));
         },
     ),
     'gurkentraum' => array(
