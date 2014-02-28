@@ -3,7 +3,7 @@
 namespace Drupal\xautoload\ClassFinder\Plugin;
 
 use Drupal\xautoload\ClassFinder\InjectedApi\InjectedApiInterface;
-use xautoload_FinderPlugin_Interface;
+use Drupal\xautoload\DirectoryBehavior\DirectoryBehaviorInterface;
 
 
 /**
@@ -12,7 +12,7 @@ use xautoload_FinderPlugin_Interface;
  *   - Situations where we don't want to register a ton of namespaces, and using
  *     a plugin instead gives us performance benefits.
  */
-interface FinderPluginInterface extends xautoload_FinderPlugin_Interface {
+interface FinderPluginInterface extends DirectoryBehaviorInterface {
 
   /**
    * Find the file for a class that in PSR-0 or PEAR would be in
@@ -53,5 +53,5 @@ interface FinderPluginInterface extends xautoload_FinderPlugin_Interface {
    *   TRUE, if the file was found.
    *   FALSE, otherwise.
    */
-  function findFile($api, $path_fragment, $path_suffix, $id = NULL);
+  function findFile($api, $path_fragment, $path_suffix, $id);
 }

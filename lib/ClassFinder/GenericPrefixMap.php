@@ -2,6 +2,7 @@
 
 namespace Drupal\xautoload\ClassFinder;
 
+use Drupal\xautoload\ClassFinder\Plugin\FinderPluginInterface;
 use Drupal\xautoload\DirectoryBehavior\DirectoryBehaviorInterface;
 use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassInjectedAPI;
 use Drupal\xautoload\ClassFinder\InjectedApi\InjectedApiInterface;
@@ -158,10 +159,17 @@ class GenericPrefixMap {
               return TRUE;
             }
           }
-          elseif ($behavior instanceof xautoload_FinderPlugin_Interface) {
+          elseif ($behavior instanceof FinderPluginInterface) {
             // Legacy "FinderPlugin".
             $api = new LoadClassInjectedAPI($class);
             if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1), $dir)) {
+              return TRUE;
+            }
+          }
+          elseif ($behavior instanceof xautoload_FinderPlugin_Interface) {
+            // Legacy "FinderPlugin".
+            $api = new LoadClassInjectedAPI($class);
+            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1))) {
               return TRUE;
             }
           }
@@ -219,9 +227,15 @@ class GenericPrefixMap {
               return TRUE;
             }
           }
+          elseif ($behavior instanceof FinderPluginInterface) {
+            // New-style "FinderPlugin".
+            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1), $dir)) {
+              return TRUE;
+            }
+          }
           elseif ($behavior instanceof xautoload_FinderPlugin_Interface) {
             // Legacy "FinderPlugin".
-            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1), $dir)) {
+            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1))) {
               return TRUE;
             }
           }

@@ -3,7 +3,7 @@
 namespace Drupal\xautoload\Adapter;
 
 use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
-use xautoload_FinderPlugin_Interface;
+use Drupal\xautoload\DirectoryBehavior\DirectoryBehaviorInterface;
 use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
 use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionNamespaceFinderPlugin;
 use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionUnderscoreFinderPlugin;
@@ -25,12 +25,12 @@ class DrupalExtensionAdapter {
   protected $finder;
 
   /**
-   * @var xautoload_FinderPlugin_Interface[]
+   * @var DirectoryBehaviorInterface[]
    */
   protected $namespaceBehaviors = array();
 
   /**
-   * @var xautoload_FinderPlugin_Interface[]
+   * @var DirectoryBehaviorInterface[]
    */
   protected $prefixBehaviors = array();
 
