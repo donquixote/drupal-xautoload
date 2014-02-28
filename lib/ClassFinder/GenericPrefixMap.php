@@ -170,11 +170,13 @@ class GenericPrefixMap {
 
       // Continue with parent fragment.
       if (FALSE === $pos) {
-        return;
+        return NULL;
       }
 
       $pos = strrpos($logical_base_path, DIRECTORY_SEPARATOR, -2);
     }
+
+    return NULL;
   }
 
   /**
@@ -228,10 +230,12 @@ class GenericPrefixMap {
 
       // Continue with parent fragment.
       if (FALSE === $pos) {
-        return;
+        return NULL;
       }
 
       $pos = strrpos($logical_base_path, DIRECTORY_SEPARATOR, -2);
     }
+
+    return NULL;
   }
 }
