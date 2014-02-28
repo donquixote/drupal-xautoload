@@ -132,11 +132,9 @@ class GenericPrefixMap {
   function loadClass($class, $logical_path, $lastpos) {
     $pos = $lastpos;
     while (TRUE) {
-      $logical_base_path = (FALSE === $pos) ? '' : substr(
-        $logical_path,
-        0,
-        $pos + 1
-      );
+      $logical_base_path = (FALSE === $pos)
+        ? ''
+        : substr($logical_path, 0, $pos + 1);
 
       if (isset($this->paths[$logical_base_path])) {
         foreach ($this->paths[$logical_base_path] as $dir => $behavior) {
@@ -154,8 +152,7 @@ class GenericPrefixMap {
               $file = $dir
                 . substr($logical_path, $pos + 1, $lastpos - $pos)
                 . str_replace('_', '/', substr($logical_path, $lastpos + 1))
-            )
-            ) {
+            )) {
               require $file;
 
               return TRUE;
@@ -164,13 +161,7 @@ class GenericPrefixMap {
           elseif ($behavior instanceof xautoload_FinderPlugin_Interface) {
             // Legacy "FinderPlugin".
             $api = new LoadClassInjectedAPI($class);
-            if ($behavior->findFile(
-              $api,
-              $logical_base_path,
-              substr($logical_path, $pos + 1),
-              $dir
-            )
-            ) {
+            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1), $dir)) {
               return TRUE;
             }
           }
@@ -204,11 +195,9 @@ class GenericPrefixMap {
   function apiFindFile($api, $logical_path, $lastpos) {
     $pos = $lastpos;
     while (TRUE) {
-      $logical_base_path = (FALSE === $pos) ? '' : substr(
-        $logical_path,
-        0,
-        $pos + 1
-      );
+      $logical_base_path = (FALSE === $pos)
+        ? ''
+        : substr($logical_path, 0, $pos + 1);
 
       if (isset($this->paths[$logical_base_path])) {
         foreach ($this->paths[$logical_base_path] as $dir => $behavior) {
@@ -224,20 +213,13 @@ class GenericPrefixMap {
               $dir
               . substr($logical_path, $pos + 1, $lastpos - $pos)
               . str_replace('_', '/', substr($logical_path, $lastpos + 1))
-            )
-            ) {
+            )) {
               return TRUE;
             }
           }
           elseif ($behavior instanceof xautoload_FinderPlugin_Interface) {
             // Legacy "FinderPlugin".
-            if ($behavior->findFile(
-              $api,
-              $logical_base_path,
-              substr($logical_path, $pos + 1),
-              $dir
-            )
-            ) {
+            if ($behavior->findFile($api, $logical_base_path, substr($logical_path, $pos + 1), $dir)) {
               return TRUE;
             }
           }

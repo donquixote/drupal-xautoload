@@ -120,11 +120,7 @@ class DrupalExtensionAdapter {
         continue;
       }
       $namespace_map['Drupal/' . $name . '/'][$name] = $this->namespaceBehaviors[$type];
-      $prefix_map[str_replace(
-        '_',
-        '/',
-        $name
-      ) . '/'][$name] = $this->prefixBehaviors[$type];
+      $prefix_map[str_replace('_', '/', $name) . '/'][$name] = $this->prefixBehaviors[$type];
       $this->registered[$name] = TRUE;
     }
     $this->namespaceMap->registerDeepPaths($namespace_map);
