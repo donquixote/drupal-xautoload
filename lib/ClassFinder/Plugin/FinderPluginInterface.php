@@ -52,6 +52,14 @@ interface FinderPluginInterface extends xautoload_FinderPlugin_Interface {
    * @return bool|null
    *   TRUE, if the file was found.
    *   FALSE, otherwise.
+   *
+   * NOTE:
+   *   The signature of this method has changed since the legacy base interface,
+   *   with a new optional parameter being added.
+   *   Due to a bug in PHP 5.3.0 - 5.3.8, redeclaring the method with the
+   *   modified signature would result in a fatal error in these PHP versions.
+   *   This is why the method is commented out.
+   *   The additional optional parameter can still be added in implementations.
    */
-  function findFile($api, $path_fragment, $path_suffix, $id = NULL);
+  # function findFile($api, $path_fragment, $path_suffix, $id = NULL);
 }
