@@ -49,7 +49,7 @@ interface FinderPluginInterface extends xautoload_FinderPlugin_Interface {
    *   Id under which the plugin was registered.
    *   This may be a numeric id, or a string key.
    *
-   * @return bool|NULL
+   * @return bool|null
    *   TRUE, if the file was found.
    *   FALSE, otherwise.
    */
