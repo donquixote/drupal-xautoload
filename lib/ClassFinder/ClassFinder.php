@@ -325,7 +325,7 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       $behavior = $this->defaultBehavior;
     }
     $logical_base_path = Util::namespaceLogicalPath($namespace);
-    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
+    $deep_path = strlen($path) ? $path . '/' : '';
     $this->namespaceMap->registerDeepPath(
       $logical_base_path,
       $deep_path,
@@ -357,7 +357,7 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       $behavior = $this->defaultBehavior;
     }
     $namespace_path_fragment = Util::namespaceLogicalPath($namespace);
-    $deep_path = strlen($path) ? $path . DIRECTORY_SEPARATOR : '';
+    $deep_path = strlen($path) ? $path . '/' : '';
     $this->namespaceMap->registerDeepPath(
       $namespace_path_fragment,
       $deep_path,
@@ -398,7 +398,7 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     }
 
     // Build the "logical path" based on PEAR replacement rules.
-    $pear_logical_path = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+    $pear_logical_path = str_replace('_', '/', $class) . '.php';
 
     // Clean up surplus '/' resulting from duplicate underscores, or an
     // underscore at the beginning of the class.
@@ -407,7 +407,7 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     }
 
     // Check if the class has any underscore.
-    $pos = strrpos($pear_logical_path, DIRECTORY_SEPARATOR);
+    $pos = strrpos($pear_logical_path, '/');
 
     return $this->prefixMap->loadClass($class, $pear_logical_path, $pos);
   }
@@ -441,7 +441,7 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     }
 
     // Build the "logical path" based on PEAR replacement rules.
-    $pear_logical_path = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+    $pear_logical_path = str_replace('_', '/', $class) . '.php';
 
     // Clean up surplus '/' resulting from duplicate underscores, or an
     // underscore at the beginning of the class.
@@ -450,7 +450,7 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     }
 
     // Check if the class has any underscore.
-    $pos = strrpos($pear_logical_path, DIRECTORY_SEPARATOR);
+    $pos = strrpos($pear_logical_path, '/');
 
     return $this->prefixMap->apiFindFile($api, $pear_logical_path, $pos);
   }

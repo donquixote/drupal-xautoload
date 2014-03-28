@@ -118,7 +118,7 @@ class Util {
    *   Prefix, without trailing underscore.
    *
    * @return string
-   *   Path fragment representing the prefix, with trailing DIRECTORY_SEPARATOR.
+   *   Path fragment representing the prefix, with trailing '/'.
    */
   static function prefixLogicalPath($prefix) {
     if (!strlen($prefix)) {
@@ -126,7 +126,7 @@ class Util {
     }
     $pear_logical_path = str_replace(
       '_',
-      DIRECTORY_SEPARATOR,
+      '/',
       rtrim($prefix, '_') . '_'
     );
     // Clean up surplus '/' resulting from duplicate underscores, or an
@@ -145,12 +145,12 @@ class Util {
    *   Namespace without trailing namespace separator.
    *
    * @return string
-   *   Path fragment representing the namespace, with trailing DIRECTORY_SEPARATOR.
+   *   Path fragment representing the namespace, with trailing '/'.
    */
   static function namespaceLogicalPath($namespace) {
     return
       strlen($namespace)
-        ? str_replace('\\', DIRECTORY_SEPARATOR, rtrim($namespace, '\\') . '\\')
+        ? str_replace('\\', '/', rtrim($namespace, '\\') . '\\')
         : '';
   }
 
@@ -169,15 +169,15 @@ class Util {
       // Use the PHP 5.3.1+ way of doing this.
       return stream_resolve_include_path($file);
     }
-    elseif ($file{0} === DIRECTORY_SEPARATOR) {
+    elseif ($file{0} === '/') {
       // That's an absolute path already.
       return file_exists($file) ? $file : FALSE;
     }
     else {
       // Manually loop all candidate paths.
       foreach (explode(PATH_SEPARATOR, get_include_path()) as $base_dir) {
-        if (file_exists($base_dir . DIRECTORY_SEPARATOR . $file)) {
-          return $base_dir . DIRECTORY_SEPARATOR . $file;
+        if (file_exists($base_dir . '/' . $file)) {
+          return $base_dir . '/' . $file;
         }
       }
 

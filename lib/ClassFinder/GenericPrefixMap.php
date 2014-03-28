@@ -64,7 +64,7 @@ class GenericPrefixMap {
    *
    * @param string $logical_base_path
    *   The would-be namespace path relative to PSR-0 root.
-   *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
+   *   That is, the namespace with '\\' replaced by '/'.
    * @param string $deep_path
    *   The filesystem location of the (PSR-0) subfolder for the given namespace.
    * @param DirectoryBehaviorInterface $behavior
@@ -77,7 +77,7 @@ class GenericPrefixMap {
   /**
    * @param string $logical_base_path
    *   The would-be namespace path relative to PSR-0 root.
-   *   That is, the namespace with '\\' replaced by DIRECTORY_SEPARATOR.
+   *   That is, the namespace with '\\' replaced by '/'.
    * @param string $deep_path
    *   The filesystem location of the (PSR-0) subfolder for the given namespace.
    * @param DirectoryBehaviorInterface $behavior
@@ -173,7 +173,7 @@ class GenericPrefixMap {
         return NULL;
       }
 
-      $pos = strrpos($logical_base_path, DIRECTORY_SEPARATOR, -2);
+      $pos = strrpos($logical_base_path, '/', -2);
     }
 
     return NULL;
@@ -233,7 +233,7 @@ class GenericPrefixMap {
         return NULL;
       }
 
-      $pos = strrpos($logical_base_path, DIRECTORY_SEPARATOR, -2);
+      $pos = strrpos($logical_base_path, '/', -2);
     }
 
     return NULL;

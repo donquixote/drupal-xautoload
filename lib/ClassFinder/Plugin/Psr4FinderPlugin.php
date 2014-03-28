@@ -13,7 +13,7 @@ class Psr4FinderPlugin implements FinderPluginInterface {
    *   have no more suggestions.
    * @param string $logical_base_path
    *   The key that this plugin was registered with.
-   *   With trailing DIRECTORY_SEPARATOR.
+   *   With trailing '/'.
    * @param string $relative_path
    *   Second part of the canonical path, ending with '.php'.
    * @param int|string $base_dir

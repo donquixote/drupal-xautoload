@@ -42,7 +42,7 @@ interface FinderPluginInterface extends xautoload_FinderPlugin_Interface {
    *   have no more suggestions.
    * @param string $path_fragment
    *   The key that this plugin was registered with.
-   *   With trailing DIRECTORY_SEPARATOR.
+   *   With trailing '/'.
    * @param string $path_suffix
    *   Second part of the canonical path, ending with '.php'.
    * @param int|string $id
