@@ -61,8 +61,12 @@ function xautoload($key = 'main') {
 // -----------------------------------------------------------------------------
 
 /**
- * Create and register the xautoload class loader.
- * Register the xautoload prefix, but don't register any Drupal-specific stuff yet.
+ * Creates and registers the xautoload class loader.
+ *
+ * Registers the xautoload_ prefix and the Drupal\xautoload\\ namespace, but
+ * does not register any other Drupal-specific stuff yet. This is because this
+ * might be called from settings.php, while some parts of Drupal are not fully
+ * initialized yet.
  */
 function _xautoload_register() {
 
@@ -90,7 +94,7 @@ function _xautoload_register() {
   // Register the 'Drupal\xautoload\\' namespace.
   $finder->addPsr4('Drupal\xautoload\\', XAUTOLOAD_SRC_DIR . '/');
 
-  // Register the "xautoload_" prefix.
+  // Register the "xautoload_" prefix for legacy classes.
   $finder->getPrefixMap()->registerDeepPath(
     'xautoload/',
     __DIR__ . '/legacy/lib/',
