@@ -6,7 +6,7 @@ require_once dirname(__DIR__) . '/xautoload.early.lib.inc';
 
 _xautoload_register();
 
-xautoload()->finder->addPsr4('Drupal\xautoload\Tests\\', __DIR__ . '/lib/');
+xautoload()->finder->addPsr4('Drupal\xautoload\Tests\\', __DIR__ . '/src/');
 
 // Use a non-cached class map generator.
 xautoload()->getServiceContainer()->set('classMapGenerator', new ClassMapGenerator());
