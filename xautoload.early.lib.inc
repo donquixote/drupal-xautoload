@@ -10,6 +10,7 @@ use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
 use Drupal\xautoload\Main;
 
 define('XAUTOLOAD_LIB_DIR', dirname(__FILE__) . '/lib');
+define('XAUTOLOAD_SRC_DIR', dirname(__FILE__) . '/src');
 
 
 // Public API functions.
@@ -87,7 +88,7 @@ function _xautoload_register() {
   $finder->register();
 
   // Register the 'Drupal\xautoload\\' namespace.
-  $finder->addPsr4('Drupal\xautoload\\', XAUTOLOAD_LIB_DIR . '/');
+  $finder->addPsr4('Drupal\xautoload\\', XAUTOLOAD_SRC_DIR . '/');
 
   // Register the "xautoload_" prefix.
   $finder->getPrefixMap()->registerDeepPath(
@@ -113,7 +114,7 @@ function _xautoload_autoload_temp($name) {
 
   if ('Drupal\xautoload\\' === substr($name, 0, 17)) {
     // PSR-4 case
-    $file = XAUTOLOAD_LIB_DIR . '/' . str_replace('\\', '/', substr($name, 17)) . '.php';
+    $file = XAUTOLOAD_SRC_DIR . '/' . str_replace('\\', '/', substr($name, 17)) . '.php';
     require_once $file;
   }
   elseif ('xautoload_' === substr($name, 0, 10) && FALSE === strpos($name, '\\')) {
