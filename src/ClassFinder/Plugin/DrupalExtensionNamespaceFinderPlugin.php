@@ -204,5 +204,7 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
       // The class was found, so return TRUE.
       return TRUE;
     }
+
+    return FALSE;
   }
 }
