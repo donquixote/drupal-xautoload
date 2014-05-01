@@ -157,14 +157,13 @@ function _xautoload_register_drupal() {
   $services = xautoload()->getServiceContainer();
 
   $lazy = variable_get('xautoload_cache_lazy', FALSE);
-
-  $cache_types = variable_get('xautoload_cache_types', array());
-
   $decorated = $lazy
     ? $services->proxyFinder
     : $services->proxyFinder->getFinder()
   ;
 
+  // Activate a cache, if available and enabled.
+  $cache_types = variable_get('xautoload_cache_types', array());
   if (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
     $cached_loader = ApcClassLoader::create($decorated, $services->cacheManager);
   }
@@ -190,5 +189,5 @@ function _xautoload_register_drupal() {
 
   // Register prefixes and namespaces for enabled extensions.
   $operation = new RegisterActiveExtensionsOperation();
-  xautoload()->proxyFinder->onFinderInit($operation);
+  $services->proxyFinder->onFinderInit($operation);
 }
