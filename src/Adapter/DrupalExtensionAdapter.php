@@ -3,7 +3,6 @@
 namespace Drupal\xautoload\Adapter;
 
 use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
-use xautoload_FinderPlugin_Interface;
 use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
 use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionNamespaceFinderPlugin;
 use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionUnderscoreFinderPlugin;
