@@ -11,7 +11,7 @@ use Drupal\xautoload\Adapter\ClassFinderAdapter;
  * stuff.
  *
  * Most of the methods here are deprecated. You should use the methods inherited
- * from xautoload_Adapter_ClassFinderAdapter instead.
+ * from the base class, LocalDirectoryAdapter, instead.
  */
 class xautoload_InjectedAPI_hookXautoload extends LocalDirectoryAdapter {
 
