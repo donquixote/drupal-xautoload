@@ -133,21 +133,30 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
     $nspath = 'Drupal/' . $extension_name . '/';
     $testpath = $nspath . 'Tests/';
     $uspath = $extension_name . '/';
-    $lib = dirname($extension_file) . '/lib/';
-    $lib_psr0 = $lib . 'Drupal/' . $extension_name . '/';
+    $extension_dir = dirname($extension_file);
+    $src = $extension_dir . '/src/';
+    $lib_psr0 = $extension_dir . '/lib/Drupal/' . $extension_name . '/';
     $is_test_class = (0 === strpos($relative_path, 'Tests/'));
 
     // Try PSR-4.
-    if (FALSE && $api->guessPath($lib . $relative_path)) {
+    if ($api->guessPath($src . $relative_path)) {
       if ($is_test_class) {
-        $this->namespaceMap->registerDeepPath($testpath, $lib . 'Tests/', $this->defaultBehavior);
+        // Register PSR-0 directory for "Drupal\\$modulename\\Tests\\"
+        // This generally happens only once per module, because for subsequent
+        // test classes the class will be found before this plugin is triggered.
+        // However, for class_exists() with nonexistent test files, this line
+        // will occur more than once.
+        $this->namespaceMap->registerDeepPath($testpath, $src . 'Tests/', $this->defaultBehavior);
         // We found the class, but it is a test class, so it does not tell us
         // anything about whether non-test classes are in PSR-0 or PSR-4.
         return TRUE;
       }
-      // Register PSR-4.
-      $this->namespaceMap->registerDeepPath($nspath, $lib, $this->defaultBehavior);
-      // Unregister the lazy plugins.
+
+      // Register PSR-4 directory for "Drupal\\$modulename\\".
+      $this->namespaceMap->registerDeepPath($nspath, $src, $this->defaultBehavior);
+
+      // Unregister the lazy plugins, including this one, for
+      // "Drupal\\$modulename\\" and for $modulename . '_'.
       $this->namespaceMap->unregisterDeepPath($nspath, $extension_name);
       $this->prefixMap->unregisterDeepPath($uspath, $extension_name);
 
@@ -197,9 +206,9 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
       // Test classes in PSR-0 are already covered by the PSR-0 plugin we just
       // registered. But test classes in PSR-4 would slip through. So we check
       // if a separate behavior needs to be registered for those.
-      if (is_dir($lib . 'Tests/')) {
-        # $this->namespaceMap->registerDeepPath($testpath, $lib . 'Tests/', $this->psr0Behavior);
-      }
+      # if (is_dir($src . 'Tests/')) {
+      #   $this->namespaceMap->registerDeepPath($testpath, $src . 'Tests/', $this->psr0Behavior);
+      # }
 
       // The class was found, so return TRUE.
       return TRUE;
