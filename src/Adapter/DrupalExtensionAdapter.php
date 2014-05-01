@@ -149,16 +149,8 @@ class DrupalExtensionAdapter {
       // The extension has already been processed.
       return;
     }
-    $this->namespaceMap->registerDeepPath(
-      'Drupal/' . $name . '/',
-      $name,
-      $this->namespaceBehaviors[$type]
-    );
-    $this->prefixMap->registerDeepPath(
-      str_replace('_', '/', $name) . '/',
-      $name,
-      $this->prefixBehaviors[$type]
-    );
+    $this->namespaceMap->registerDeepPath('Drupal/' . $name . '/', $name, $this->namespaceBehaviors[$type]);
+    $this->prefixMap->registerDeepPath(str_replace('_', '/', $name) . '/', $name, $this->prefixBehaviors[$type]);
     $this->registered[$name] = TRUE;
   }
 
@@ -182,29 +174,17 @@ class DrupalExtensionAdapter {
       }
       // Unregister the lazy plugins.
       $this->namespaceMap->unregisterDeepPath('Drupal/' . $name . '/', $name);
-      $this->prefixMap->unregisterDeepPath(
-        str_replace('_', '/', $name) . '/',
-        $name
-      );
+      $this->prefixMap->unregisterDeepPath(str_replace('_', '/', $name) . '/', $name);
     }
+
     $dir = strlen($subdir)
       ? $extension_dir . '/' . trim($subdir, '/') . '/'
       : $extension_dir . '/';
-    $this->namespaceMap->registerDeepPath(
-      'Drupal/' . $name . '/',
-      $dir,
-      $this->defaultBehavior
-    );
+    $this->namespaceMap->registerDeepPath('Drupal/' . $name . '/', $dir, $this->defaultBehavior);
+
     // Re-add the PSR-0 test directory, for consistency's sake.
-    if (is_dir(
-      $psr0_tests_dir = $extension_dir . '/lib/Drupal/' . $name . '/Tests'
-    )
-    ) {
-      $this->namespaceMap->registerDeepPath(
-        'Drupal/' . $name . '/Tests/',
-        $psr0_tests_dir,
-        $this->defaultBehavior
-      );
+    if (is_dir($psr0_tests_dir = $extension_dir . '/lib/Drupal/' . $name . '/Tests')) {
+      $this->namespaceMap->registerDeepPath('Drupal/' . $name . '/Tests/', $psr0_tests_dir, $this->defaultBehavior);
     }
   }
 }

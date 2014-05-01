@@ -63,11 +63,7 @@ class Main implements ServiceContainerInterface {
     $info = pathinfo($__FILE__);
     $name = $info['filename'];
     $dir = $info['dirname'];
-    $this->extensionRegistrationService->registerExtension(
-      $name,
-      'module',
-      $dir
-    );
+    $this->extensionRegistrationService->registerExtension($name, 'module', $dir);
   }
 
   /**
@@ -103,11 +99,7 @@ class Main implements ServiceContainerInterface {
   function registerModulePsr4($__FILE__, $subdir) {
     $info = pathinfo($__FILE__);
     $name = $info['filename'];
-    $this->services->extensionRegistrationService->registerExtensionPsr4(
-      $name,
-      $info['dirname'],
-      $subdir
-    );
+    $this->services->extensionRegistrationService->registerExtensionPsr4($name, $info['dirname'], $subdir);
   }
 
   /**

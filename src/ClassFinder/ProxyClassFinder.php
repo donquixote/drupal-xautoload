@@ -10,9 +10,7 @@ use Drupal\xautoload\FinderOperation\FinderOperationInterface;
  * A placeholder class finder. Used to postpone expensive operations until they
  * are actually needed.
  */
-class ProxyClassFinder
-  extends AbstractClassLoader
-  implements ClassFinderInterface {
+class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterface {
 
   /**
    * @var ExtendedClassFinderInterface
