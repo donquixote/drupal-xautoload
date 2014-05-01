@@ -138,7 +138,8 @@ function libraries_xautoload($api) {
 // -----------------------------------------------------------------------------
 
 /**
- * Register Drupal-related namespaces and prefixes in the xautoload loader.
+ * Registers Drupal-related namespaces and prefixes in the xautoload loader, and
+ * activates the APC (or similar) cache, if enabled.
  */
 function _xautoload_register_drupal() {
 

@@ -25,32 +25,43 @@ class DrupalExtensionAdapter {
   protected $finder;
 
   /**
-   * @var xautoload_FinderPlugin_Interface[]
+   * One finder plugin for each extension type ('module', 'theme').
+   *
+   * @var DrupalExtensionNamespaceFinderPlugin[]
    */
   protected $namespaceBehaviors = array();
 
   /**
-   * @var xautoload_FinderPlugin_Interface[]
+   * One finder plugin for each extension type ('module', 'theme').
+   *
+   * @var DrupalExtensionUnderscoreFinderPlugin[]
    */
   protected $prefixBehaviors = array();
 
   /**
+   * The namespace map used in the class loader.
+   *
    * @var \Drupal\xautoload\ClassFinder\GenericPrefixMap
    */
   protected $namespaceMap;
 
   /**
+   * The prefix map used in the class loader.
+   *
    * @var \Drupal\xautoload\ClassFinder\GenericPrefixMap
    */
   protected $prefixMap;
 
   /**
+   * Which modules have already been processed.
+   *
    * @var bool[]
-   *   Which modules have already been processed.
    */
   protected $registered = array();
 
   /**
+   * Directory behavior for PSR-4
+   *
    * @var DefaultDirectoryBehavior
    */
   protected $defaultBehavior;

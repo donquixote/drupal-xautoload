@@ -38,21 +38,29 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
   protected $type;
 
   /**
+   * Namespace map used in the class finder for PSR-0/4-like mappings.
+   *
    * @var GenericPrefixMap
    */
   protected $namespaceMap;
 
   /**
+   * Prefix map used in the class finder for PEAR-like mappings.
+   *
    * @var GenericPrefixMap
    */
   protected $prefixMap;
 
   /**
+   * Directory behavior for PSR-4.
+   *
    * @var DefaultDirectoryBehavior
    */
   protected $defaultBehavior;
 
   /**
+   * Directory behavior with the special underscore handling for PSR-0.
+   *
    * @var Psr0DirectoryBehavior
    */
   protected $psr0Behavior;
@@ -79,7 +87,40 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Looks up a class starting with "Drupal\$extension_name\\".
+   *
+   * This plugin method will be called for every class beginning with
+   * "Drupal\\$extension_name\\", as long as the plugin is registered for
+   * $logical_base_path = 'Drupal/$extension_name/'.
+   *
+   * A similar plugin will is registered along with this one for the PEAR-FLAT
+   * pattern, called for every class beginning with $modulename . '_'.
+   *
+   * The plugin will eventually unregister itself and its cousin, once it has
+   * - determined the correct path for the module, and
+   * - determined that the module is using either PSR-0 or PSR-4.
+   *   It does that by including the file candidate for PSR-0 and/or PSR-4 and
+   *   checking whether the class is now defined.
+   *
+   * The plugin will instead register a direct
+   *
+   * @param \Drupal\xautoload\ClassFinder\InjectedApi\InjectedApiInterface $api
+   *   An object with methods like suggestFile() and guessFile().
+   * @param string $logical_base_path
+   *   The logical base path determined from the registered namespace.
+   *   E.g. 'Drupal/menupoly/'.
+   * @param string $relative_path
+   *   Remaining part of the logical path following $logical_base_path.
+   *   E.g. 'FooNamespace/BarClass.php'.
+   * @param string|null $extension_name
+   *   Second key that the plugin was registered with. Usually this would be the
+   *   physical base directory where we prepend the relative path to get the
+   *   file path. But in this case it is simply the extensions name.
+   *   E.g. 'menupoly'.
+   *
+   * @return bool|null
+   *   TRUE, if the file was found.
+   *   FALSE or NULL, otherwise.
    */
   function findFile($api, $logical_base_path, $relative_path, $extension_name = NULL) {
 
@@ -109,6 +150,7 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
       // Unregister the lazy plugins.
       $this->namespaceMap->unregisterDeepPath($nspath, $extension_name);
       $this->prefixMap->unregisterDeepPath($uspath, $extension_name);
+
       // Test classes in PSR-4 are already covered by the PSR-4 plugin we just
       // registered. But test classes in PSR-0 would slip through. So we check
       // if a separate behavior needs to be registered for those.
@@ -144,11 +186,14 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
         // anything about whether non-test classes are in PSR-0 or PSR-4.
         return TRUE;
       }
-      // Unregister the lazy plugins.
+
+      // Unregister the lazy plugins, including this one.
       $this->namespaceMap->unregisterDeepPath($nspath, $extension_name);
       $this->prefixMap->unregisterDeepPath($uspath, $extension_name);
+
       // Register PSR-0 for regular namespaced classes.
       $this->namespaceMap->registerDeepPath($nspath, $lib_psr0, $this->psr0Behavior);
+
       // Test classes in PSR-0 are already covered by the PSR-0 plugin we just
       // registered. But test classes in PSR-4 would slip through. So we check
       // if a separate behavior needs to be registered for those.

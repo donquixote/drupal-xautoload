@@ -43,9 +43,9 @@ interface xautoload_FinderPlugin_Interface extends DirectoryBehaviorInterface {
    * @param string $path_suffix
    *   Second part of the canonical path, ending with '.php'.
    *
-   * @return bool|NULL
+   * @return bool|null
    *   TRUE, if the file was found.
-   *   FALSE, otherwise.
+   *   FALSE or NULL, otherwise.
    */
   function findFile($api, $path_fragment, $path_suffix);
 }
