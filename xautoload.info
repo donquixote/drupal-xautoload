@@ -2,3 +2,6 @@ name = "X Autoload"
 description = "Autoload based on PSR-0, PSR-4 and a custom PHP 5.2 compatibility mode."
 core = 7.x
 php = 5.3
+
+
+version = 7.x-4.1

@@ -216,4 +216,5 @@ class DrupalExtensionNamespaceFinderPlugin implements FinderPluginInterface {
 
     return FALSE;
   }
+
 }

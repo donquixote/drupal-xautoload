@@ -12,8 +12,15 @@ use Drupal\xautoload\Discovery\CachedClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\DrupalSystem\DrupalSystem;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
+use Drupal\xautoload\FinderOperation\RegisterDrupalExtensionsOperation;
+use Drupal\xautoload\LibrariesIntegration;
 use Drupal\xautoload\Main;
+use Drupal\xautoload\Tests\Mock\LibrariesInfo;
 
+/**
+ * @see ServiceContainerInterface
+ * @see ServiceContainer
+ */
 class ServiceFactory {
 
   /**
@@ -67,7 +74,7 @@ class ServiceFactory {
    * @return CacheManager
    */
   function cacheManager($services) {
-    return CacheManager::create();
+    return CacheManager::create($services->system);
   }
 
   /**
@@ -123,6 +130,24 @@ class ServiceFactory {
    */
   function system($services) {
     return new DrupalSystem();
+  }
+
+  /**
+   * @param ServiceContainer $services
+   *
+   * @return \Drupal\xautoload\FinderOperation\RegisterDrupalExtensionsOperation
+   */
+  function extensionOperation($services) {
+    return new RegisterDrupalExtensionsOperation($services->system);
+  }
+
+  /**
+   * @param ServiceContainer $services
+   *
+   * @return \Drupal\xautoload\LibrariesIntegration
+   */
+  function librariesIntegration($services) {
+    return new LibrariesIntegration($services->system);
   }
 }
 

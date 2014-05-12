@@ -2,6 +2,7 @@
 
 namespace Drupal\xautoload\CacheManager;
 
+use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 use Drupal\xautoload\Util;
 
 class CacheManager {
@@ -12,25 +13,34 @@ class CacheManager {
   protected $prefix;
 
   /**
+   * @var \Drupal\xautoload\DrupalSystem\DrupalSystemInterface
+   */
+  protected $system;
+
+  /**
    * @var CacheManagerObserverInterface[]
    */
   protected $observers = array();
 
   /**
-   * @param $prefix
+   * @param string $prefix
+   * @param \Drupal\xautoload\DrupalSystem\DrupalSystemInterface $system
    */
-  protected function __construct($prefix) {
+  protected function __construct($prefix, DrupalSystemInterface $system) {
     $this->prefix = $prefix;
+    $this->system = $system;
   }
 
   /**
    * This method has side effects, so it is not the constructor.
    *
+   * @param \Drupal\xautoload\DrupalSystem\DrupalSystemInterface $system
+   *
    * @return CacheManager
    */
-  static function create() {
-    $prefix = variable_get('xautoload_cache_prefix', NULL);
-    $manager = new self($prefix);
+  static function create(DrupalSystemInterface $system) {
+    $prefix = $system->variableGet('xautoload_cache_prefix', NULL);
+    $manager = new self($prefix, $system);
     if (empty($prefix)) {
       $manager->renewCachePrefix();
     }
@@ -50,7 +60,7 @@ class CacheManager {
    */
   function renewCachePrefix() {
     $this->prefix = Util::randomString();
-    variable_set('xautoload_cache_prefix', $this->prefix);
+    $this->system->variableSet('xautoload_cache_prefix', $this->prefix);
     foreach ($this->observers as $observer) {
       $observer->setCachePrefix($this->prefix);
     }

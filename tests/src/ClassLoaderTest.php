@@ -7,7 +7,7 @@ use Drupal\xautoload\DirectoryBehavior\Psr0DirectoryBehavior;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
 
-class ClassLoaderTest extends \PHPUnit_Framework_TestCase {
+abstract class ClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @var VirtualFilesystem

@@ -227,6 +227,8 @@ class xautoload_InjectedAPI_hookXautoload extends LocalDirectoryAdapter {
   /**
    * Explicitly set the base for relative paths.
    *
+   * Alias for LocalDirectoryAdapter::setLocalDirectory()
+   *
    * @param string $dir
    *   New relative base path.
    */

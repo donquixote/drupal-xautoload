@@ -69,9 +69,28 @@ class VirtualFilesystem {
   function addClass($file, $class) {
     $this->addKnownFile($file);
     if (self::FILE !== ($existing = $this->knownPaths[$file])) {
-      throw new \Exception("A class '$existing' already exists at '$file'. Cannot overwrite with class '$class'.");
+      throw new \Exception("A non-empty file already exists at '$file'. Cannot overwrite with class '$class'.");
     }
     $this->knownPaths[$file] = $class;
+  }
+
+  /**
+   * @param string $file
+   * @param string $php
+   *   File contents starting with '<?php'.
+   * @param bool $overwrite
+   *
+   * @throws \Exception
+   */
+  function addPhpFile($file, $php, $overwrite = FALSE) {
+    $this->addKnownFile($file);
+    if (!$overwrite && self::FILE !== ($existing = $this->knownPaths[$file])) {
+      throw new \Exception("A non-empty file already exists at '$file'. Cannot overwrite with PHP code.");
+    }
+    if (0 !== strpos($php, '<?php')) {
+      throw new \Exception("PHP files must begin with '<?php'.");
+    }
+    $this->knownPaths[$file] = $php;
   }
 
   /**
@@ -210,6 +229,21 @@ class VirtualFilesystem {
 Drupal\\xautoload\\Tests\\Filesystem\\VirtualFilesystem::reportFileIncluded($instance_key_export, $path_export);
 
 EOT;
+    }
+
+    if (0 === strpos($this->knownPaths[$path], '<?php')) {
+      // PHP file.
+      $php = substr($this->knownPaths[$path], 5);
+      return <<<EOT
+<?php
+Drupal\\xautoload\\Tests\\Filesystem\\VirtualFilesystem::reportFileIncluded($instance_key_export, $path_export);
+$php
+EOT;
+    }
+
+    if (preg_match('#\s#', $this->knownPaths[$path])) {
+      // File with arbitrary contents.
+      return $this->knownPaths[$path];
     }
 
     // PHP file with class definition.

@@ -93,23 +93,6 @@ class DrupalExtensionAdapter {
    * Register lazy plugins for enabled Drupal modules and themes, assuming that
    * we don't know yet whether they use PSR-0, PEAR-Flat, or none of these.
    *
-   * @param string[] $extension_names
-   *   Extension names.
-   */
-  function registerExtensionsByName($extension_names) {
-    $this->registerExtensions(
-      $this->system->getExtensionTypes($extension_names)
-    );
-  }
-
-  function registerActiveExtensions() {
-    $this->registerExtensions($this->system->getActiveExtensions());
-  }
-
-  /**
-   * Register lazy plugins for enabled Drupal modules and themes, assuming that
-   * we don't know yet whether they use PSR-0, PEAR-Flat, or none of these.
-   *
    * @param string[] $extensions
    *   An array where the keys are extension names, and the values are extension
    *   types like 'module' or 'theme'.
