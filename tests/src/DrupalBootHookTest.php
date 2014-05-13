@@ -28,6 +28,8 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
    * @return array[]
    */
   public function providerModuleEnable() {
+    $hookXautoloadEarly = FALSE;
+    $hookXautoloadLate = TRUE;
     $initialModuleVariations = array(array('system' => TRUE));
     foreach (array(
       'xautoload' => array(FALSE, TRUE),
@@ -39,24 +41,17 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
     $variations = array();
     foreach ($initialModuleVariations as $initialModuleVariation) {
       $expectedCalls = array();
-      $expectedCalls[] = array(
-        'function' => 'testmod_libraries_info',
-        'args' => array(),
-      );
-      $expectedCalls[] = array(
-        'function' => '_testmod_libraries_testlib_xautoload',
-        'args' => array(
-          '(xautoload_InjectedAPI_hookXautoload)',
-          'test://libraries/testlib',
-        ),
-      );
-      $expectedCalls[] = array(
-        'function' => 'testmod_xautoload',
-        'args' => array(
-          '(xautoload_InjectedAPI_hookXautoload)',
-          'test://modules/testmod',
-        ),
-      );
+
+      if ($hookXautoloadEarly) {
+        $expectedCalls[] = array(
+          'function' => 'testmod_xautoload',
+          'args' => array(
+            '(xautoload_InjectedAPI_hookXautoload)',
+            'test://modules/testmod',
+          ),
+        );
+      }
+
       if (NULL === $initialModuleVariation['testmod']) {
         $expectedCalls[] = array(
           'function' => 'testmod_schema',
@@ -71,6 +66,7 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
           'args' => array(),
         );
       }
+
       $expectedCalls[] = array(
         'function' => 'testmod_enable',
         'args' => array(),
@@ -85,6 +81,29 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
           '(array)'
         ),
       );
+
+      if ($hookXautoloadLate) {
+        $expectedCalls[] = array(
+          'function' => 'testmod_xautoload',
+          'args' => array(
+            '(xautoload_InjectedAPI_hookXautoload)',
+            'test://modules/testmod',
+          ),
+        );
+      }
+
+      $expectedCalls[] = array(
+        'function' => 'testmod_libraries_info',
+        'args' => array(),
+      );
+      $expectedCalls[] = array(
+        'function' => '_testmod_libraries_testlib_xautoload',
+        'args' => array(
+          '(xautoload_InjectedAPI_hookXautoload)',
+          'test://libraries/testlib',
+        ),
+      );
+
       $variations[] = array($initialModuleVariation, $expectedCalls);
     }
     return $variations;
@@ -126,6 +145,13 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
   protected function getExpectedCallsForNormalRequest() {
     $expectedCalls = array(
       array(
+        'function' => 'testmod_xautoload',
+        'args' => array(
+          '(xautoload_InjectedAPI_hookXautoload)',
+          'test://modules/testmod',
+        ),
+      ),
+      array(
         'function' => 'testmod_libraries_info',
         'args' => array(),
       ),
@@ -134,13 +160,6 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
         'args' => array(
           '(xautoload_InjectedAPI_hookXautoload)',
           'test://libraries/testlib',
-        ),
-      ),
-      array(
-        'function' => 'testmod_xautoload',
-        'args' => array(
-          '(xautoload_InjectedAPI_hookXautoload)',
-          'test://modules/testmod',
         ),
       ),
       array(

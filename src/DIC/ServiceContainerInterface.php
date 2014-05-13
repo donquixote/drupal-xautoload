@@ -9,8 +9,8 @@ use Drupal\xautoload\ClassFinder\ProxyClassFinder;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGeneratorInterface;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
-use Drupal\xautoload\FinderOperation\RegisterDrupalExtensionsOperation;
-use Drupal\xautoload\LibrariesIntegration;
+use Drupal\xautoload\Phases\DrupalPhaseControl;
+use Drupal\xautoload\Phases\ExtensionNamespaces;
 use Drupal\xautoload\Main;
 
 /**
@@ -24,9 +24,9 @@ use Drupal\xautoload\Main;
  * @property ExtendedClassFinderInterface $finder
  *   Alias for ->classFinder
  * @property DrupalSystemInterface $system
- * @property LibrariesIntegration $librariesIntegration
- * @property RegisterDrupalExtensionsOperation $extensionOperation
+ * @property DrupalPhaseControl $phaseControl
  * @property DrupalExtensionAdapter $extensionRegistrationService
+ * @property ExtensionNamespaces extensionNamespaces
  *
  * @see ServiceContainer
  * @see ServiceFactory

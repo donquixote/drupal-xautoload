@@ -70,7 +70,7 @@ abstract class AbstractDrupalBootTest extends \PHPUnit_Framework_TestCase {
     $this->callLog->assertCalls($this, $expectedCalls);
 
     // Now we want all classes to be available.
-    foreach ($this->exampleModules->getExampleClasses() as $module => $classes) {
+    foreach ($this->exampleModules->getExampleClasses() as $classes) {
       foreach ((array)$classes as $class) {
         $this->assertClassExists($class);
       }

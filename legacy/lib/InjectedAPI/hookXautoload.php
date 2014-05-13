@@ -21,9 +21,21 @@ class xautoload_InjectedAPI_hookXautoload extends LocalDirectoryAdapter {
   protected $finder;
 
   /**
+   * @param ExtendedClassFinderInterface $finder
+   *   The class finder object.
+   * @param string $localDirectory
+   *
+   * @return self
+   */
+  static function create($finder, $localDirectory) {
+    $adapter = ClassFinderAdapter::create($finder);
+    return new self($adapter, $localDirectory);
+  }
+
+  /**
    * @param ClassFinderAdapter $adapter
    *   The class finder object.
-   * @param string $localDirectory ;
+   * @param string $localDirectory
    */
   function __construct($adapter, $localDirectory) {
     parent::__construct($adapter, $localDirectory);

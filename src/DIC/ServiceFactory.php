@@ -12,10 +12,11 @@ use Drupal\xautoload\Discovery\CachedClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\DrupalSystem\DrupalSystem;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
-use Drupal\xautoload\FinderOperation\RegisterDrupalExtensionsOperation;
-use Drupal\xautoload\LibrariesIntegration;
+use Drupal\xautoload\Phases\DrupalPhaseControl;
+use Drupal\xautoload\Phases\ExtensionNamespaces;
+use Drupal\xautoload\Phases\HookXautoload;
+use Drupal\xautoload\Phases\LibrariesIntegration;
 use Drupal\xautoload\Main;
-use Drupal\xautoload\Tests\Mock\LibrariesInfo;
 
 /**
  * @see ServiceContainerInterface
@@ -90,7 +91,7 @@ class ServiceFactory {
    */
   function proxyFinder($services) {
     // The class finder is cheap to create, so it can use an identity proxy.
-    return new ProxyClassFinder($services->finder, $services->extensionRegistrationService);
+    return new ProxyClassFinder($services->finder);
   }
 
   /**
@@ -135,19 +136,24 @@ class ServiceFactory {
   /**
    * @param ServiceContainer $services
    *
-   * @return \Drupal\xautoload\FinderOperation\RegisterDrupalExtensionsOperation
+   * @return DrupalPhaseControl
    */
-  function extensionOperation($services) {
-    return new RegisterDrupalExtensionsOperation($services->system);
+  function phaseControl($services) {
+    $observers = array(
+      $services->extensionNamespaces,
+      new HookXautoload($services->system),
+      new LibrariesIntegration($services->system),
+    );
+    return new DrupalPhaseControl($services->system, $observers);
   }
 
   /**
    * @param ServiceContainer $services
    *
-   * @return \Drupal\xautoload\LibrariesIntegration
+   * @return ExtensionNamespaces
    */
-  function librariesIntegration($services) {
-    return new LibrariesIntegration($services->system);
+  function extensionNamespaces($services) {
+    return new ExtensionNamespaces($services->system);
   }
 }
 

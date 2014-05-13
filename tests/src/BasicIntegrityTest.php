@@ -6,7 +6,7 @@ namespace Drupal\xautoload\Tests;
 /**
  * A test class to verify that all class files work well across PHP versions.
  */
-abstract class BasicIntegrityTest extends \PHPUnit_Framework_TestCase {
+class BasicIntegrityTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * Tests that all classes in the lib/ folder can be included without conflict.

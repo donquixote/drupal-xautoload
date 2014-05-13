@@ -4,8 +4,6 @@
 namespace Drupal\xautoload\Tests\Mock;
 
 
-use Drupal\xautoload\Tests\Util\StaticCallLog;
-
 class ModuleImplements {
 
   /**

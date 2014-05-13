@@ -3,6 +3,7 @@
 
 namespace Drupal\xautoload\Adapter;
 
+use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\Util;
 use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
 use Drupal\xautoload\Discovery\ComposerDir;
@@ -38,6 +39,15 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
    * @var ClassMapGeneratorInterface
    */
   protected $classMapGenerator;
+
+  /**
+   * @param ExtendedClassFinderInterface $finder
+   *
+   * @return self
+   */
+  static function create($finder) {
+    return new self($finder, new ClassMapGenerator());
+  }
 
   /**
    * @param ExtendedClassFinderInterface $finder
@@ -259,6 +269,21 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
           $root_path,
           '/'
         ) . '/' . $logical_base_path) : $logical_base_path;
+      $this->prefixMap->registerDeepPath(
+        $logical_base_path,
+        $deep_path,
+        $this->defaultBehavior
+      );
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function addPearFlat($prefix, $paths) {
+    $logical_base_path = Util::prefixLogicalPath($prefix);
+    foreach ((array) $paths as $deep_path) {
+      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
       $this->prefixMap->registerDeepPath(
         $logical_base_path,
         $deep_path,

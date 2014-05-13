@@ -4,7 +4,7 @@ namespace Drupal\xautoload\Tests;
 
 use Drupal\xautoload\Discovery\WildcardFileFinder;
 
-abstract class DiscoveryTest extends \PHPUnit_Framework_TestCase {
+class DiscoveryTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * Test hook_registry_files_alter() wildcard replacement.

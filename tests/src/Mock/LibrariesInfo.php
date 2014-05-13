@@ -4,9 +4,6 @@
 namespace Drupal\xautoload\Tests\Mock;
 
 
-use Drupal\xautoload\Tests\Util\HackyLog;
-use Drupal\xautoload\Tests\Util\StaticCallLog;
-
 class LibrariesInfo {
 
   /**

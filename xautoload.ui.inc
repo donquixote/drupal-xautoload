@@ -4,7 +4,7 @@
  * Implements hook_form_FORM_ID_alter()
  * with FORM_ID = "system_performance_settings"
  */
-function xautoload_form_system_performance_settings_alter(&$form, $form_state) {
+function xautoload_form_system_performance_settings_alter(&$form) {
 
   $form['xautoload'] = array(
     '#type' => 'fieldset',

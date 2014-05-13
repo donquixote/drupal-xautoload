@@ -8,6 +8,7 @@ use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
 use Drupal\xautoload\DirectoryBehavior\Psr0DirectoryBehavior;
 use Drupal\xautoload\Util;
 
+
 class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInterface {
 
   /**
@@ -154,6 +155,23 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
           $root_path,
           '/'
         ) . '/' . $logical_base_path) : $logical_base_path;
+      $this->prefixMap->registerDeepPath(
+        $logical_base_path,
+        $deep_path,
+        $this->defaultBehavior
+      );
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function addPearFlat($prefix, $paths) {
+    $logical_base_path = Util::prefixLogicalPath($prefix);
+    foreach ((array) $paths as $deep_path) {
+      $deep_path = strlen($deep_path)
+        ? (rtrim($deep_path, '/') . '/')
+        : '';
       $this->prefixMap->registerDeepPath(
         $logical_base_path,
         $deep_path,

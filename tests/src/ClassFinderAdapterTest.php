@@ -5,7 +5,7 @@ namespace Drupal\xautoload\Tests;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
 
-abstract class ClassFinderAdapterTest extends \PHPUnit_Framework_TestCase {
+class ClassFinderAdapterTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @var VirtualFilesystem

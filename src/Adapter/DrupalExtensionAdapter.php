@@ -6,6 +6,7 @@ use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
 use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
 use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionNamespaceFinderPlugin;
 use Drupal\xautoload\ClassFinder\Plugin\DrupalExtensionUnderscoreFinderPlugin;
+use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 
 /**
  * Service that knows how to register module namespaces and prefixes into the
@@ -66,10 +67,10 @@ class DrupalExtensionAdapter {
   protected $defaultBehavior;
 
   /**
-   * @param \Drupal\xautoload\DrupalSystem\DrupalSystemInterface $system
+   * @param DrupalSystemInterface $system
    * @param ExtendedClassFinderInterface $finder
    */
-  function __construct($system, $finder) {
+  function __construct(DrupalSystemInterface $system, ExtendedClassFinderInterface $finder) {
     $this->system = $system;
     $this->finder = $finder;
     $this->namespaceMap = $finder->getNamespaceMap();

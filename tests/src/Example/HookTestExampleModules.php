@@ -103,7 +103,7 @@ function testmod_install() {
 
 function testmod_schema() {
   \\Drupal\\xautoload\\Tests\\Util\\StaticCallLog::addCall();
-  new \\Drupal\\testmod\\Foo();
+  # new \\Drupal\\testmod\\Foo();
 }
 
 EOT
