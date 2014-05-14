@@ -1,7 +1,8 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests\Mock;
+namespace Drupal\xautoload\Tests\VirtualDrupal;
+
 
 
 /**
@@ -312,5 +313,18 @@ class SystemTable {
     foreach ($this->systemTableData as $name => $record) {
       $record['bootstrap'] = empty($bootstrap_modules[$name]) ? 0 : 1;
     }
+  }
+
+  /**
+   * @param string $name
+   * @param int $weight
+   *
+   * @throws \Exception
+   */
+  public function moduleSetWeight($name, $weight) {
+    if (!isset($this->systemTableData[$name])) {
+      throw new \Exception("Unknown module '$name'.");
+    }
+    $this->systemTableData[$name]['weight'] = $weight;
   }
 } 

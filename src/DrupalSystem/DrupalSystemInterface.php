@@ -92,4 +92,12 @@ interface DrupalSystemInterface {
    * @return string|false
    */
   function librariesGetPath($name);
+
+  /**
+   * Called from xautoload_install() to set the module weight.
+   *
+   * @param int $weight
+   *   New module weight for xautoload.
+   */
+  public function installSetModuleWeight($weight);
 }

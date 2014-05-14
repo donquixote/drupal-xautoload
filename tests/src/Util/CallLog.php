@@ -35,6 +35,7 @@ class CallLog {
     if (array_values($expectedCalls) !== $expectedCalls) {
       throw new \InvalidArgumentException('$expectedCalls must be a numeric array with no keys missing.');
     }
+    $testCase->assertEquals($expectedCalls, $this->calls);
     for ($i = 0; TRUE; ++$i) {
       $actualCall = isset($this->calls[$i]) ? $this->calls[$i] : NULL;
       $expectedCall = isset($expectedCalls[$i]) ? $expectedCalls[$i] : NULL;

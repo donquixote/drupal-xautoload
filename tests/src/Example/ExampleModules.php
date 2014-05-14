@@ -4,7 +4,7 @@
 namespace Drupal\xautoload\Tests\Example;
 
 
-use Drupal\xautoload\Tests\AbstractDrupalBootTest;
+use Drupal\xautoload\Tests\DrupalBootTest\AbstractDrupalBootTest;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
 
 class ExampleModules extends AbstractExampleModules {
@@ -12,7 +12,7 @@ class ExampleModules extends AbstractExampleModules {
   /**
    * Sets up virtual class files for example modules.
    *
-   * @param AbstractDrupalBootTest $testCase
+   * @param \Drupal\xautoload\Tests\DrupalBootTest\AbstractDrupalBootTest $testCase
    * @param VirtualFilesystem $filesystem
    *
    * @throws \Exception

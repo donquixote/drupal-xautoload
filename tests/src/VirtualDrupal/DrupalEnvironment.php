@@ -1,8 +1,10 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests\Mock;
+namespace Drupal\xautoload\Tests\VirtualDrupal;
 
+
+use Drupal\xautoload\Tests\Mock\MockDrupalSystem;
 
 class DrupalEnvironment {
 
@@ -53,7 +55,7 @@ class DrupalEnvironment {
     $systemListReset = new SystemListReset($this->cache, $drupalStatic);
     $systemRebuildModuleData = new SystemRebuildModuleData($drupalStatic, $moduleBuildDependencies, $this->systemTable, $systemBuildModuleData, $systemListReset);
     $librariesInfo = new LibrariesInfo($drupalStatic, $hookSystem);
-    $this->mockDrupalSystem = new MockDrupalSystem($this->systemTable, $moduleList, $hookSystem, $drupalGetFilename, $librariesInfo);
+    $this->mockDrupalSystem = new MockDrupalSystem($this->systemTable, $moduleList, $hookSystem, $drupalGetFilename, $librariesInfo, $systemListReset);
     $drupalLoad = new DrupalLoad($drupalGetFilename);
     $this->drupalBoot = new DrupalBootstrap($drupalLoad, $hookSystem, $moduleList);
     $systemUpdateBootstrapStatus = new SystemUpdateBootstrapStatus($hookSystem, $this->systemTable, $systemListReset);

@@ -4,10 +4,10 @@
 namespace Drupal\xautoload\Tests\Example;
 
 
-use Drupal\xautoload\Tests\AbstractDrupalBootTest;
+use Drupal\xautoload\Tests\DrupalBootTest\AbstractDrupalBootTest;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
-use Drupal\xautoload\Tests\Mock\ExampleModulesInterface;
-use Drupal\xautoload\Tests\Mock\PureFunctions;
+use Drupal\xautoload\Tests\VirtualDrupal\ExampleModulesInterface;
+use Drupal\xautoload\Tests\VirtualDrupal\PureFunctions;
 
 abstract class AbstractExampleModules implements ExampleModulesInterface {
 
@@ -91,7 +91,7 @@ EOT;
   }
 
   /**
-   * @param \Drupal\xautoload\Tests\AbstractDrupalBootTest $testCase
+   * @param \Drupal\xautoload\Tests\DrupalBootTest\AbstractDrupalBootTest $testCase
    */
   public function assertLoadExampleClasses(AbstractDrupalBootTest $testCase) {
     foreach ($this->getExampleClasses() as $class) {

@@ -4,7 +4,7 @@
 namespace Drupal\xautoload\Tests\Example;
 
 
-use Drupal\xautoload\Tests\AbstractDrupalBootTest;
+use Drupal\xautoload\Tests\DrupalBootTest\AbstractDrupalBootTest;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
 
 /**
@@ -15,7 +15,7 @@ class HookTestExampleModules extends AbstractExampleModules {
   /**
    * Sets up virtual class files for example modules.
    *
-   * @param AbstractDrupalBootTest $testCase
+   * @param \Drupal\xautoload\Tests\DrupalBootTest\AbstractDrupalBootTest $testCase
    * @param VirtualFilesystem $filesystem
    *
    * @throws \Exception
@@ -51,27 +51,31 @@ class HookTestExampleModules extends AbstractExampleModules {
 
 function testmod_init() {
   \\Drupal\\xautoload\\Tests\\Util\\StaticCallLog::addCall();
-  # new \\Drupal\\testmod\\Foo();
+  new \\Drupal\\testmod\\Foo();
+  new \\Acme\\TestLib\\Foo();
 }
 
 function testmod_modules_enabled() {
   \\Drupal\\xautoload\\Tests\\Util\\StaticCallLog::addCall();
   # new \\Drupal\\testmod\\Foo();
+  # new \\Acme\\TestLib\\Foo();
 }
 
 function testmod_watchdog() {
   \\Drupal\\xautoload\\Tests\\Util\\StaticCallLog::addCall();
   # new \\Drupal\\testmod\\Foo();
+  # new \\Acme\\TestLib\\Foo();
 }
 
 function testmod_xautoload(\$adapter) {
   \\Drupal\\xautoload\\Tests\\Util\\StaticCallLog::addCall();
   \$adapter->addPsr4('Drupal\\testmod\\\\', 'psr4');
+  new \\Drupal\\testmod\\Foo();
 }
 
 function testmod_libraries_info() {
   \\Drupal\\xautoload\\Tests\\Util\\StaticCallLog::addCall();
-  # new \\Drupal\\testmod\\Foo();
+  new \\Drupal\\testmod\\Foo();
   return array(
     'testlib' => array(
       'name' => 'Test library',

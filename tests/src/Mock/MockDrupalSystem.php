@@ -3,6 +3,13 @@
 namespace Drupal\xautoload\Tests\Mock;
 
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
+use Drupal\xautoload\Tests\VirtualDrupal\DrupalGetFilename;
+use Drupal\xautoload\Tests\VirtualDrupal\HookSystem;
+use Drupal\xautoload\Tests\VirtualDrupal\LibrariesInfo;
+use Drupal\xautoload\Tests\VirtualDrupal\ModuleList;
+use Drupal\xautoload\Tests\VirtualDrupal\PureFunctions;
+use Drupal\xautoload\Tests\VirtualDrupal\SystemListReset;
+use Drupal\xautoload\Tests\VirtualDrupal\SystemTable;
 
 class MockDrupalSystem implements DrupalSystemInterface {
 
@@ -37,24 +44,32 @@ class MockDrupalSystem implements DrupalSystemInterface {
   private $librariesInfo;
 
   /**
+   * @var SystemListReset
+   */
+  private $systemListReset;
+
+  /**
    * @param SystemTable $systemTable
    * @param ModuleList $moduleList
    * @param HookSystem $hookSystem
    * @param DrupalGetFilename $drupalGetFilename
    * @param LibrariesInfo $librariesInfo
+   * @param SystemListReset $systemListReset
    */
   function __construct(
     SystemTable $systemTable,
     ModuleList $moduleList,
     HookSystem $hookSystem,
     DrupalGetFilename $drupalGetFilename,
-    LibrariesInfo $librariesInfo
+    LibrariesInfo $librariesInfo,
+    SystemListReset $systemListReset
   ) {
     $this->systemTable = $systemTable;
     $this->moduleList = $moduleList;
     $this->hookSystem = $hookSystem;
     $this->drupalGetFilename = $drupalGetFilename;
     $this->librariesInfo = $librariesInfo;
+    $this->systemListReset = $systemListReset;
   }
 
   /**
@@ -219,5 +234,16 @@ class MockDrupalSystem implements DrupalSystemInterface {
    */
   function librariesGetPath($name) {
     return $this->librariesInfo->librariesGetPath($name);
+  }
+
+  /**
+   * Called from xautoload_install() to set the module weight.
+   *
+   * @param int $weight
+   *   New module weight for xautoload.
+   */
+  public function installSetModuleWeight($weight) {
+    $this->systemTable->moduleSetWeight('xautoload', $weight);
+    $this->systemListReset->systemListReset();
   }
 }

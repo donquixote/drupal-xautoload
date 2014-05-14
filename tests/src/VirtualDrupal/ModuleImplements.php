@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests\Mock;
+namespace Drupal\xautoload\Tests\VirtualDrupal;
 
 
 class ModuleImplements {
@@ -128,6 +128,11 @@ class ModuleImplements {
     $hook_info = $this->moduleHookInfo();
     $implementations = array();
     $list = $this->moduleList->moduleList(FALSE, FALSE, $sort);
+
+    if ('modules_enabled' === $hook) {
+      # HackyLog::logx($list);
+    }
+
     foreach ($list as $module) {
       $include_file = isset($hook_info[$hook]['group'])
         && module_load_include('inc', $module, $module . '.' . $hook_info[$hook]['group']);

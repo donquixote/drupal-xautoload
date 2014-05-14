@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests;
+namespace Drupal\xautoload\Tests\DrupalBootTest;
 
 use Drupal\xautoload\Tests\Example\AbstractExampleModules;
-use Drupal\xautoload\Tests\Mock\DrupalEnvironment;
+use Drupal\xautoload\Tests\VirtualDrupal\DrupalEnvironment;
 use Drupal\xautoload\Tests\Util\CallLog;
 use Drupal\xautoload\Tests\Util\StaticCallLog;
 
@@ -58,8 +58,6 @@ abstract class AbstractDrupalBootTest extends \PHPUnit_Framework_TestCase {
   function testNormalRequest() {
 
     $this->prepare();
-
-    # HackyLog::log(\PHPUnit_Util_Test::getProvidedData(get_class($this), __FUNCTION__));
 
     $this->prepareAllEnabled();
 
@@ -137,6 +135,7 @@ abstract class AbstractDrupalBootTest extends \PHPUnit_Framework_TestCase {
     foreach ($this->exampleModules->getExampleClasses() as $name => $classes) {
       $this->exampleDrupal->getSystemTable()->moduleSetEnabled($name);
     }
+    $this->exampleDrupal->getSystemTable()->moduleSetWeight('xautoload', -90);
   }
 
   /**
@@ -162,6 +161,10 @@ abstract class AbstractDrupalBootTest extends \PHPUnit_Framework_TestCase {
       else {
         throw new \Exception("Unexpected state.");
       }
+    }
+    if (isset($initialModules['xautoload'])) {
+      // xautoload is installed or enabled, so the module weight must be in the database.
+      $this->exampleDrupal->getSystemTable()->moduleSetWeight('xautoload', -90);
     }
   }
 

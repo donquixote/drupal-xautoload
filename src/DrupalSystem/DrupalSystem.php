@@ -107,4 +107,19 @@ class DrupalSystem implements DrupalSystemInterface {
     }
     return libraries_get_path($name);
   }
+
+  /**
+   * Called from xautoload_install() to set the module weight.
+   *
+   * @param int $weight
+   *   New module weight for xautoload.
+   */
+  public function installSetModuleWeight($weight) {
+    db_update('system')
+      ->fields(array('weight' => $weight))
+      ->condition('name', 'xautoload')
+      ->condition('type', 'module')
+      ->execute();
+    system_list_reset();
+  }
 }

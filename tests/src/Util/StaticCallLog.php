@@ -45,7 +45,13 @@ abstract class StaticCallLog {
     if (!isset(self::$callLog)) {
       throw new \Exception("StaticCallLog not initialized yet.");
     }
-    $trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+
+    $trace = version_compare(PHP_VERSION, '5.4.0', '>=')
+      ? debug_backtrace(0, 2)
+      // Second parameter not supported in PHP < 5.4.0. It would cause a
+      // "Warning: debug_backtrace() expects at most 1 parameter, 2 given".
+      : debug_backtrace(0);
+
     $call = $trace[1];
     $callFiltered = array();
     foreach (array('function', 'class', 'type') as $key) {

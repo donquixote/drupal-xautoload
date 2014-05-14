@@ -87,8 +87,8 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
       $implementations['xautoload'] = 'ui';
       require_once __DIR__ . '/xautoload.ui.inc';
       break;
-    case 'modules_installed':
     case 'modules_enabled':
+    case 'modules_installed':
     case 'registry_files_alter':
       $implementations['xautoload'] = 'system';
     require_once __DIR__ . '/xautoload.system.inc';

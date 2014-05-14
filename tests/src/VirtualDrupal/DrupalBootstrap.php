@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests\Mock;
+namespace Drupal\xautoload\Tests\VirtualDrupal;
 
 
 

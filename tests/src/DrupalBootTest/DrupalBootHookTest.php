@@ -1,18 +1,18 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests;
+namespace Drupal\xautoload\Tests\DrupalBootTest;
 
 
 use Drupal\xautoload\Tests\Example\HookTestExampleModules;
-use Drupal\xautoload\Tests\Mock\DrupalEnvironment;
+use Drupal\xautoload\Tests\VirtualDrupal\DrupalEnvironment;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
 use Drupal\xautoload\Tests\Util\CallLog;
 use Drupal\xautoload\Tests\Util\StaticCallLog;
 
 // Due to problems with @runTestsInSeparateProcesses and @preserveGlobalState,
 // this file needs to be included manually.
-require_once __DIR__ . '/AbstractDrupalBootTest.php';
+require_once dirname(dirname(__DIR__)) . '/bootstrap.php';
 
 /**
  * Tests modules that use hook_xautoload() and hook_libraries_info()
@@ -75,12 +75,6 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
         'function' => 'testmod_watchdog',
         'args' => array(),
       );
-      $expectedCalls[] = array(
-        'function' => 'testmod_modules_enabled',
-        'args' => array(
-          '(array)'
-        ),
-      );
 
       if ($hookXautoloadLate) {
         $expectedCalls[] = array(
@@ -91,7 +85,6 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
           ),
         );
       }
-
       $expectedCalls[] = array(
         'function' => 'testmod_libraries_info',
         'args' => array(),
@@ -101,6 +94,12 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
         'args' => array(
           '(xautoload_InjectedAPI_hookXautoload)',
           'test://libraries/testlib',
+        ),
+      );
+      $expectedCalls[] = array(
+        'function' => 'testmod_modules_enabled',
+        'args' => array(
+          '(array)'
         ),
       );
 
@@ -113,7 +112,6 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
     if (isset($this->exampleDrupal)) {
       return;
     }
-    require_once dirname(__DIR__) . '/bootstrap.php';
     $this->exampleModules = new HookTestExampleModules();
     $this->exampleDrupal = new DrupalEnvironment($this->exampleModules);
   }

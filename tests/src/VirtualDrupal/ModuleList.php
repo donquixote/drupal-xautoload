@@ -1,7 +1,8 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests\Mock;
+namespace Drupal\xautoload\Tests\VirtualDrupal;
+
 
 /**
  * Replicates module_list() with its static cache variables.
@@ -101,6 +102,10 @@ class ModuleList {
 
     if ($sort) {
       return $this->moduleListSorted();
+    }
+
+    if (count($this->list)) {
+      # HackyLog::log($this->list);
     }
 
     return $this->list;

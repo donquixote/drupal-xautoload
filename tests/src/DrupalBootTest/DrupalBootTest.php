@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests;
+namespace Drupal\xautoload\Tests\DrupalBootTest;
 
 
-use Drupal\xautoload\Tests\Mock\DrupalEnvironment;
+use Drupal\xautoload\Tests\VirtualDrupal\DrupalEnvironment;
 use Drupal\xautoload\Tests\Example\ExampleModules;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
 use Drupal\xautoload\Tests\Util\CallLog;
@@ -12,7 +12,7 @@ use Drupal\xautoload\Tests\Util\StaticCallLog;
 
 // Due to problems with @runTestsInSeparateProcesses and @preserveGlobalState,
 // this file needs to be included manually.
-require_once __DIR__ . '/AbstractDrupalBootTest.php';
+require_once dirname(dirname(__DIR__)) . '/bootstrap.php';
 
 /**
  * @runTestsInSeparateProcesses
@@ -117,7 +117,6 @@ class DrupalBootTest extends AbstractDrupalBootTest {
     if (isset($this->exampleDrupal)) {
       return;
     }
-    require_once dirname(__DIR__) . '/bootstrap.php';
     $this->exampleModules = new ExampleModules();
     $this->exampleDrupal = new DrupalEnvironment($this->exampleModules);
   }
