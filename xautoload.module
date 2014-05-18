@@ -29,6 +29,7 @@ function xautoload_boot() {}
 
 /**
  * Implements hook_custom_theme()
+ *
  * We only do this because that's the first hook to fire after bootstrap.
  */
 function xautoload_custom_theme() {

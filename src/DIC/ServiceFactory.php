@@ -14,6 +14,10 @@ use Drupal\xautoload\DrupalSystem\DrupalSystem;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 use Drupal\xautoload\Main;
 
+/**
+ * @see ServiceContainerInterface
+ * @see ServiceContainer
+ */
 class ServiceFactory {
 
   /**
