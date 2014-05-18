@@ -17,7 +17,7 @@ class CacheManager {
   protected $observers = array();
 
   /**
-   * @param $prefix
+   * @param string $prefix
    */
   protected function __construct($prefix) {
     $this->prefix = $prefix;

@@ -1,7 +1,6 @@
 <?php
 
 use Drupal\xautoload\ClassFinder\ClassFinderInterface;
-use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
 use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassGetFileInjectedApi;
 use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassInjectedAPI;
 use Drupal\xautoload\DIC\ServiceContainer;
@@ -85,9 +84,6 @@ function _xautoload_register() {
   LoadClassGetFileInjectedApi::forceAutoload();
   \Drupal\xautoload\Util::forceAutoload();
 
-  /**
-   * @var ExtendedClassFinderInterface $finder
-   */
   $finder = xautoload()->finder;
   $finder->register();
 

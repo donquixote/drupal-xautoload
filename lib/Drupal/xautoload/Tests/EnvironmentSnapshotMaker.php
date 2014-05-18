@@ -57,4 +57,4 @@ class EnvironmentSnapshotMaker {
 
     return $observations;
   }
-} 
+}

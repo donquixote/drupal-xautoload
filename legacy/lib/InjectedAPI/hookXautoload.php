@@ -23,7 +23,7 @@ class xautoload_InjectedAPI_hookXautoload extends LocalDirectoryAdapter {
   /**
    * @param ClassFinderAdapter $adapter
    *   The class finder object.
-   * @param string $localDirectory ;
+   * @param string $localDirectory
    */
   function __construct($adapter, $localDirectory) {
     parent::__construct($adapter, $localDirectory);
@@ -226,6 +226,8 @@ class xautoload_InjectedAPI_hookXautoload extends LocalDirectoryAdapter {
 
   /**
    * Explicitly set the base for relative paths.
+   *
+   * Alias for LocalDirectoryAdapter::setLocalDirectory()
    *
    * @param string $dir
    *   New relative base path.

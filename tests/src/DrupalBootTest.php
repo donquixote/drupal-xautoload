@@ -90,4 +90,4 @@ class DrupalBootTest extends \PHPUnit_Framework_TestCase {
     $this->assertFalse(class_exists($class, FALSE), "Class '$class' is not defined yet.");
     $this->assertTrue(class_exists($class), "Class '$class' successfully loaded.");
   }
-} 
+}
