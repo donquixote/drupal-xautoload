@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests;
+namespace Drupal\xautoload\Tests\DrupalBootTest;
 
 
 use Drupal\xautoload\DrupalSystem\MockDrupalSystem;
