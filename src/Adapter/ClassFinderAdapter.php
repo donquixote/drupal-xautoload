@@ -3,6 +3,7 @@
 
 namespace Drupal\xautoload\Adapter;
 
+use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\Util;
 use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
 use Drupal\xautoload\Discovery\ComposerDir;
@@ -38,6 +39,15 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
    * @var ClassMapGeneratorInterface
    */
   protected $classMapGenerator;
+
+  /**
+   * @param ExtendedClassFinderInterface $finder
+   *
+   * @return self
+   */
+  static function create($finder) {
+    return new self($finder, new ClassMapGenerator());
+  }
 
   /**
    * @param ExtendedClassFinderInterface $finder
