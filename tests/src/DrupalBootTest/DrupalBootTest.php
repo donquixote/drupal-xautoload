@@ -4,90 +4,155 @@
 namespace Drupal\xautoload\Tests\DrupalBootTest;
 
 
-use Drupal\xautoload\DrupalSystem\MockDrupalSystem;
+use Drupal\xautoload\Tests\VirtualDrupal\DrupalEnvironment;
+use Drupal\xautoload\Tests\Example\ExampleModules;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
-use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
+use Drupal\xautoload\Tests\Util\CallLog;
+use Drupal\xautoload\Tests\Util\StaticCallLog;
 
-class DrupalBootTest extends \PHPUnit_Framework_TestCase {
+// Due to problems with @runTestsInSeparateProcesses and @preserveGlobalState,
+// this file needs to be included manually.
+require_once dirname(dirname(__DIR__)) . '/bootstrap.php';
 
-  /**
-   * @var VirtualFilesystem
-   */
-  protected $filesystem;
-
-  function setUp() {
-    parent::setUp();
-    $this->filesystem = StreamWrapper::register('test');
-  }
-
-  function tearDown() {
-    stream_wrapper_unregister('test');
-    parent::tearDown();
-  }
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+class DrupalBootTest extends AbstractDrupalBootTest {
 
   /**
-   * Tests a simulated regular request.
+   * @param bool $install
+   *
+   * @return array[]
+   *   Variations of modules being either
+   *   - enabled (TRUE),
+   *   - installed but disabled (FALSE), or
+   *   - not installed (NULL).
+   *   Structure: array(..., array(
+   *     'system' => TRUE,
+   *     'xautoload' => FALSE,
+   *     'libraries' => NULL), ...)
    */
-  function testNormalRequest() {
-
-    // Create virtual class files.
-    $this->filesystem->addClass(
-      'test://modules/testmod_psr0/lib/Drupal/testmod_psr0/Foo.php',
-      'Drupal\testmod_psr0\Foo');
-    $this->filesystem->addClass(
-      'test://modules/testmod_psr4/lib/Foo.php',
-      'Drupal\testmod_psr4\Foo');
-    $this->filesystem->addClass(
-      'test://modules/testmod_pearflat/lib/Foo.php',
-      'testmod_pearflat_Foo');
-
-    $this->assertTrue(
-      file_exists('test://modules/testmod_psr0/lib/Drupal/testmod_psr0/Foo.php'),
-      'Stream wrapper file exists.');
-
-    $services = xautoload()->getServiceContainer();
-
-    // Mock out DrupalSystem in the service container.
-    $extensions = $this->getExampleExtensions();
-    $system = new MockDrupalSystem(array(), $extensions);
-    $services->set('system', $system);
-
-    // Simulate _xautoload_register_drupal().
-
-    // No cache is active.
-    // Initialize the finder, to fire scheduled operations.
-    $services->proxyFinder->getFinder();
-
-    // Register prefixes and namespaces for enabled extensions.
-    $operation = new FinderOperation\BootPhase($extensions);
-    $services->proxyFinder->onFinderInit($operation);
-
-    // Simulate inclusion of other module files.
-    // The testmod_psr4.module must contain an equivalent to the following line,
-    // to tell xautoload that PSR-4 is in action:
-    $services->main->registerModulePsr4('test://modules/testmod_psr4/testmod_psr4.module', 'lib');
-
-    // Boot modules use their classes.
-    $this->assertLoadClass('Drupal\testmod_psr0\Foo');
-    $this->assertLoadClass('Drupal\testmod_psr4\Foo');
-    $this->assertLoadClass('testmod_pearflat_Foo');
+  private function initialModulesVariations($install) {
+    $variations = array();
+    $state = $install ? NULL : FALSE;
+    $variation = array('system' => TRUE);
+    $variation += array_fill_keys(array_keys($this->exampleModules->getExampleClasses()), $state);
+    $variations[] = $variation;
+    foreach (array('xautoload') as $module) {
+      $variations = $this->providerArrayKeyVariations($variations, $module, array(TRUE, FALSE, NULL));
+    }
+    return $variations;
   }
 
   /**
-   * @return \stdClass[]
+   * @return array[]
    */
-  protected function getExampleExtensions() {
-    return array_fill_keys(array(
-      'system', 'views', 'menu_block',
-      'testmod_psr0', 'testmod_psr4', 'testmod_pearflat'
-    ), 'module');
+  public function providerModuleEnable() {
+    $this->initOnce();
+    $variations = array();
+    foreach (array(TRUE, FALSE) as $install) {
+      $expectedCalls = array();
+      $enabledModulesSoFar = array();
+      foreach ($this->exampleModules->getExampleClasses() as $module => $classes) {
+        $enabledModulesSoFar[] = $module;
+        if ($install) {
+          $expectedCalls[] = array(
+            'function' => $module . '_schema',
+            'args' => array(),
+          );
+          $expectedCalls[] = array(
+            'function' => $module . '_install',
+            'args' => array(),
+          );
+          foreach ($enabledModulesSoFar as $module) {
+            $expectedCalls[] = array(
+              'function' => $module . '_watchdog',
+              'args' => array(),
+            );
+          }
+        }
+        $expectedCalls[] = array(
+          'function' => $module . '_enable',
+          'args' => array(),
+        );
+        foreach ($enabledModulesSoFar as $module) {
+          $expectedCalls[] = array(
+            'function' => $module . '_watchdog',
+            'args' => array(),
+          );
+        }
+      }
+      foreach ($this->initialModulesVariations($install) as $moduleStates) {
+        /*
+        $enabledModules = array();
+        foreach ($moduleStates as $module => $state) {
+          if (TRUE !== $state) {
+            $enabledModules[$module] = TRUE;
+          }
+        }
+        foreach ($enabledModulesSoFar as $module) {
+          if (isset($enabledModules[$module])) {
+            unset($enabledModules[$module]);
+            $enabledModules[$module] = TRUE;
+          }
+        }
+        $enabledModules = array_keys($enabledModules);
+        */
+        $variationExpectedCalls = $expectedCalls;
+        foreach (array_keys($this->exampleModules->getExampleClasses()) as $module) {
+          $variationExpectedCalls[] = array(
+            'function' => $module . '_modules_enabled',
+            'args' => array('(array)'),
+          );
+        }
+        $variations[] = array($moduleStates, $variationExpectedCalls);
+      }
+    }
+
+    return $variations;
+  }
+
+  function initOnce() {
+    if (isset($this->exampleDrupal)) {
+      return;
+    }
+    $this->exampleModules = new ExampleModules();
+    $this->exampleDrupal = new DrupalEnvironment($this->exampleModules);
   }
 
   /**
-   * @param string $class
+   * setUp() does not help us because of the process sharing problem.
+   * So we use this instead.
+   *
+   * @throws \Exception
    */
-  protected function assertLoadClass($class) {
-    $this->assertFalse(class_exists($class, FALSE), "Class '$class' is not defined yet.");
-    $this->assertTrue(class_exists($class), "Class '$class' successfully loaded.");
+  protected function prepare() {
+    $this->initOnce();
+    $filesystem = StreamWrapper::register('test');
+    $this->exampleModules->setupVirtualFiles($this, $filesystem);
+    foreach ($this->exampleModules->discoverModuleFilenames('module') as $name => $filename) {
+      $this->exampleDrupal->getSystemTable()->addModuleWithFilename($name, $filename);
+    }
+    $this->exampleDrupal->getSystemTable()->moduleSetEnabled('system');
+    $this->exampleDrupal->initBootstrapStatus();
+    # $this->exampleDrupal->getCache()->cacheSet('module_implements', $data, 'cache_bootstrap');
+    xautoload()->getServiceContainer()->set('system', $this->exampleDrupal->getMockDrupalSystem());
+    $this->callLog = new CallLog();
+    StaticCallLog::setCallLog($this->callLog);
+  }
+
+  /**
+   * @return array[]
+   */
+  protected function getExpectedCallsForNormalRequest() {
+    $expectedCalls = array();
+    foreach ($this->exampleModules->getExampleClasses() as $module => $classes) {
+      $expectedCalls[] = array(
+        'function' => $module . '_init',
+        'args' => array(),
+      );
+    }
+    return $expectedCalls;
   }
 }
