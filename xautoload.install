@@ -5,7 +5,8 @@
  */
 function xautoload_install() {
   // Set module weight for xautoload to run before other modules.
-  db_query("UPDATE {system} SET weight = -90 WHERE name = 'xautoload' AND type = 'module'");
+  // This has to work in unit tests!
+  xautoload()->system->installSetModuleWeight(-90);
 }
 
 /**
