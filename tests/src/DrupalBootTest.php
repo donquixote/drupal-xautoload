@@ -4,7 +4,7 @@
 namespace Drupal\xautoload\Tests;
 
 
-use Drupal\xautoload\DrupalSystem\MockDrupalSystem;
+use Drupal\xautoload\Tests\Mock\MockDrupalSystem;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
 

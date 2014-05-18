@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\xautoload\DrupalSystem;
+namespace Drupal\xautoload\Tests\Mock;
+
+use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 
 class MockDrupalSystem implements DrupalSystemInterface {
 
