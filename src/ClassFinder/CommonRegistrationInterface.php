@@ -67,4 +67,15 @@ interface CommonRegistrationInterface {
    */
   function addPear($prefix, $paths);
 
+  /**
+   * Adds a prefix similar to PEAR, but with flat directories.
+   *
+   * This will assume with no further checks that $prefix contains no namespace
+   * separator.
+   *
+   * @param string $prefix
+   * @param string[]|string $paths
+   */
+  function addPearFlat($prefix, $paths);
+
 }

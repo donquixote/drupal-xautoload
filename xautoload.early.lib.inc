@@ -5,7 +5,6 @@ use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassGetFileInjectedApi;
 use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassInjectedAPI;
 use Drupal\xautoload\DIC\ServiceContainer;
 use Drupal\xautoload\DIC\ServiceFactory;
-use Drupal\xautoload\DirectoryBehavior\DefaultDirectoryBehavior;
 use Drupal\xautoload\Main;
 
 define('XAUTOLOAD_LIB_DIR', dirname(__FILE__) . '/lib');
@@ -91,10 +90,7 @@ function _xautoload_register() {
   $finder->addPsr4('Drupal\xautoload\\', XAUTOLOAD_SRC_DIR . '/');
 
   // Register the "xautoload_" prefix for legacy classes.
-  $finder->getPrefixMap()->registerDeepPath(
-    'xautoload/',
-    __DIR__ . '/legacy/lib/',
-    new DefaultDirectoryBehavior());
+  $finder->addPearFlat('xautoload_', __DIR__ . '/legacy/lib/');
 
   // Unregister the temporary loader.
   spl_autoload_unregister('_xautoload_autoload_temp');

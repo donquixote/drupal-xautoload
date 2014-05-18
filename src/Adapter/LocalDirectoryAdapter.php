@@ -221,6 +221,26 @@ class LocalDirectoryAdapter implements ClassFinderAdapterInterface {
     $this->master->addPear($prefix, $paths);
   }
 
+  /**
+   * Adds a prefix similar to PEAR, but with flat directories.
+   *
+   * This will assume with no further checks that $prefix contains no namespace
+   * separator.
+   *
+   * @param string $prefix
+   *   The prefix, e.g. 'Acme_FooPackage_'
+   * @param string|string[] $paths
+   *   An array of paths, or one specific path.
+   *   E.g. 'lib' for $relative = TRUE,
+   *   or 'sites/all/libraries/AcmeFooPackage/lib' for $relative = FALSE.
+   * @param bool $relative
+   *   If TRUE, the paths will be relative to $this->localDirectory.
+   */
+  function addPearFlat($prefix, $paths, $relative = TRUE) {
+    $relative && $this->prependToPaths($paths);
+    $this->master->addPearFlat($prefix, $paths);
+  }
+
   //                                                      Relative path handling
   // ---------------------------------------------------------------------------
 
