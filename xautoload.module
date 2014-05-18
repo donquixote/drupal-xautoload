@@ -99,13 +99,13 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
       break;
     case 'form_system_performance_settings_alter':
       $implementations['xautoload'] = 'ui';
-      module_load_include('ui.inc', 'xautoload');
+      require_once __DIR__ . '/xautoload.ui.inc';
       break;
     case 'modules_installed':
     case 'modules_enabled':
     case 'registry_files_alter':
       $implementations['xautoload'] = 'system';
-      module_load_include('system.inc', 'xautoload');
+      require_once __DIR__ . '/xautoload.system.inc';
       break;
     default:
       return;
