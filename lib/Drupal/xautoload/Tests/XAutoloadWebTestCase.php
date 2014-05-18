@@ -63,7 +63,13 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     // so we have to clear old cached values from APC cache.
     xautoload()->cacheManager->renewCachePrefix();
 
-    module_enable(array('xautoload_test_1', 'xautoload_test_2', 'xautoload_test_3'), FALSE);
+    module_enable(array(
+      'xautoload_test_1',
+      'xautoload_test_2',
+      'xautoload_test_3',
+      'xautoload_test_4',
+      'xautoload_test_5',
+    ), FALSE);
     menu_rebuild();
 
     foreach (array(
