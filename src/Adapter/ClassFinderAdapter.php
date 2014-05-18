@@ -276,4 +276,19 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
       );
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  function addPearFlat($prefix, $paths) {
+    $logical_base_path = Util::prefixLogicalPath($prefix);
+    foreach ((array) $paths as $deep_path) {
+      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $this->prefixMap->registerDeepPath(
+        $logical_base_path,
+        $deep_path,
+        $this->defaultBehavior
+      );
+    }
+  }
 }
