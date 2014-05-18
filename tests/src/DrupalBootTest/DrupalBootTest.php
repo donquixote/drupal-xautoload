@@ -1,9 +1,10 @@
 <?php
 
 
-namespace Drupal\xautoload\Tests;
+namespace Drupal\xautoload\Tests\DrupalBootTest;
 
 
+use Drupal\xautoload\Tests\FinderOperation\BootPhase;
 use Drupal\xautoload\Tests\Mock\MockDrupalSystem;
 use Drupal\xautoload\Tests\Filesystem\StreamWrapper;
 use Drupal\xautoload\Tests\Filesystem\VirtualFilesystem;
@@ -59,7 +60,7 @@ class DrupalBootTest extends \PHPUnit_Framework_TestCase {
     $services->proxyFinder->getFinder();
 
     // Register prefixes and namespaces for enabled extensions.
-    $operation = new FinderOperation\BootPhase($extensions);
+    $operation = new BootPhase($extensions);
     $services->proxyFinder->onFinderInit($operation);
 
     // Simulate inclusion of other module files.
