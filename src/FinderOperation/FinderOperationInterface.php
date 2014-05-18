@@ -2,7 +2,6 @@
 
 namespace Drupal\xautoload\FinderOperation;
 
-use Drupal\xautoload\Adapter\DrupalExtensionAdapter;
 use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
 
 /**
@@ -23,8 +22,6 @@ interface FinderOperationInterface {
    *
    * @param ExtendedClassFinderInterface $finder
    *   The class finder.
-   * @param DrupalExtensionAdapter $helper
-   *   A helper object with additional methods.
    */
-  function operateOnFinder($finder, $helper);
+  function operateOnFinder($finder);
 }

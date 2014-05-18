@@ -1,29 +1,6 @@
 <?php
 
 use Drupal\xautoload\Discovery\WildcardFileFinder;
-use Drupal\xautoload\FinderOperation\HookXautoloadOperation;
-
-/**
- * Implements hook_modules_enabled()
- *
- * @param string[] $modules
- */
-function xautoload_modules_enabled($modules) {
-  xautoload()->extensionRegistrationService->registerExtensionsByName($modules);
-  xautoload()->cacheManager->renewCachePrefix();
-
-  // Trigger invocation of hook_xautoload() to catch any hooks.
-  $operation = new HookXautoloadOperation();
-  xautoload()->proxyFinder->onFinderInit($operation);
-}
-
-/**
- * Implements hook_modules_installed()
- */
-function xautoload_modules_installed($modules) {
-  xautoload()->extensionRegistrationService->registerExtensionsByName($modules);
-  xautoload()->cacheManager->renewCachePrefix();
-}
 
 /**
  * Implements hook_registry_files_alter()

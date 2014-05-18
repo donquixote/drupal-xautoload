@@ -33,18 +33,7 @@ function xautoload_boot() {}
  * We only do this because that's the first hook to fire after bootstrap.
  */
 function xautoload_custom_theme() {
-
-  // Make sure this only runs once.
-  // (we run this from hook_init also, to avoid upgrade issues)
-  static $first_run = TRUE;
-  if (!$first_run) {
-    return;
-  }
-  $first_run = FALSE;
-
-  // Trigger invocation of hook_xautoload().
-  $operation = new HookXautoloadOperation();
-  xautoload()->proxyFinder->onFinderInit($operation);
+  xautoload()->phaseControl->enterMainPhase();
 }
 
 /**
@@ -59,9 +48,16 @@ function xautoload_custom_theme() {
  *   which would no longer have a direct reference to the finder object.
  */
 function xautoload_init() {
+  xautoload()->phaseControl->enterMainPhase();
+}
 
-  // If hook_custom_theme() hasn't been triggered, we call it now.
-  xautoload_custom_theme();
+/**
+ * Implements hook_modules_enabled()
+ *
+ * @param string[] $modules
+ */
+function xautoload_modules_enabled($modules) {
+  xautoload()->phaseControl->modulesEnabled($modules);
 }
 
 /**
@@ -72,22 +68,14 @@ function xautoload_init() {
  */
 function xautoload_module_implements_alter(&$implementations, $hook) {
 
-  static $modules;
-  if (!isset($modules)) {
-    $modules = module_list();
-  }
+  // Check if new modules have been enabled.
+  if ('boot' === $hook) {
 
-  // Some crazy stuff (like using l() in hook_enable()) can trigger hook
-  // invocation on just-enabled modules, before xautoload has a chance to
-  // register their namespaces. The only place to register these modules is
-  // here.
-  foreach ($implementations as $module => $group) {
-    if (empty($modules[$module])) {
-      // This module needs to be registered, to avoid a missing class error.
-      xautoload()->extensionRegistrationService->registerExtensionsByName(array($module));
-      xautoload()->cacheManager->renewCachePrefix();
-      $modules[$module] = $module;
-    }
+    # \Drupal\xautoload\Tests\HackyLog::log($hook);
+    // hook_module_implements_alter('boot') gets called (indirectly) from
+    // _system_update_bootstrap_status(), which happens each time a new module
+    // is enabled.
+    xautoload()->phaseControl->checkNewExtensions();
   }
 
   // Most hook implementations are in dedicated files.
@@ -109,28 +97,6 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
       break;
     default:
       return;
-  }
-}
-
-// Hooks on behalf of other modules
-// -----------------------------------------------------------------------------
-
-/**
- * Implements hook_xautoload on behalf of libraries module
- *
- * @param \xautoload_InjectedAPI_hookXautoload $api
- *   An adapter object that can register stuff into the class loader.
- */
-function libraries_xautoload($api) {
-  if (!function_exists('libraries_info')) {
-    // Libraries is at a lower version, which does not have this function.
-    return;
-  }
-  foreach (libraries_info() as $name => $info) {
-    if (isset($info['xautoload']) && is_callable($f = $info['xautoload'])) {
-      $api->setExtensionDir($dir = libraries_get_path($name));
-      call_user_func($f, $api, $dir);
-    }
   }
 }
 
@@ -189,6 +155,5 @@ function _xautoload_register_drupal() {
   }
 
   // Register prefixes and namespaces for enabled extensions.
-  $operation = new RegisterActiveExtensionsOperation();
-  $services->proxyFinder->onFinderInit($operation);
+  $services->proxyFinder->onFinderInit($services->phaseControl);
 }
