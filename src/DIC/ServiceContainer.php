@@ -2,6 +2,9 @@
 
 namespace Drupal\xautoload\DIC;
 
+/**
+ * @see ServiceFactory
+ */
 class ServiceContainer implements ServiceContainerInterface {
 
   /**

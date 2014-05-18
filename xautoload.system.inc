@@ -31,6 +31,9 @@ function xautoload_modules_installed($modules) {
  * Support wildcard syntax in the files[] setting in your module's info file.
  * See https://drupal.org/node/1976198
  *
+ * This function will remove entries like foo/inc/**, and instead add all the
+ * individual class files found in the foo/inc/ folder.
+ *
  * @param array[] &$files
  *   List of files specified in files[] array in module info files.
  *   Format:
@@ -44,16 +47,8 @@ function xautoload_modules_installed($modules) {
  *       'module' => 'foo',
  *       'weight' => 0,
  *     );
- *
- *   This function will remove the entry for foo/inc/**, and instead add all the
- *   individual class files found in the foo/inc/ folder.
- *
- * @param stdClass[] $modules
- *   Array keys are numeric.
- *   Array values are objects each representing a module.
- *   This parameter will be ignored.
  */
-function xautoload_registry_files_alter(&$files, $modules) {
+function xautoload_registry_files_alter(&$files) {
   $file_finder = new WildcardFileFinder();
   $file_finder->addDrupalPaths($files);
   $files = $file_finder->getDrupalFiles();

@@ -23,6 +23,9 @@ use Drupal\xautoload\Main;
  *   Alias for ->classFinder
  * @property DrupalSystemInterface $system
  * @property DrupalExtensionAdapter $extensionRegistrationService
+ *
+ * @see ServiceContainer
+ * @see ServiceFactory
  */
 interface ServiceContainerInterface {
 
