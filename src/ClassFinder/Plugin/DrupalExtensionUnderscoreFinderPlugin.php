@@ -46,5 +46,8 @@ class DrupalExtensionUnderscoreFinderPlugin extends DrupalExtensionNamespaceFind
       // The class was found, so return TRUE.
       return TRUE;
     }
+
+    // The class was not found, so return FALSE.
+    return FALSE;
   }
 }

@@ -12,8 +12,6 @@ class xautoload_FinderPlugin_CheckIncludePath implements xautoload_FinderPlugin_
    */
   function findFile($api, $logical_base_path, $relative_path) {
     $path = $logical_base_path . $relative_path;
-    if ($api->suggestFile_checkIncludePath($path)) {
-      return TRUE;
-    }
+    return $api->suggestFile_checkIncludePath($path);
   }
 }

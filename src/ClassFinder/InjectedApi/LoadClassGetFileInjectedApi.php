@@ -27,7 +27,6 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
     if (file_exists($file)) {
       $this->file = $file;
       require $file;
-
       return TRUE;
     }
     else {
@@ -50,7 +49,6 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
   function suggestFile_skipFileExists($file) {
     $this->file = $file;
     require $file;
-
     return TRUE;
   }
 
@@ -66,7 +64,6 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
   function suggestFile_checkNothing($file) {
     $this->file = $file;
     require $file;
-
     return TRUE;
   }
 
@@ -84,9 +81,9 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
     if (FALSE !== $file = Util::findFileInIncludePath($file)) {
       $this->file = $file;
       require $file;
-
       return TRUE;
     }
+    return FALSE;
   }
 
   /**
@@ -96,9 +93,9 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
     require_once $file;
     if (Util::classIsDefined($this->className)) {
       $this->file = $file;
-
       return TRUE;
     }
+    return FALSE;
   }
 
   /**
@@ -109,10 +106,10 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
       require_once $file;
       if (Util::classIsDefined($this->className)) {
         $this->file = $file;
-
         return TRUE;
       }
     }
+    return FALSE;
   }
 
   /**
@@ -121,7 +118,6 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
   function claimFile($file) {
     require $file;
     $this->file = $file;
-
     return TRUE;
   }
 
@@ -132,8 +128,8 @@ class LoadClassGetFileInjectedApi extends FindFileInjectedApi {
     if (file_exists($file)) {
       require $file;
       $this->file = $file;
-
       return TRUE;
     }
+    return FALSE;
   }
 }
