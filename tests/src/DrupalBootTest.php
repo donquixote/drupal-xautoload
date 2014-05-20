@@ -77,10 +77,12 @@ class DrupalBootTest extends \PHPUnit_Framework_TestCase {
    * @return \stdClass[]
    */
   protected function getExampleExtensions() {
-    return array_fill_keys(array(
-      'system', 'views', 'menu_block',
-      'testmod_psr0', 'testmod_psr4', 'testmod_pearflat'
-    ), 'module');
+    return array_fill_keys(
+      array(
+        'system', 'views', 'menu_block',
+        'testmod_psr0', 'testmod_psr4', 'testmod_pearflat'
+      ),
+      'module');
   }
 
   /**

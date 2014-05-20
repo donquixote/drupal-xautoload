@@ -15,8 +15,12 @@ class FileInspector {
     try {
       $contents = php_strip_whitespace($path);
     } catch (\Exception $e) {
-      throw new \RuntimeException('Could not scan for classes inside ' . $path . ": \n" . $e->getMessage(
-        ), 0, $e);
+      throw new \RuntimeException(
+        'Could not scan for classes inside ' . $path . ": \n" . $e->getMessage(),
+        // The Exception code. Defaults to 0.
+        0,
+        // The previous exception used for exception chaining.
+        $e);
     }
 
     return self::inspectFileContents($contents);
@@ -30,7 +34,9 @@ class FileInspector {
    *   Classes discovered in the file.
    */
   protected static function inspectFileContents($contents) {
-    $traits = version_compare(PHP_VERSION, '5.4', '<') ? '' : '|trait';
+    $traits = version_compare(PHP_VERSION, '5.4', '<')
+      ? ''
+      : '|trait';
 
     // return early if there is no chance of matching anything in this file
     if (!preg_match('{\b(?:class|interface' . $traits . ')\s}i', $contents)) {
@@ -41,20 +47,22 @@ class FileInspector {
     $contents = preg_replace(
       '{<<<\'?(\w+)\'?(?:\r\n|\n|\r)(?:.*?)(?:\r\n|\n|\r)\\1(?=\r\n|\n|\r|;)}s',
       'null',
-      $contents
-    );
+      $contents);
+
     // strip strings
     $contents = preg_replace(
       '{"[^"\\\\]*(\\\\.[^"\\\\]*)*"|\'[^\'\\\\]*(\\\\.[^\'\\\\]*)*\'}s',
       'null',
-      $contents
-    );
+      $contents);
+
     // strip leading non-php code if needed
     if (substr($contents, 0, 2) !== '<?') {
       $contents = preg_replace('{^.+?<\?}s', '<?', $contents);
     }
+
     // strip non-php blocks in the file
     $contents = preg_replace('{\?>.+<\?}s', '?><?', $contents);
+
     // strip trailing non-php code if needed
     $pos = strrpos($contents, '?>');
     if (FALSE !== $pos && FALSE === strpos(substr($contents, $pos), '<?')) {
@@ -77,11 +85,8 @@ class FileInspector {
 
     for ($i = 0, $len = count($matches['type']); $i < $len; $i++) {
       if (!empty($matches['ns'][$i])) {
-        $namespace = str_replace(
-            array(' ', "\t", "\r", "\n"),
-            '',
-            $matches['nsname'][$i]
-          ) . '\\';
+        $namespace = str_replace(array(' ', "\t", "\r", "\n"), '', $matches['nsname'][$i])
+          . '\\';
       }
       else {
         $classes[] = ltrim($namespace . $matches['name'][$i], '\\');

@@ -94,8 +94,7 @@ function _xautoload_register() {
   $finder->getPrefixMap()->registerDeepPath(
     'xautoload/',
     __DIR__ . '/legacy/lib/',
-    new DefaultDirectoryBehavior())
-  ;
+    new DefaultDirectoryBehavior());
 
   // Unregister the temporary loader.
   spl_autoload_unregister('_xautoload_autoload_temp');

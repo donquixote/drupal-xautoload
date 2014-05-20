@@ -50,10 +50,12 @@ class DiscoveryTest extends \PHPUnit_Framework_TestCase {
       dirname(__DIR__) . '/fixtures/WildcardFileFinder/tests/sub/sub/sub/foo.test',
     );
 
-    $expected = array_fill_keys($expected, array (
-      'module' => 'views',
-      'weight' => 0,
-    ));
+    $expected = array_fill_keys(
+      $expected,
+      array (
+        'module' => 'views',
+        'weight' => 0,
+      ));
 
     $this->assertEquals($expected, $files);
   }

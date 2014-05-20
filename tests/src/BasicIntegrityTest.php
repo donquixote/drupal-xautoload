@@ -13,9 +13,7 @@ class BasicIntegrityTest extends \PHPUnit_Framework_TestCase {
    */
   public function testIncludeAll() {
     $lib = dirname(dirname(__DIR__)) . '/lib';
-    $skip = array(
-      $lib . '/Drupal',
-    );
+    $skip = array($lib . '/Drupal');
     $this->includeAllRecursivePsr4($lib, 'Drupal\xautoload', $skip);
   }
 

@@ -46,8 +46,7 @@ class ComposerJson {
   static function createFromData($data, $path_prefix) {
     return empty($data['target-dir'])
       ? new self($data, $path_prefix)
-      : new ComposerJsonTargetDir($data, $path_prefix)
-      ;
+      : new ComposerJsonTargetDir($data, $path_prefix);
   }
 
   /**

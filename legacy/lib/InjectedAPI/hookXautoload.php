@@ -149,11 +149,7 @@ class xautoload_InjectedAPI_hookXautoload extends LocalDirectoryAdapter {
    * @param boolean $relative
    *   Whether or not the path is relative to the current extension dir.
    */
-  function namespaceDeep(
-    $namespace,
-    $namespace_deep_dir = NULL,
-    $relative = TRUE
-  ) {
+  function namespaceDeep($namespace, $namespace_deep_dir = NULL, $relative = TRUE) {
     $namespace_deep_dir = $this->processDir($namespace_deep_dir, $relative);
     $this->finder->registerNamespaceDeep($namespace, $namespace_deep_dir);
   }

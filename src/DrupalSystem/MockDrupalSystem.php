@@ -27,7 +27,9 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * {@inheritdoc}
    */
   function variableGet($name, $default = NULL) {
-    return $this->variables[$name] ? : $default;
+    return isset($this->variables[$name])
+      ? $this->variables[$name]
+      : $default;
   }
 
   /**

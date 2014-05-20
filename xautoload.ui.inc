@@ -25,7 +25,9 @@ function xautoload_form_system_performance_settings_alter(&$form) {
   foreach ($cache_names as $key => $title) {
     $options[$key] = t('@cache_name (@status)', array(
       '@cache_name' => $title,
-      '@status' => $cache_status[$key] ? t('Running and available') : t('Not currently available'),
+      '@status' => $cache_status[$key]
+        ? t('Running and available')
+        : t('Not currently available'),
     ));
   }
 
