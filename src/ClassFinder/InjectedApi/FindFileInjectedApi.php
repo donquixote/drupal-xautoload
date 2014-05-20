@@ -42,12 +42,9 @@ class FindFileInjectedApi extends AbstractInjectedApi {
   function suggestFile($file) {
     if (file_exists($file)) {
       $this->file = $file;
-
       return TRUE;
     }
-    else {
-      return FALSE;
-    }
+    return FALSE;
   }
 
   /**
@@ -64,7 +61,6 @@ class FindFileInjectedApi extends AbstractInjectedApi {
    */
   function suggestFile_skipFileExists($file) {
     $this->file = $file;
-
     return TRUE;
   }
 
@@ -79,7 +75,6 @@ class FindFileInjectedApi extends AbstractInjectedApi {
    */
   function suggestFile_checkNothing($file) {
     $this->file = $file;
-
     return TRUE;
   }
 
@@ -96,12 +91,9 @@ class FindFileInjectedApi extends AbstractInjectedApi {
   function suggestFile_checkIncludePath($file) {
     if (FALSE !== $file = Util::findFileInIncludePath($file)) {
       $this->file = $file;
-
       return TRUE;
     }
-    else {
-      return FALSE;
-    }
+    return FALSE;
   }
 
   /**
@@ -112,9 +104,9 @@ class FindFileInjectedApi extends AbstractInjectedApi {
     require_once $file;
     if (Util::classIsDefined($this->className)) {
       $this->file = $file;
-
       return TRUE;
     }
+    return FALSE;
   }
 
   /**
@@ -126,10 +118,10 @@ class FindFileInjectedApi extends AbstractInjectedApi {
       require_once $file;
       if (Util::classIsDefined($this->className)) {
         $this->file = $file;
-
         return TRUE;
       }
     }
+    return FALSE;
   }
 
   /**
@@ -137,7 +129,6 @@ class FindFileInjectedApi extends AbstractInjectedApi {
    */
   function claimFile($file) {
     $this->file = $file;
-
     return TRUE;
   }
 
@@ -147,8 +138,8 @@ class FindFileInjectedApi extends AbstractInjectedApi {
   function claimPath($file) {
     if (file_exists($file)) {
       $this->file = $file;
-
       return TRUE;
     }
+    return FALSE;
   }
 }
