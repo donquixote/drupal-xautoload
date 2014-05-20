@@ -71,7 +71,7 @@ class ServiceFactory {
    * @return CacheManager
    */
   function cacheManager($services) {
-    return CacheManager::create();
+    return CacheManager::create($services->system);
   }
 
   /**
