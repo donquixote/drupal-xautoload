@@ -15,6 +15,13 @@ class DrupalSystem implements DrupalSystemInterface {
   /**
    * {@inheritdoc}
    */
+  function variableSet($name, $value) {
+    variable_set($name, $value);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   function variableGet($name, $default = NULL) {
     return variable_get($name, $default);
   }
@@ -24,6 +31,13 @@ class DrupalSystem implements DrupalSystemInterface {
    */
   function drupalGetFilename($type, $name) {
     return DRUPAL_ROOT . '/' . drupal_get_filename($type, $name);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function drupalGetPath($type, $name) {
+    return DRUPAL_ROOT . '/' . drupal_get_path($type, $name);
   }
 
   /**
@@ -44,5 +58,67 @@ class DrupalSystem implements DrupalSystemInterface {
     // Doing this directly tends to be a lot faster than system_list().
     return db_query("SELECT name, type from {system} WHERE status = 1")
       ->fetchAllKeyed();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function moduleImplements($hook) {
+    return module_implements($hook);
+  }
+
+  /**
+   * Wrapper for module_list()
+   *
+   * @return array
+   */
+  function moduleList() {
+    return module_list();
+  }
+
+  /**
+   * @see libraries_info()
+   *
+   * @throws \Exception
+   * @return mixed
+   */
+  function getLibrariesInfo() {
+    if (!function_exists('libraries_info')) {
+      // Libraries is at a lower version, which does not have this function.
+      return array();
+    }
+    drupal_static_reset('libraries_info');
+    return libraries_info();
+  }
+
+  /**
+   * @see libraries_get_path()
+   *
+   * @param string $name
+   *   Name of the library.
+   *
+   * @throws \Exception
+   * @return string|false
+   */
+  function librariesGetPath($name) {
+    if (!function_exists('libraries_get_path')) {
+      throw new \Exception('Function libraries_get_path() does not exist.');
+    }
+    return libraries_get_path($name);
+  }
+
+  /**
+   * Called from xautoload_install() to set the module weight.
+   *
+   * @param int $weight
+   *   New module weight for xautoload.
+   */
+  public function installSetModuleWeight($weight) {
+    db_update('system')
+      ->fields(array('weight' => $weight))
+      ->condition('name', 'xautoload')
+      ->condition('type', 'module')
+      ->execute();
+    system_list_reset();
   }
 }
