@@ -60,10 +60,7 @@ class Main implements ServiceContainerInterface {
    *   __FILE__ constant for this argument.
    */
   function registerModule($__FILE__) {
-    $info = pathinfo($__FILE__);
-    $name = $info['filename'];
-    $dir = $info['dirname'];
-    $this->extensionRegistrationService->registerExtension($name, 'module', $dir);
+    $this->services->extensionNamespaces->registerExtension($__FILE__);
   }
 
   /**
@@ -97,9 +94,7 @@ class Main implements ServiceContainerInterface {
    *   directory. E.g. "src" or "lib".
    */
   function registerModulePsr4($__FILE__, $subdir) {
-    $info = pathinfo($__FILE__);
-    $name = $info['filename'];
-    $this->services->extensionRegistrationService->registerExtensionPsr4($name, $info['dirname'], $subdir);
+    $this->services->extensionNamespaces->registerExtensionPsr4($__FILE__, $subdir);
   }
 
   /**

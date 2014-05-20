@@ -2,7 +2,6 @@
 
 namespace Drupal\xautoload\ClassFinder;
 
-use Drupal\xautoload\Adapter\DrupalExtensionAdapter;
 use Drupal\xautoload\ClassLoader\AbstractClassLoader;
 use Drupal\xautoload\FinderOperation\FinderOperationInterface;
 
@@ -19,11 +18,6 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
   protected $finder;
 
   /**
-   * @var DrupalExtensionAdapter
-   */
-  protected $helper;
-
-  /**
    * @var FinderOperationInterface[]
    *   Operations to run when the actual finder is initialized.
    */
@@ -36,11 +30,11 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
 
   /**
    * @param ExtendedClassFinderInterface $finder
-   * @param DrupalExtensionAdapter $helper
+   *
+   * @internal param \Drupal\xautoload\Adapter\DrupalExtensionAdapter $helper
    */
-  function __construct($finder, $helper) {
+  function __construct($finder) {
     $this->finder = $finder;
-    $this->helper = $helper;
   }
 
   /**
@@ -68,7 +62,7 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
       $this->scheduledOperations[] = $operation;
     }
     else {
-      $operation->operateOnFinder($this->finder, $this->helper);
+      $operation->operateOnFinder($this->finder);
     }
   }
 
@@ -87,7 +81,7 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
   protected function initFinder() {
     if (!$this->initialized) {
       foreach ($this->scheduledOperations as $operation) {
-        $operation->operateOnFinder($this->finder, $this->helper);
+        $operation->operateOnFinder($this->finder);
       }
       $this->initialized = TRUE;
     }

@@ -21,7 +21,7 @@ class LoaderSetFinderOperation implements FinderOperationInterface {
   /**
    * {@inheritdoc}
    */
-  function operateOnFinder($finder, $helper) {
+  function operateOnFinder($finder) {
     $this->loader->setFinder($finder);
   }
 }

@@ -3,26 +3,80 @@
 namespace Drupal\xautoload\Tests\Mock;
 
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
+use Drupal\xautoload\Tests\VirtualDrupal\DrupalGetFilename;
+use Drupal\xautoload\Tests\VirtualDrupal\HookSystem;
+use Drupal\xautoload\Tests\VirtualDrupal\LibrariesInfo;
+use Drupal\xautoload\Tests\VirtualDrupal\ModuleList;
+use Drupal\xautoload\Tests\VirtualDrupal\PureFunctions;
+use Drupal\xautoload\Tests\VirtualDrupal\SystemListReset;
+use Drupal\xautoload\Tests\VirtualDrupal\SystemTable;
 
 class MockDrupalSystem implements DrupalSystemInterface {
 
   /**
    * @var array
    */
-  protected $variables;
+  private $variables = array();
 
   /**
-   * @var string[]
+   * @var HookSystem
    */
-  protected $activeExtensions;
+  private $hookSystem;
 
   /**
-   * @param array $variables
-   * @param string[] $active_extensions
+   * @var SystemTable
    */
-  function __construct(array $variables, array $active_extensions) {
-    $this->variables = $variables;
-    $this->activeExtensions = $active_extensions;
+  private $systemTable;
+
+  /**
+   * @var ModuleList
+   */
+  private $moduleList;
+
+  /**
+   * @var DrupalGetFilename
+   */
+  private $drupalGetFilename;
+
+  /**
+   * @var LibrariesInfo
+   */
+  private $librariesInfo;
+
+  /**
+   * @var SystemListReset
+   */
+  private $systemListReset;
+
+  /**
+   * @param SystemTable $systemTable
+   * @param ModuleList $moduleList
+   * @param HookSystem $hookSystem
+   * @param DrupalGetFilename $drupalGetFilename
+   * @param LibrariesInfo $librariesInfo
+   * @param SystemListReset $systemListReset
+   */
+  function __construct(
+    SystemTable $systemTable,
+    ModuleList $moduleList,
+    HookSystem $hookSystem,
+    DrupalGetFilename $drupalGetFilename,
+    LibrariesInfo $librariesInfo,
+    SystemListReset $systemListReset
+  ) {
+    $this->systemTable = $systemTable;
+    $this->moduleList = $moduleList;
+    $this->hookSystem = $hookSystem;
+    $this->drupalGetFilename = $drupalGetFilename;
+    $this->librariesInfo = $librariesInfo;
+    $this->systemListReset = $systemListReset;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function variableSet($name, $value) {
+    $this->variables[$name] = $value;
   }
 
   /**
@@ -38,8 +92,14 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * {@inheritdoc}
    */
   function drupalGetFilename($type, $name) {
-    // Simply assume that everything is a module.
-    return "test://modules/$name/$name.module";
+    return $this->drupalGetFilename->drupalGetFilename($type, $name);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function drupalGetPath($type, $name) {
+    return $this->drupalGetFilename->drupalGetPath($type, $name);
   }
 
   /**
@@ -54,49 +114,104 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * {@inheritdoc}
    */
   function getActiveExtensions() {
-    return $this->activeExtensions;
+    return $this->systemTable->getActiveExtensions();
   }
 
   /**
-   * Wrapper for variable_set()
+   * Replicates module_list()
    *
-   * @param string $name
-   * @param mixed $value
+   * @param bool $refresh
+   * @param bool $bootstrap_refresh
+   * @param bool $sort
+   *
+   * @return string[]
    */
-  function variableSet($name, $value) {
-    // TODO: Implement variableSet() method.
+  function moduleList($refresh = FALSE, $bootstrap_refresh = FALSE, $sort = FALSE) {
+    return $this->moduleList->moduleList($refresh, $bootstrap_refresh, $sort);
   }
 
   /**
-   * @see drupal_get_path()
+   * @see module_invoke()
    *
-   * @param string $type
-   * @param string $name
-   *
-   * @return string
-   */
-  function drupalGetPath($type, $name) {
-    // TODO: Implement drupalGetPath() method.
-  }
-
-  /**
-   * Wrapper for module_list()
-   *
-   * @return array
-   */
-  function moduleList() {
-    // TODO: Implement moduleList() method.
-  }
-
-  /**
-   * Wrapper for module_implements()
-   *
+   * @param string $module
    * @param string $hook
    *
-   * @return array[]
+   * @return mixed
+   *
+   * @throws \Exception
+   */
+  function moduleInvoke($module, $hook) {
+    $args = func_get_args();
+    switch (count($args)) {
+      case 2:
+        return PureFunctions::moduleInvoke($module, $hook);
+      case 3:
+        return PureFunctions::moduleInvoke($module, $hook, $args[2]);
+      case 4:
+        return PureFunctions::moduleInvoke($module, $hook, $args[2], $args[3]);
+      default:
+        throw new \Exception("More arguments than expected.");
+    }
+  }
+
+  /**
+   * @param string $hook
+   */
+  function moduleInvokeAll($hook) {
+    $args = func_get_args();
+    call_user_func_array(array($this->hookSystem, 'moduleInvokeAll'), $args);
+  }
+
+  /**
+   * @param string $hook
+   *
+   * @throws \Exception
+   * @return array
    */
   function moduleImplements($hook) {
-    // TODO: Implement moduleImplements() method.
+    return $this->hookSystem->moduleImplements($hook);
+  }
+
+  /**
+   * @param string $hook
+   * @param mixed $data
+   */
+  function drupalAlter($hook, &$data) {
+    $args = func_get_args();
+    assert($hook === array_shift($args));
+    assert($data === array_shift($args));
+    while (count($args) < 3) {
+      $args[] = NULL;
+    }
+    $this->hookSystem->drupalAlter($hook, $data, $args[0], $args[1], $args[2]);
+  }
+
+  /**
+   * Replicates module_load_include()
+   *
+   * @param string $type
+   * @param string $module
+   * @param string|null $name
+   *
+   * @return bool|string
+   */
+  function moduleLoadInclude($type, $module, $name = NULL) {
+    if (!isset($name)) {
+      $name = $module;
+    }
+    $file = $this->drupalGetPath('module', $module) . "/$name.$type";
+    if (is_file($file)) {
+      require_once $file;
+      return $file;
+    }
+    return FALSE;
+  }
+
+  /**
+   * Resets the module_implements() cache.
+   */
+  public function resetModuleImplementsCache() {
+    $this->hookSystem->moduleImplementsReset();
   }
 
   /**
@@ -105,7 +220,8 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @return mixed
    */
   function getLibrariesInfo() {
-    // TODO: Implement getLibrariesInfo() method.
+    $this->librariesInfo->resetLibrariesInfo();
+    return $this->librariesInfo->getLibrariesInfo();
   }
 
   /**
@@ -117,7 +233,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @return string|false
    */
   function librariesGetPath($name) {
-    // TODO: Implement librariesGetPath() method.
+    return $this->librariesInfo->librariesGetPath($name);
   }
 
   /**
@@ -127,6 +243,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    *   New module weight for xautoload.
    */
   public function installSetModuleWeight($weight) {
-    // TODO: Implement installSetModuleWeight() method.
+    $this->systemTable->moduleSetWeight('xautoload', $weight);
+    $this->systemListReset->systemListReset();
   }
 }

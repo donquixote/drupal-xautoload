@@ -12,6 +12,10 @@ use Drupal\xautoload\Discovery\CachedClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\DrupalSystem\DrupalSystem;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
+use Drupal\xautoload\Phases\DrupalPhaseControl;
+use Drupal\xautoload\Phases\ExtensionNamespaces;
+use Drupal\xautoload\Phases\HookXautoload;
+use Drupal\xautoload\Phases\LibrariesIntegration;
 use Drupal\xautoload\Main;
 
 /**
@@ -87,7 +91,7 @@ class ServiceFactory {
    */
   function proxyFinder($services) {
     // The class finder is cheap to create, so it can use an identity proxy.
-    return new ProxyClassFinder($services->finder, $services->extensionRegistrationService);
+    return new ProxyClassFinder($services->finder);
   }
 
   /**
@@ -127,6 +131,29 @@ class ServiceFactory {
    */
   function system($services) {
     return new DrupalSystem();
+  }
+
+  /**
+   * @param ServiceContainer $services
+   *
+   * @return DrupalPhaseControl
+   */
+  function phaseControl($services) {
+    $observers = array(
+      $services->extensionNamespaces,
+      new HookXautoload($services->system),
+      new LibrariesIntegration($services->system),
+    );
+    return new DrupalPhaseControl($services->system, $observers);
+  }
+
+  /**
+   * @param ServiceContainer $services
+   *
+   * @return ExtensionNamespaces
+   */
+  function extensionNamespaces($services) {
+    return new ExtensionNamespaces($services->system);
   }
 }
 
