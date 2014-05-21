@@ -25,5 +25,5 @@ interface CacheMissObserverInterface {
    * @param ExtendedClassFinderInterface $finder
    *   The class finder.
    */
-  function operateOnFinder($finder);
+  function cacheMiss($finder);
 }

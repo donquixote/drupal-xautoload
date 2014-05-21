@@ -58,7 +58,7 @@ class DrupalPhaseControl implements CacheMissObserverInterface {
   /**
    * {@inheritdoc}
    */
-  public function operateOnFinder($finder) {
+  public function cacheMiss($finder) {
     $this->extensions = $this->system->getActiveExtensions();
     foreach ($this->observers as $observer) {
       $observer->wakeUp($finder, $this->extensions);

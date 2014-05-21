@@ -62,7 +62,7 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
       $this->cacheMissObservers[] = $observer;
     }
     else {
-      $observer->operateOnFinder($this->finder);
+      $observer->cacheMiss($this->finder);
     }
   }
 
@@ -81,7 +81,7 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
   protected function initFinder() {
     if (!$this->initialized) {
       foreach ($this->cacheMissObservers as $operation) {
-        $operation->operateOnFinder($this->finder);
+        $operation->cacheMiss($this->finder);
       }
       $this->initialized = TRUE;
     }
