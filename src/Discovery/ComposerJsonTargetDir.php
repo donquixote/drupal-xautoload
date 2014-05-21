@@ -86,26 +86,21 @@ class ComposerJsonTargetDir extends ComposerJson {
       if (FALSE === strpos($prefix, '\\')) {
         $logical_base_path = Util::prefixLogicalPath($prefix);
         foreach ((array) $paths as $root_path) {
-          $deep_path = strlen($root_path) ? (rtrim(
-              $root_path,
-              '/'
-            ) . '/' . $logical_base_path) : $logical_base_path;
+          $deep_path = strlen($root_path)
+            ? rtrim($root_path, '/') . '/' . $logical_base_path
+            : $logical_base_path;
           if (0 !== strpos($deep_path, $this->targetDir)) {
             continue;
           }
-          $deep_path = $this->pathPrefix . substr(
-              $deep_path,
-              $target_dir_strlen
-            );
+          $deep_path = $this->pathPrefix . substr($deep_path, $target_dir_strlen);
           $prefix_map[$logical_base_path][$deep_path] = $default_behavior;
         }
       }
       $logical_base_path = Util::namespaceLogicalPath($prefix);
       foreach ((array) $paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim(
-            $root_path,
-            '/'
-          ) . '/' . $logical_base_path) : $logical_base_path;
+        $deep_path = strlen($root_path)
+          ? rtrim($root_path, '/') . '/' . $logical_base_path
+          : $logical_base_path;
         if (0 !== strpos($deep_path, $this->targetDir)) {
           continue;
         }

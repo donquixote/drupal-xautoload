@@ -37,9 +37,10 @@ class ClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
     $finder->addPsr4('Drupal\ex_ample\\', 'test://base/lib/');
 
-    $this->assertCandidateOrder($finder, 'Drupal\ex_ample\Psr4_%\Foo_Bar', array(
-      'test://base/lib/Psr4_%/Foo_Bar.php',
-    ));
+    $this->assertCandidateOrder(
+      $finder,
+      'Drupal\ex_ample\Psr4_%\Foo_Bar',
+      array('test://base/lib/Psr4_%/Foo_Bar.php'));
   }
 
   /**
@@ -54,10 +55,13 @@ class ClassLoaderTest extends \PHPUnit_Framework_TestCase {
     $finder->registerNamespaceDeep('Drupal\\ex_ample', 'test://base/lib', $psr0);
     $finder->registerNamespaceRoot('Drupal\\ex_ample', 'test://base/vendor', $psr0);
 
-    $this->assertCandidateOrder($finder, 'Drupal\ex_ample\Sub_%\Foo_Bar', array(
-      'test://base/lib/Sub_%/Foo/Bar.php',
-      'test://base/vendor/Drupal/ex_ample/Sub_%/Foo/Bar.php',
-    ));
+    $this->assertCandidateOrder(
+      $finder,
+      'Drupal\ex_ample\Sub_%\Foo_Bar',
+      array(
+        'test://base/lib/Sub_%/Foo/Bar.php',
+        'test://base/vendor/Drupal/ex_ample/Sub_%/Foo/Bar.php',
+      ));
   }
 
   /**
@@ -71,10 +75,13 @@ class ClassLoaderTest extends \PHPUnit_Framework_TestCase {
     $finder->registerPrefixDeep('ex_ample', 'test://base/lib');
     $finder->registerPrefixRoot('ex_ample', 'test://base/vendor');
 
-    $this->assertCandidateOrder($finder, 'ex_ample_Sub%_Foo', array(
-      'test://base/lib/Sub%/Foo.php',
-      'test://base/vendor/ex/ample/Sub%/Foo.php',
-    ));
+    $this->assertCandidateOrder(
+      $finder,
+      'ex_ample_Sub%_Foo',
+      array(
+        'test://base/lib/Sub%/Foo.php',
+        'test://base/vendor/ex/ample/Sub%/Foo.php',
+      ));
   }
 
   /**
@@ -90,10 +97,12 @@ class ClassLoaderTest extends \PHPUnit_Framework_TestCase {
     $finder->registerPrefixRoot('_ex_ample', 'test://vendor');
 
     // Verify that underscores are not a problem..
-    $this->assertCandidateOrder($finder, '_ex_ample_Abc%_Def', array(
-      'test://lib/Abc%/Def.php',
-      'test://vendor/_ex/ample/Abc%/Def.php',
-    ));
+    $this->assertCandidateOrder(
+      $finder,
+      '_ex_ample_Abc%_Def', array(
+        'test://lib/Abc%/Def.php',
+        'test://vendor/_ex/ample/Abc%/Def.php',
+      ));
     $this->assertCandidateOrder($finder, '_abc_Foo%', array());
     $this->assertCandidateOrder($finder, 'abc__Foo%', array());
   }

@@ -56,9 +56,8 @@ class DrupalSystem implements DrupalSystemInterface {
    */
   function getActiveExtensions() {
     // Doing this directly tends to be a lot faster than system_list().
-    return db_query(
-      "SELECT name, type from {system} WHERE status = 1"
-    )->fetchAllKeyed();
+    return db_query("SELECT name, type from {system} WHERE status = 1")
+      ->fetchAllKeyed();
   }
 
   /**

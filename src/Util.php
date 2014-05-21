@@ -20,11 +20,7 @@ class Util {
    * @return string
    *   Random string of the specified length
    */
-  static function randomString(
-    $length = 30,
-    $chars = NULL,
-    $chars_first = NULL
-  ) {
+  static function randomString($length = 30, $chars = NULL, $chars_first = NULL) {
 
     if (!isset($chars)) {
       $chars = 'abcdefghijklmnopqrstuvwxyz' .
@@ -124,11 +120,7 @@ class Util {
     if (!strlen($prefix)) {
       return '';
     }
-    $pear_logical_path = str_replace(
-      '_',
-      '/',
-      rtrim($prefix, '_') . '_'
-    );
+    $pear_logical_path = str_replace('_', '/', rtrim($prefix, '_') . '_');
     // Clean up surplus '/' resulting from duplicate underscores, or an
     // underscore at the beginning of the class.
     while (FALSE !== $pos = strrpos('/' . $pear_logical_path, '//')) {
@@ -171,7 +163,9 @@ class Util {
     }
     elseif ($file{0} === '/') {
       // That's an absolute path already.
-      return file_exists($file) ? $file : FALSE;
+      return file_exists($file)
+        ? $file
+        : FALSE;
     }
     else {
       // Manually loop all candidate paths.

@@ -95,11 +95,12 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     $all = EnvironmentSnapshotMaker::getSnapshots($module);
 
     foreach ($all as $phase => $observations) {
-      $when =
-        ($phase === 'early') ? 'on drupal_load() during module_enable()' : (
-        ($phase === 'later') ? 'after hook_modules_enabled()' : (
-        'at an undefined time'
-      ));
+      $when = ($phase === 'early')
+        ? 'on drupal_load() during module_enable()'
+        : (($phase === 'later')
+          ? 'after hook_modules_enabled()'
+          : 'at an undefined time'
+        );
 
       // Test the classes of the example module.
       foreach ($classes as $class) {
@@ -136,11 +137,14 @@ class XAutoloadWebTestCase extends \DrupalWebTestCase {
     }
 
     foreach ($all as $phase => $observations) {
-      $when =
-        ($phase === 'early') ? 'on early bootstrap' : (
-        ($phase === 'boot')  ? 'during hook_boot()' : (
-        'at an undefined time'
-      ));
+
+      $when = ($phase === 'early')
+        ? 'on early bootstrap'
+        : (($phase === 'boot')
+          ? 'during hook_boot()'
+          : 'at an undefined time'
+        );
+
       $this->xautoloadCheckTestEnvironment($observations, $cache_types, $cache_lazy, $when);
 
       // Test the classes of the example module.

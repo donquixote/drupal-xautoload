@@ -75,29 +75,25 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       // Due to the ambiguity of PSR-0, this could be either PEAR-like or namespaced.
       $logical_base_path = Util::prefixLogicalPath($prefix);
       foreach ((array) $paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim(
-            $root_path,
-            '/'
-          ) . '/' . $logical_base_path) : $logical_base_path;
+        $deep_path = strlen($root_path)
+          ? rtrim($root_path, '/') . '/' . $logical_base_path
+          : $logical_base_path;
         $this->prefixMap->registerDeepPath(
           $logical_base_path,
           $deep_path,
-          $this->defaultBehavior
-        );
+          $this->defaultBehavior);
       }
     }
     // Namespaced PSR-0
     $logical_base_path = Util::namespaceLogicalPath($prefix);
     foreach ((array) $paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $this->namespaceMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->psr0Behavior
-      );
+        $this->psr0Behavior);
     }
   }
 
@@ -115,12 +111,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     // Namespaced PSR-4
     $logical_base_path = Util::namespaceLogicalPath($prefix);
     foreach ((array) $paths as $deep_path) {
-      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $deep_path = strlen($deep_path)
+        ? rtrim($deep_path, '/') . '/'
+        : '';
       $this->namespaceMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->defaultBehavior
-      );
+        $this->defaultBehavior);
     }
   }
 
@@ -133,15 +130,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
   function addNamespacePsr0($prefix, $paths) {
     $logical_base_path = Util::namespaceLogicalPath($prefix);
     foreach ((array) $paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $this->namespaceMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->psr0Behavior
-      );
+        $this->psr0Behavior);
     }
   }
 
@@ -151,15 +146,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
   function addPear($prefix, $paths) {
     $logical_base_path = Util::prefixLogicalPath($prefix);
     foreach ((array) $paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $this->prefixMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->defaultBehavior
-      );
+        $this->defaultBehavior);
     }
   }
 
@@ -210,15 +203,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       $behavior = $this->defaultBehavior;
     }
     $logical_base_path = Util::prefixLogicalPath($prefix);
-    $deep_path = strlen($root_path) ? (rtrim(
-        $root_path,
-        '/'
-      ) . '/' . $logical_base_path) : $logical_base_path;
+    $deep_path = strlen($root_path)
+      ? rtrim($root_path, '/') . '/' . $logical_base_path
+      : $logical_base_path;
     $this->prefixMap->registerDeepPath(
       $logical_base_path,
       $deep_path,
-      $behavior
-    );
+      $behavior);
 
     if (strlen($prefix)) {
       // We assume that the class named $prefix is also found at this path.
@@ -237,10 +228,9 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     $deep_map = array();
     foreach ($map as $prefix => $root_path) {
       $logical_base_path = Util::prefixLogicalPath($prefix);
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $deep_map[$logical_base_path][$deep_path] = $behavior;
 
       // Register the class with name $prefix.
@@ -272,7 +262,9 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     $deep_map = array();
     foreach ($map as $prefix => $deep_path) {
       $logical_base_path = Util::prefixLogicalPath($prefix);
-      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $deep_path = strlen($deep_path)
+        ? rtrim($deep_path, '/') . '/'
+        : '';
       $deep_map[$logical_base_path][$deep_path] = $behavior;
     }
     $this->prefixMap->registerDeepPaths($deep_map);
@@ -286,12 +278,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       $behavior = $this->defaultBehavior;
     }
     $logical_base_path = Util::prefixLogicalPath($prefix);
-    $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+    $deep_path = strlen($deep_path)
+      ? rtrim($deep_path, '/') . '/'
+      : '';
     $this->prefixMap->registerDeepPath(
       $logical_base_path,
       $deep_path,
-      $behavior
-    );
+      $behavior);
   }
 
   //                                                             Namespace stuff
@@ -305,15 +298,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       $behavior = $this->defaultBehavior;
     }
     $logical_base_path = Util::namespaceLogicalPath($namespace);
-    $deep_path = strlen($root_path) ? (rtrim(
-        $root_path,
-        '/'
-      ) . '/' . $logical_base_path) : $logical_base_path;
+    $deep_path = strlen($root_path)
+      ? rtrim($root_path, '/') . '/' . $logical_base_path
+      : $logical_base_path;
     $this->namespaceMap->registerDeepPath(
       $logical_base_path,
       $deep_path,
-      $behavior
-    );
+      $behavior);
   }
 
   /**
@@ -326,10 +317,9 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     $deep_map = array();
     foreach ($map as $namespace => $root_path) {
       $logical_base_path = Util::namespaceLogicalPath($namespace);
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $deep_map[$logical_base_path][$deep_path] = $behavior;
     }
     $this->namespaceMap->registerDeepPaths($deep_map);
@@ -343,12 +333,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       $behavior = $this->defaultBehavior;
     }
     $logical_base_path = Util::namespaceLogicalPath($namespace);
-    $deep_path = strlen($path) ? $path . '/' : '';
+    $deep_path = strlen($path)
+      ? $path . '/'
+      : '';
     $this->namespaceMap->registerDeepPath(
       $logical_base_path,
       $deep_path,
-      $behavior
-    );
+      $behavior);
   }
 
   /**
@@ -361,7 +352,9 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
     $deep_map = array();
     foreach ($map as $namespace => $deep_path) {
       $logical_base_path = Util::namespaceLogicalPath($namespace);
-      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $deep_path = strlen($deep_path)
+        ? rtrim($deep_path, '/') . '/'
+        : '';
       $deep_map[$logical_base_path][$deep_path] = $behavior;
     }
     $this->namespaceMap->registerDeepPaths($deep_map);
@@ -375,12 +368,13 @@ class ClassFinder extends AbstractClassLoader implements ExtendedClassFinderInte
       $behavior = $this->defaultBehavior;
     }
     $namespace_path_fragment = Util::namespaceLogicalPath($namespace);
-    $deep_path = strlen($path) ? $path . '/' : '';
+    $deep_path = strlen($path)
+      ? $path . '/'
+      : '';
     $this->namespaceMap->registerDeepPath(
       $namespace_path_fragment,
       $deep_path,
-      $behavior
-    );
+      $behavior);
   }
 
   // ---------------------------------------------------------------------------

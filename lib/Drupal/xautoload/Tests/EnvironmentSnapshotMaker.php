@@ -26,7 +26,9 @@ class EnvironmentSnapshotMaker {
    * @return array
    */
   static function getSnapshots($module) {
-    return isset(self::$snapshots[$module]) ? self::$snapshots[$module] : array();
+    return isset(self::$snapshots[$module])
+      ? self::$snapshots[$module]
+      : array();
   }
 
   /**

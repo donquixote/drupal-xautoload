@@ -134,19 +134,17 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
       if (FALSE === strpos($prefix, '\\')) {
         $logical_base_path = Util::prefixLogicalPath($prefix);
         foreach ((array) $paths as $root_path) {
-          $deep_path = strlen($root_path) ? (rtrim(
-              $root_path,
-              '/'
-            ) . '/' . $logical_base_path) : $logical_base_path;
+          $deep_path = strlen($root_path)
+            ? rtrim($root_path, '/') . '/' . $logical_base_path
+            : $logical_base_path;
           $prefix_map[$logical_base_path][$deep_path] = $this->defaultBehavior;
         }
       }
       $logical_base_path = Util::namespaceLogicalPath($prefix);
       foreach ((array) $paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim(
-            $root_path,
-            '/'
-          ) . '/' . $logical_base_path) : $logical_base_path;
+        $deep_path = strlen($root_path)
+          ? rtrim($root_path, '/') . '/' . $logical_base_path
+          : $logical_base_path;
         $namespace_map[$logical_base_path][$deep_path] = $this->psr0Behavior;
       }
     }
@@ -164,7 +162,9 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
     foreach ($map as $namespace => $paths) {
       $logical_base_path = Util::namespaceLogicalPath($namespace);
       foreach ($paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim($root_path, '/') . '/') : '';
+        $deep_path = strlen($root_path)
+          ? rtrim($root_path, '/') . '/'
+          : '';
         $namespace_map[$logical_base_path][$deep_path] = $this->defaultBehavior;
       }
     }
@@ -189,29 +189,25 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
       // Due to the ambiguity of PSR-0, this could be either PEAR-like or namespaced.
       $logical_base_path = Util::prefixLogicalPath($prefix);
       foreach ((array) $paths as $root_path) {
-        $deep_path = strlen($root_path) ? (rtrim(
-            $root_path,
-            '/'
-          ) . '/' . $logical_base_path) : $logical_base_path;
+        $deep_path = strlen($root_path)
+          ? rtrim($root_path, '/') . '/' . $logical_base_path
+          : $logical_base_path;
         $this->prefixMap->registerDeepPath(
           $logical_base_path,
           $deep_path,
-          $this->defaultBehavior
-        );
+          $this->defaultBehavior);
       }
     }
     // Namespaced PSR-0
     $logical_base_path = Util::namespaceLogicalPath($prefix);
     foreach ((array) $paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $this->namespaceMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->psr0Behavior
-      );
+        $this->psr0Behavior);
     }
   }
 
@@ -229,12 +225,13 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
     // Namespaced PSR-4
     $logical_base_path = Util::namespaceLogicalPath($prefix);
     foreach ((array) $paths as $deep_path) {
-      $deep_path = strlen($deep_path) ? (rtrim($deep_path, '/') . '/') : '';
+      $deep_path = strlen($deep_path)
+        ? rtrim($deep_path, '/') . '/'
+        : '';
       $this->namespaceMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->defaultBehavior
-      );
+        $this->defaultBehavior);
     }
   }
 
@@ -247,15 +244,13 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
   function addNamespacePsr0($prefix, $paths) {
     $logical_base_path = Util::namespaceLogicalPath($prefix);
     foreach ((array) $paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $this->namespaceMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->psr0Behavior
-      );
+        $this->psr0Behavior);
     }
   }
 
@@ -265,15 +260,13 @@ class ClassFinderAdapter implements ClassFinderAdapterInterface {
   function addPear($prefix, $paths) {
     $logical_base_path = Util::prefixLogicalPath($prefix);
     foreach ((array) $paths as $root_path) {
-      $deep_path = strlen($root_path) ? (rtrim(
-          $root_path,
-          '/'
-        ) . '/' . $logical_base_path) : $logical_base_path;
+      $deep_path = strlen($root_path)
+        ? rtrim($root_path, '/') . '/' . $logical_base_path
+        : $logical_base_path;
       $this->prefixMap->registerDeepPath(
         $logical_base_path,
         $deep_path,
-        $this->defaultBehavior
-      );
+        $this->defaultBehavior);
     }
   }
 

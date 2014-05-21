@@ -12,9 +12,8 @@ class WinCacheClassLoader extends AbstractCachedClassLoader implements CacheMana
    *   Throws an exception, if requirements are not satisfied.
    */
   protected function checkRequirements() {
-    return extension_loaded('wincache') && function_exists(
-      'wincache_ucache_get'
-    );
+    return extension_loaded('wincache')
+      && function_exists('wincache_ucache_get');
   }
 
   /**

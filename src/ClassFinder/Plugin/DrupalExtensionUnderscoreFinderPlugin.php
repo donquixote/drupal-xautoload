@@ -7,17 +7,9 @@ class DrupalExtensionUnderscoreFinderPlugin extends DrupalExtensionNamespaceFind
   /**
    * {@inheritdoc}
    */
-  function findFile(
-    $api,
-    $logical_base_path,
-    $relative_path,
-    $extension_name = NULL
-  ) {
+  function findFile($api, $logical_base_path, $relative_path, $extension_name = NULL) {
 
-    $extension_file = $this->system->drupalGetFilename(
-      $this->type,
-      $extension_name
-    );
+    $extension_file = $this->system->drupalGetFilename($this->type, $extension_name);
 
     if (empty($extension_file)) {
       // Extension does not exist, or is not installed.
@@ -42,15 +34,13 @@ class DrupalExtensionUnderscoreFinderPlugin extends DrupalExtensionNamespaceFind
         $this->namespaceMap->registerDeepPath(
           $testpath,
           $lib_psr0 . 'Tests/',
-          $this->psr0Behavior
-        );
+          $this->psr0Behavior);
       }
       if (is_dir($lib . 'Tests/')) {
         $this->namespaceMap->registerDeepPath(
           $testpath,
           $lib . 'Tests/',
-          $this->defaultBehavior
-        );
+          $this->defaultBehavior);
       }
 
       // The class was found, so return TRUE.
