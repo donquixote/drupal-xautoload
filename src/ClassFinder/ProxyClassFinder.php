@@ -3,7 +3,7 @@
 namespace Drupal\xautoload\ClassFinder;
 
 use Drupal\xautoload\ClassLoader\AbstractClassLoader;
-use Drupal\xautoload\FinderOperation\FinderOperationInterface;
+use Drupal\xautoload\CacheMissObserver\CacheMissObserverInterface;
 
 /**
  * A placeholder class finder. Used to postpone expensive operations until they
@@ -18,10 +18,10 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
   protected $finder;
 
   /**
-   * @var FinderOperationInterface[]
+   * @var CacheMissObserverInterface[]
    *   Operations to run when the actual finder is initialized.
    */
-  protected $scheduledOperations = array();
+  protected $cacheMissObservers = array();
 
   /**
    * @var bool
@@ -55,14 +55,14 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
   }
 
   /**
-   * @param FinderOperationInterface $operation
+   * @param CacheMissObserverInterface $observer
    */
-  function onFinderInit($operation) {
+  function observeFirstCacheMiss($observer) {
     if (!$this->initialized) {
-      $this->scheduledOperations[] = $operation;
+      $this->cacheMissObservers[] = $observer;
     }
     else {
-      $operation->operateOnFinder($this->finder);
+      $observer->operateOnFinder($this->finder);
     }
   }
 
@@ -76,11 +76,11 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
   }
 
   /**
-   * Initialize the finder and run scheduled operations.
+   * Initialize the finder and notify cache miss observers.
    */
   protected function initFinder() {
     if (!$this->initialized) {
-      foreach ($this->scheduledOperations as $operation) {
+      foreach ($this->cacheMissObservers as $operation) {
         $operation->operateOnFinder($this->finder);
       }
       $this->initialized = TRUE;

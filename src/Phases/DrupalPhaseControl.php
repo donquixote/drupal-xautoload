@@ -4,13 +4,13 @@
 namespace Drupal\xautoload\Phases;
 
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
-use Drupal\xautoload\FinderOperation\FinderOperationInterface;
+use Drupal\xautoload\CacheMissObserver\CacheMissObserverInterface;
 
 /**
  * Records events during a Drupal request, and forwards them to the registered
  * observers after the first class loader cache miss.
  */
-class DrupalPhaseControl implements FinderOperationInterface {
+class DrupalPhaseControl implements CacheMissObserverInterface {
 
   /**
    * @var DrupalSystemInterface

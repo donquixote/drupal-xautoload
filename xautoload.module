@@ -3,7 +3,7 @@
 use Drupal\xautoload\ClassLoader\ApcClassLoader;
 use Drupal\xautoload\ClassLoader\WinCacheClassLoader;
 use Drupal\xautoload\ClassLoader\XCacheClassLoader;
-use Drupal\xautoload\FinderOperation\LoaderSetFinderOperation;
+use Drupal\xautoload\CacheMissObserver\CacheMissLoaderSetFinder;
 
 /*
  * When the module has just been installed,
@@ -134,7 +134,7 @@ function _xautoload_register_drupal() {
 
   if (isset($cached_loader)) {
     if ($lazy) {
-      $decorated->onFinderInit(new LoaderSetFinderOperation($cached_loader));
+      $decorated->observeFirstCacheMiss(new CacheMissLoaderSetFinder($cached_loader));
     }
     $cached_loader->register();
     $services->finder->unregister();
@@ -146,5 +146,5 @@ function _xautoload_register_drupal() {
   }
 
   // Register prefixes and namespaces for enabled extensions.
-  $services->proxyFinder->onFinderInit($services->phaseControl);
+  $services->proxyFinder->observeFirstCacheMiss($services->phaseControl);
 }

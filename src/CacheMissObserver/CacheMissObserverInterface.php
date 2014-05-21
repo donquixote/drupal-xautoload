@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xautoload\FinderOperation;
+namespace Drupal\xautoload\CacheMissObserver;
 
 use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
 
@@ -10,9 +10,11 @@ use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
  *
  * In an average request, with the APC cache or similar enabled, class-to-file
  * mappings will usually be loaded from the cache. The "real" class finder will
- * only be created and initialized if one of the classes is not in the cache.
+ * only be initialized if one of the classes is not in the cache.
+ *
+ * @see ProxyClassFinder
  */
-interface FinderOperationInterface {
+interface CacheMissObserverInterface {
 
   /**
    * Executes the operation.

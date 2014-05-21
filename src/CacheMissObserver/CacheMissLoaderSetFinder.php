@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\xautoload\FinderOperation;
+namespace Drupal\xautoload\CacheMissObserver;
 
 use Drupal\xautoload\ClassLoader\AbstractClassLoaderDecorator;
 
-class LoaderSetFinderOperation implements FinderOperationInterface {
+class CacheMissLoaderSetFinder implements CacheMissObserverInterface {
 
   /**
    * @var AbstractClassLoaderDecorator
