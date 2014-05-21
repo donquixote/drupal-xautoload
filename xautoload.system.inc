@@ -3,6 +3,15 @@
 use Drupal\xautoload\Discovery\WildcardFileFinder;
 
 /**
+ * Implements hook_modules_enabled()
+ *
+ * @param string[] $modules
+ */
+function xautoload_modules_enabled($modules) {
+  xautoload()->phaseControl->modulesEnabled($modules);
+}
+
+/**
  * Implements hook_registry_files_alter()
  *
  * Support wildcard syntax in the files[] setting in your module's info file.
