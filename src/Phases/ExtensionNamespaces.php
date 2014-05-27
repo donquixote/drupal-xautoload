@@ -144,6 +144,13 @@ class ExtensionNamespaces implements PhaseObserverInterface {
   /**
    * Enter the main phase of the request, where all module files are included.
    */
+  public function enterPreMainPhase() {
+    // Nothing.
+  }
+
+  /**
+   * Enter the main phase of the request, where hook_init() fires.
+   */
   public function enterMainPhase() {
     // Nothing.
   }

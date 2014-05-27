@@ -57,11 +57,18 @@ class HookXautoloadEarly implements PhaseObserverInterface {
   /**
    * Enter the main phase of the request, where all module files are included.
    */
-  public function enterMainPhase() {
+  public function enterPreMainPhase() {
     // @todo Don't use moduleImplements(), to prevent hook_module_implements_alter()
     $modules = $this->system->moduleImplements('xautoload');
     // @todo Remove boot modules from the list.
     $this->runHookXautoload($modules);
+  }
+
+  /**
+   * Enter the main phase of the request, where hook_init() fires.
+   */
+  public function enterMainPhase() {
+    // Nothing.
   }
 
   /**

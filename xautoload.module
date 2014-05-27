@@ -31,7 +31,7 @@ function xautoload_boot() {}
  * We only do this because that's the first hook to fire after bootstrap.
  */
 function xautoload_custom_theme() {
-  xautoload()->phaseControl->enterMainPhase();
+  xautoload()->phaseControl->enterPreMainPhase();
 }
 
 /**

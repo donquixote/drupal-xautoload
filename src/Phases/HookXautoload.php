@@ -64,9 +64,16 @@ class HookXautoload implements PhaseObserverInterface {
   /**
    * Enter the main phase of the request, where all module files are included.
    */
-  public function enterMainPhase() {
+  public function enterPreMainPhase() {
     $modules = $this->system->moduleImplements('xautoload');
     $this->runHookXautoload($modules);
+  }
+
+  /**
+   * Enter the main phase of the request, where hook_init() fires.
+   */
+  public function enterMainPhase() {
+    // Nothing.
   }
 
   /**

@@ -36,15 +36,21 @@ class DrupalPhaseControl implements CacheMissObserverInterface {
 
   /**
    * @var bool
-   *   TRUE, if in main phase.
-   */
-  private $mainPhase = FALSE;
-
-  /**
-   * @var bool
    *   TRUE, if in of after boot phase.
    */
   private $bootPhase;
+
+  /**
+   * @var bool
+   *   TRUE, if in pre-main phase or main phase.
+   */
+  private $preMainPhase = FALSE;
+
+  /**
+   * @var bool
+   *   TRUE, if in main phase.
+   */
+  private $mainPhase;
 
   /**
    * @param DrupalSystemInterface $system
@@ -70,10 +76,10 @@ class DrupalPhaseControl implements CacheMissObserverInterface {
         $observer->enterBootPhase();
       }
     }
-    if ($this->mainPhase) {
+    if ($this->preMainPhase) {
       // We slipped into main phase while asleep. Need to catch up.
       foreach ($this->observers as $observer) {
-        $observer->enterMainPhase();
+        $observer->enterPreMainPhase();
       }
     }
   }
@@ -99,11 +105,34 @@ class DrupalPhaseControl implements CacheMissObserverInterface {
    *
    * Called from
    * @see xautoload_custom_theme()
-   * @see xautolaod_init()
+   */
+  public function enterPreMainPhase() {
+    // Main phase implies boot phase.
+    $this->enterBootPhase();
+    if ($this->preMainPhase) {
+      // We are already in the main phase. Nothing changes.
+      return;
+    }
+    $this->preMainPhase = TRUE;
+    if (!$this->awake) {
+      // The entire thing is not initialized yet.
+      // Postpone until operateOnFinder()
+      return;
+    }
+    foreach ($this->observers as $observer) {
+      $observer->enterPreMainPhase();
+    }
+  }
+
+  /**
+   * Initiate the main phase.
+   *
+   * Called from
+   * @see xautoload_init()
    */
   public function enterMainPhase() {
     // Main phase implies boot phase.
-    $this->enterBootPhase();
+    $this->enterPreMainPhase();
     if ($this->mainPhase) {
       // We are already in the main phase. Nothing changes.
       return;
@@ -143,7 +172,7 @@ class DrupalPhaseControl implements CacheMissObserverInterface {
         if ('xautoload' === $name) {
           // If xautoload is enabled in this request, then boot phase and main
           // phase are not properly initialized yet.
-          $this->enterMainPhase();
+          $this->enterPreMainPhase();
         }
         // Notify observers about the new extension.
         foreach ($this->observers as $observer) {

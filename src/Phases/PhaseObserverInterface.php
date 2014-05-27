@@ -41,7 +41,13 @@ interface PhaseObserverInterface {
   public function enterBootPhase();
 
   /**
-   * Enter the main phase of the request, where all module files are included.
+   * Enter the pre-main phase of the request, where all module files are
+   * included and hook_custom_theme() fires.
+   */
+  public function enterPreMainPhase();
+
+  /**
+   * Enter the main phase of the request, where hook_init() fires.
    */
   public function enterMainPhase();
 
