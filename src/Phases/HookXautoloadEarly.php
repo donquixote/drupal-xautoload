@@ -10,6 +10,8 @@ use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 /**
  * A variation of hook_xautoload() that fires very early, as soon as a *.module
  * file is included, but only once per module / request.
+ *
+ * CURRENTLY NOT USED.
  */
 class HookXautoloadEarly implements PhaseObserverInterface {
 

@@ -36,7 +36,8 @@ interface PhaseObserverInterface {
   public function wakeUp(ExtendedClassFinderInterface $finder, array $extensions);
 
   /**
-   * Enter the boot phase of the request, where all bootstrap module files are included.
+   * Enter the boot phase of the request, where all bootstrap module files are
+   * included.
    */
   public function enterBootPhase();
 
