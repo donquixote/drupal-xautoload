@@ -25,12 +25,14 @@ class LocalDirectoryAdapter implements ClassFinderAdapterInterface {
   /**
    * @param ClassFinderAdapter $adapter
    *   The class finder object.
-   * @param string $localDirectory ;
+   * @param string $localDirectory
    */
   function __construct($adapter, $localDirectory) {
     // parent::__construct($adapter->finder, $adapter->getClassmapGenerator());
     $this->master = $adapter;
-    $this->localDirectory = $localDirectory;
+    $this->localDirectory = strlen($localDirectory)
+      ? rtrim($localDirectory, '/') . '/'
+      : '';
   }
 
   /**
