@@ -30,13 +30,6 @@ class LibrariesPreLoadCallback {
     if (!empty($library['installed'])) {
       xautoload()->librariesQueue->addLibraryToQueue($library);
     }
-    krumong()->devel->dpm(
-      array(
-        'library' => $library,
-        'version' => $version,
-        'variant' => $variant,
-      ),
-      __METHOD__);
   }
 
 } 
