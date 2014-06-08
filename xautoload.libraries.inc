@@ -24,6 +24,7 @@ function xautoload_libraries_info_alter(&$info) {
         // unserialize.
         $library_info['module'],
         $library_name);
+      $library_info['callbacks']['pre-load'][] = new LibrariesPreLoadCallback();
     }
   }
 }
