@@ -86,6 +86,10 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
       $implementations = array('xautoload' => 'system') + $implementations;
       require_once __DIR__ . '/xautoload.system.inc';
       break;
+    case 'libraries_info_alter':
+      $implementations['xautoload'] = 'libraries';
+      require_once __DIR__ . '/xautoload.libraries.inc';
+      break;
     default:
       return;
   }
