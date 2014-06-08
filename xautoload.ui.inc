@@ -13,11 +13,13 @@ function xautoload_form_system_performance_settings_alter(&$form) {
 
   $cache_status = array(
     'apc' => (extension_loaded('apc') && function_exists('apc_store')),
+    'apcu' => (extension_loaded('apcu') && function_exists('apcu_store')),
     'wincache' => (extension_loaded('WinCache') && function_exists('wincache_ucache_get')),
     'xcache' => (extension_loaded('Xcache') && function_exists('xcache_get')),
   );
   $cache_names = array(
     'apc' => 'APC',
+    'apcu' => 'APCu',
     'wincache' => 'WinCache',
     'xcache' => 'XCache',
   );

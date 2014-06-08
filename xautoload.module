@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\xautoload\ClassLoader\ApcClassLoader;
+use Drupal\xautoload\ClassLoader\ApcuClassLoader;
 use Drupal\xautoload\ClassLoader\WinCacheClassLoader;
 use Drupal\xautoload\ClassLoader\XCacheClassLoader;
 use Drupal\xautoload\CacheMissObserver\CacheMissLoaderSetFinder;
@@ -128,6 +129,9 @@ function _xautoload_register_drupal() {
   $cache_types = $services->system->variableGet('xautoload_cache_types', array());
   if (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
     $cached_loader = ApcClassLoader::create($decorated, $services->cacheManager);
+  }
+  elseif (!empty($cache_types['apcu']) && extension_loaded('apcu') && function_exists('apcu_store')) {
+    $cached_loader = ApcuClassLoader::create($decorated, $services->cacheManager);
   }
   elseif (!empty($cache_types['wincache']) && extension_loaded('wincache') && function_exists('wincache_ucache_get')) {
     $cached_loader = WinCacheClassLoader::create($decorated, $services->cacheManager);
