@@ -9,7 +9,6 @@ use Drupal\xautoload\ClassFinder\ProxyClassFinder;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGeneratorInterface;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
-use Drupal\xautoload\Libraries\LibrariesQueue;
 use Drupal\xautoload\Phases\DrupalPhaseControl;
 use Drupal\xautoload\Phases\ExtensionNamespaces;
 use Drupal\xautoload\Main;
@@ -28,7 +27,6 @@ use Drupal\xautoload\Main;
  * @property DrupalPhaseControl $phaseControl
  * @property DrupalExtensionAdapter $extensionRegistrationService
  * @property ExtensionNamespaces extensionNamespaces
- * @property LibrariesQueue librariesQueue
  *
  * @see ServiceContainer
  * @see ServiceFactory

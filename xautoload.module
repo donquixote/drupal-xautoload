@@ -155,6 +155,4 @@ function _xautoload_register_drupal() {
 
   // Register prefixes and namespaces for enabled extensions.
   $services->proxyFinder->observeFirstCacheMiss($services->phaseControl);
-  // Register libraries where libraries_load() was called.
-  $services->proxyFinder->observeFirstCacheMiss($services->librariesQueue);
 }

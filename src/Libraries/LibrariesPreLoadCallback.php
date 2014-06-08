@@ -2,7 +2,22 @@
 
 namespace Drupal\xautoload\Libraries;
 
+
 class LibrariesPreLoadCallback {
+
+  /**
+   * @var callable
+   *   A callable that is serializable, so not a closure.
+   *   Can be a SerializableClosureWrapper.
+   */
+  private $callable;
+
+  /**
+   * @param callable $callable
+   */
+  function __construct($callable) {
+    $this->callable = $callable;
+  }
 
   /**
    * Callback that is applied directly before the library is loaded. At this
@@ -28,8 +43,9 @@ class LibrariesPreLoadCallback {
    */
   function __invoke($library, $version, $variant) {
     if (!empty($library['installed'])) {
-      xautoload()->librariesQueue->addLibraryToQueue($library);
+      xautoload()->proxyFinder->observeFirstCacheMiss(
+        new LibraryCacheMissObserver($this->callable, $library['library path']));
     }
   }
 
-} 
+}

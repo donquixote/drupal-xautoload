@@ -12,7 +12,6 @@ use Drupal\xautoload\Discovery\CachedClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\DrupalSystem\DrupalSystem;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
-use Drupal\xautoload\Libraries\LibrariesQueue;
 use Drupal\xautoload\Phases\DrupalPhaseControl;
 use Drupal\xautoload\Phases\ExtensionNamespaces;
 use Drupal\xautoload\Phases\HookXautoload;
@@ -144,15 +143,6 @@ class ServiceFactory {
       new HookXautoload($services->system),
     );
     return new DrupalPhaseControl($services->system, $observers);
-  }
-
-  /**
-   * @param ServiceContainer $services
-   *
-   * @return \Drupal\xautoload\Libraries\LibrariesQueue
-   */
-  function librariesQueue($services) {
-    return new LibrariesQueue();
   }
 
   /**
