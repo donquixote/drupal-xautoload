@@ -238,7 +238,8 @@ class DrupalComponentContainer {
       $this->HookSystem,
       $this->DrupalGetFilename,
       $this->LibrariesInfo,
-      $this->SystemListReset);
+      $this->SystemListReset,
+      $this->Cache);
   }
 
   /**

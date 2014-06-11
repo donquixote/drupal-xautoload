@@ -120,4 +120,30 @@ class DrupalSystem implements DrupalSystemInterface {
       ->execute();
     system_list_reset();
   }
+
+  /**
+   * @param string $cid
+   * @param string $bin
+   *
+   * @return mixed
+   *
+   * @see cache_get()
+   */
+  public function cacheGet($cid, $bin = 'cache') {
+    return cache_get($cid, $bin);
+  }
+
+  /**
+   * @param string $cid
+   * @param mixed $data
+   * @param string $bin
+   *
+   * @return mixed
+   *
+   * @see cache_set()
+   */
+  public function cacheSet($cid, $data, $bin = 'cache') {
+    cache_set($cid, $data, $bin);
+  }
+
 }

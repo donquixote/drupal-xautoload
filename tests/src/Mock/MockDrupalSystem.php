@@ -3,6 +3,7 @@
 namespace Drupal\xautoload\Tests\Mock;
 
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
+use Drupal\xautoload\Tests\VirtualDrupal\Cache;
 use Drupal\xautoload\Tests\VirtualDrupal\DrupalGetFilename;
 use Drupal\xautoload\Tests\VirtualDrupal\HookSystem;
 use Drupal\xautoload\Tests\VirtualDrupal\LibrariesInfo;
@@ -49,12 +50,18 @@ class MockDrupalSystem implements DrupalSystemInterface {
   private $systemListReset;
 
   /**
+   * @var Cache
+   */
+  private $cache;
+
+  /**
    * @param SystemTable $systemTable
    * @param ModuleList $moduleList
    * @param HookSystem $hookSystem
    * @param DrupalGetFilename $drupalGetFilename
    * @param LibrariesInfo $librariesInfo
    * @param SystemListReset $systemListReset
+   * @param \Drupal\xautoload\Tests\VirtualDrupal\Cache $cache
    */
   function __construct(
     SystemTable $systemTable,
@@ -62,7 +69,8 @@ class MockDrupalSystem implements DrupalSystemInterface {
     HookSystem $hookSystem,
     DrupalGetFilename $drupalGetFilename,
     LibrariesInfo $librariesInfo,
-    SystemListReset $systemListReset
+    SystemListReset $systemListReset,
+    Cache $cache
   ) {
     $this->systemTable = $systemTable;
     $this->moduleList = $moduleList;
@@ -70,6 +78,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
     $this->drupalGetFilename = $drupalGetFilename;
     $this->librariesInfo = $librariesInfo;
     $this->systemListReset = $systemListReset;
+    $this->cache = $cache;
   }
 
   /**
@@ -245,5 +254,31 @@ class MockDrupalSystem implements DrupalSystemInterface {
   public function installSetModuleWeight($weight) {
     $this->systemTable->moduleSetWeight('xautoload', $weight);
     $this->systemListReset->systemListReset();
+  }
+
+  /**
+   * @param string $cid
+   * @param string $bin
+   *
+   * @return object|false
+   *   The cache or FALSE on failure.
+   *
+   * @see cache_get()
+   */
+  public function cacheGet($cid, $bin = 'cache') {
+    return $this->cache->cacheGet($cid, $bin);
+  }
+
+  /**
+   * @param string $cid
+   * @param mixed $data
+   * @param string $bin
+   *
+   * @return mixed
+   *
+   * @see cache_set()
+   */
+  public function cacheSet($cid, $data, $bin = 'cache') {
+    return $this->cache->cacheSet($cid, $data, $bin);
   }
 }

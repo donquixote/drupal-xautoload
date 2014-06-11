@@ -100,4 +100,27 @@ interface DrupalSystemInterface {
    *   New module weight for xautoload.
    */
   public function installSetModuleWeight($weight);
+
+  /**
+   * @param string $cid
+   * @param string $bin
+   *
+   * @return object|false
+   *   The cache or FALSE on failure.
+   *
+   * @see cache_get()
+   */
+  public function cacheGet($cid, $bin = 'cache');
+
+  /**
+   * @param string $cid
+   * @param mixed $data
+   * @param string $bin
+   *
+   * @return mixed
+   *
+   * @see cache_set()
+   */
+  public function cacheSet($cid, $data, $bin = 'cache');
+
 }

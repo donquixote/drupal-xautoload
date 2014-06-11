@@ -47,7 +47,7 @@ class ServiceFactory {
    * @return ClassMapGenerator
    */
   function classMapGenerator($services) {
-    return new CachedClassMapGenerator($services->classMapGeneratorRaw);
+    return new CachedClassMapGenerator($services->classMapGeneratorRaw, $services->system);
   }
 
   /**
