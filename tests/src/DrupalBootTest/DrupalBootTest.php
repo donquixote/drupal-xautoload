@@ -118,6 +118,7 @@ class DrupalBootTest extends AbstractDrupalBootTest {
     }
     $this->exampleModules = new ExampleModules();
     $this->exampleDrupal = new DrupalEnvironment($this->exampleModules);
+    $this->exampleDrupal->setStaticInstance();
   }
 
   /**
