@@ -28,9 +28,11 @@ class LibrariesInfo {
   /**
    * @see libraries_info()
    *
+   * @param string|null $name
+   *
    * @return mixed
    */
-  function getLibrariesInfo() {
+  function &getLibrariesInfo($name = NULL) {
     // This static cache is re-used by libraries_detect() to save memory.
     $libraries = &$this->drupalStatic->get('libraries_info');
 
@@ -73,6 +75,7 @@ class LibrariesInfo {
         return $false;
       }
     }
+
     return $libraries;
   }
 

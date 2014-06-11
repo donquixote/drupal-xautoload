@@ -24,9 +24,18 @@ abstract class AbstractExampleModules implements ExampleModulesInterface {
 <?php
 // Nothing special here.
 EOT;
+
+    $phpLibrariesModule = <<<EOT
+<?php
+
+function libraries_load(\$name) {
+  \\Drupal\\xautoload\\Tests\\VirtualDrupal\\DrupalEnvironment::getInstance()->librariesLoad(\$name);
+}
+EOT;
+
     $filesystem->addPhpFile('test://modules/system/system.module', $phpNothing, TRUE);
     $filesystem->addPhpFile('test://modules/system/system.install', $phpNothing, TRUE);
-    $filesystem->addPhpFile('test://modules/libraries/libraries.module', $phpNothing, TRUE);
+    $filesystem->addPhpFile('test://modules/libraries/libraries.module', $phpLibrariesModule, TRUE);
     $filesystem->addPhpFile('test://modules/libraries/libraries.install', $phpNothing, TRUE);
   }
 
