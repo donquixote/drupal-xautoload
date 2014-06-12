@@ -18,6 +18,8 @@ class Cache {
    * @param string $bin
    *
    * @return object|false
+   *
+   * @see cache_get()
    */
   function cacheGet($cid, $bin = 'cache') {
     if (!isset($this->cache[$bin][$cid])) {
@@ -30,6 +32,8 @@ class Cache {
    * @param string $cid
    * @param mixed $data
    * @param string $bin
+   *
+   * @see cache_set()
    */
   function cacheSet($cid, $data, $bin = 'cache') {
     $this->cache[$bin][$cid] = (object)array(
@@ -42,6 +46,8 @@ class Cache {
    * @param null $bin
    *
    * @return mixed
+   *
+   * @see cache_clear_all()
    */
   function cacheClearAll($cid = NULL, $bin = NULL) {
     if (!isset($cid) && !isset($bin)) {

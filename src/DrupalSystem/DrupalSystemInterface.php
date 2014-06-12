@@ -123,4 +123,17 @@ interface DrupalSystemInterface {
    */
   public function cacheSet($cid, $data, $bin = 'cache');
 
+  /**
+   * @param string|null $cid
+   * @param string|null $bin
+   *
+   * @see cache_clear_all()
+   */
+  public function cacheClearAll($cid = NULL, $bin = NULL);
+
+  /**
+   * @param string $key
+   */
+  public function drupalStaticReset($key);
+
 }

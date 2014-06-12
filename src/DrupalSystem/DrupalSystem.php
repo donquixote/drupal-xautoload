@@ -146,4 +146,20 @@ class DrupalSystem implements DrupalSystemInterface {
     cache_set($cid, $data, $bin);
   }
 
+  /**
+   * @param string|null $cid
+   * @param string|null $bin
+   *
+   * @see cache_clear_all()
+   */
+  public function cacheClearAll($cid = NULL, $bin = NULL) {
+    cache_clear_all($cid, $bin);
+  }
+
+  /**
+   * @param string $key
+   */
+  public function drupalStaticReset($key) {
+    \drupal_static_reset($key);
+  }
 }

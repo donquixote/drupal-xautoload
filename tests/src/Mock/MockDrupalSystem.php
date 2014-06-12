@@ -3,16 +3,15 @@
 namespace Drupal\xautoload\Tests\Mock;
 
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
-use Drupal\xautoload\Tests\VirtualDrupal\Cache;
-use Drupal\xautoload\Tests\VirtualDrupal\DrupalGetFilename;
-use Drupal\xautoload\Tests\VirtualDrupal\HookSystem;
-use Drupal\xautoload\Tests\VirtualDrupal\LibrariesInfo;
-use Drupal\xautoload\Tests\VirtualDrupal\ModuleList;
+use Drupal\xautoload\Tests\VirtualDrupal\DrupalComponentContainer;
 use Drupal\xautoload\Tests\VirtualDrupal\PureFunctions;
-use Drupal\xautoload\Tests\VirtualDrupal\SystemListReset;
-use Drupal\xautoload\Tests\VirtualDrupal\SystemTable;
 
 class MockDrupalSystem implements DrupalSystemInterface {
+
+  /**
+   * @var DrupalComponentContainer
+   */
+  private $components;
 
   /**
    * @var array
@@ -20,65 +19,10 @@ class MockDrupalSystem implements DrupalSystemInterface {
   private $variables = array();
 
   /**
-   * @var HookSystem
+   * @param DrupalComponentContainer $components
    */
-  private $hookSystem;
-
-  /**
-   * @var SystemTable
-   */
-  private $systemTable;
-
-  /**
-   * @var ModuleList
-   */
-  private $moduleList;
-
-  /**
-   * @var DrupalGetFilename
-   */
-  private $drupalGetFilename;
-
-  /**
-   * @var LibrariesInfo
-   */
-  private $librariesInfo;
-
-  /**
-   * @var SystemListReset
-   */
-  private $systemListReset;
-
-  /**
-   * @var Cache
-   */
-  private $cache;
-
-  /**
-   * @param SystemTable $systemTable
-   * @param ModuleList $moduleList
-   * @param HookSystem $hookSystem
-   * @param DrupalGetFilename $drupalGetFilename
-   * @param LibrariesInfo $librariesInfo
-   * @param SystemListReset $systemListReset
-   * @param \Drupal\xautoload\Tests\VirtualDrupal\Cache $cache
-   */
-  function __construct(
-    SystemTable $systemTable,
-    ModuleList $moduleList,
-    HookSystem $hookSystem,
-    DrupalGetFilename $drupalGetFilename,
-    LibrariesInfo $librariesInfo,
-    SystemListReset $systemListReset,
-    Cache $cache
-  ) {
-    $this->systemTable = $systemTable;
-    $this->moduleList = $moduleList;
-    $this->hookSystem = $hookSystem;
-    $this->drupalGetFilename = $drupalGetFilename;
-    $this->librariesInfo = $librariesInfo;
-    $this->systemListReset = $systemListReset;
-    $this->cache = $cache;
+  function __construct(DrupalComponentContainer $components) {
+    $this->components = $components;
   }
 
   /**
@@ -101,14 +45,14 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * {@inheritdoc}
    */
   function drupalGetFilename($type, $name) {
-    return $this->drupalGetFilename->drupalGetFilename($type, $name);
+    return $this->components->DrupalGetFilename->drupalGetFilename($type, $name);
   }
 
   /**
    * {@inheritdoc}
    */
   function drupalGetPath($type, $name) {
-    return $this->drupalGetFilename->drupalGetPath($type, $name);
+    return $this->components->DrupalGetFilename->drupalGetPath($type, $name);
   }
 
   /**
@@ -123,7 +67,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * {@inheritdoc}
    */
   function getActiveExtensions() {
-    return $this->systemTable->getActiveExtensions();
+    return $this->components->SystemTable->getActiveExtensions();
   }
 
   /**
@@ -136,7 +80,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @return string[]
    */
   function moduleList($refresh = FALSE, $bootstrap_refresh = FALSE, $sort = FALSE) {
-    return $this->moduleList->moduleList($refresh, $bootstrap_refresh, $sort);
+    return $this->components->ModuleList->moduleList($refresh, $bootstrap_refresh, $sort);
   }
 
   /**
@@ -168,7 +112,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    */
   function moduleInvokeAll($hook) {
     $args = func_get_args();
-    call_user_func_array(array($this->hookSystem, 'moduleInvokeAll'), $args);
+    call_user_func_array(array($this->components->HookSystem, 'moduleInvokeAll'), $args);
   }
 
   /**
@@ -178,7 +122,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @return array
    */
   function moduleImplements($hook) {
-    return $this->hookSystem->moduleImplements($hook);
+    return $this->components->HookSystem->moduleImplements($hook);
   }
 
   /**
@@ -192,7 +136,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
     while (count($args) < 3) {
       $args[] = NULL;
     }
-    $this->hookSystem->drupalAlter($hook, $data, $args[0], $args[1], $args[2]);
+    $this->components->HookSystem->drupalAlter($hook, $data, $args[0], $args[1], $args[2]);
   }
 
   /**
@@ -220,7 +164,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * Resets the module_implements() cache.
    */
   public function resetModuleImplementsCache() {
-    $this->hookSystem->moduleImplementsReset();
+    $this->components->HookSystem->moduleImplementsReset();
   }
 
   /**
@@ -229,8 +173,8 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @return mixed
    */
   function getLibrariesInfo() {
-    $this->librariesInfo->resetLibrariesInfo();
-    return $this->librariesInfo->getLibrariesInfo();
+    $this->components->LibrariesInfo->resetLibrariesInfo();
+    return $this->components->LibrariesInfo->getLibrariesInfo();
   }
 
   /**
@@ -242,7 +186,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @return string|false
    */
   function librariesGetPath($name) {
-    return $this->librariesInfo->librariesGetPath($name);
+    return $this->components->LibrariesInfo->librariesGetPath($name);
   }
 
   /**
@@ -252,8 +196,8 @@ class MockDrupalSystem implements DrupalSystemInterface {
    *   New module weight for xautoload.
    */
   public function installSetModuleWeight($weight) {
-    $this->systemTable->moduleSetWeight('xautoload', $weight);
-    $this->systemListReset->systemListReset();
+    $this->components->SystemTable->moduleSetWeight('xautoload', $weight);
+    $this->components->SystemListReset->systemListReset();
   }
 
   /**
@@ -266,7 +210,7 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @see cache_get()
    */
   public function cacheGet($cid, $bin = 'cache') {
-    return $this->cache->cacheGet($cid, $bin);
+    return $this->components->Cache->cacheGet($cid, $bin);
   }
 
   /**
@@ -279,6 +223,24 @@ class MockDrupalSystem implements DrupalSystemInterface {
    * @see cache_set()
    */
   public function cacheSet($cid, $data, $bin = 'cache') {
-    return $this->cache->cacheSet($cid, $data, $bin);
+    $this->components->Cache->cacheSet($cid, $data, $bin);
   }
+
+  /**
+   * @param string|null $cid
+   * @param string|null $bin
+   *
+   * @see cache_clear_all()
+   */
+  public function cacheClearAll($cid = NULL, $bin = NULL) {
+    $this->components->Cache->cacheClearAll($cid, $bin);
+  }
+
+  /**
+   * @param string $key
+   */
+  public function drupalStaticReset($key) {
+    $this->components->DrupalStatic->resetKey($key);
+  }
+
 }

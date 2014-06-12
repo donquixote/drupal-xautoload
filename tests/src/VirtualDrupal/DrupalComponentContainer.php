@@ -153,6 +153,26 @@ class DrupalComponentContainer {
   }
 
   /**
+   * @return ModuleBuildDependencies
+   *
+   * @see DrupalComponentContainer::ModuleBuildDependencies
+   */
+  protected function getModuleBuildDependencies() {
+    return new ModuleBuildDependencies();
+  }
+
+  /**
+   * @return SystemBuildModuleData
+   *
+   * @see DrupalComponentContainer::SystemBuildModuleData
+   */
+  protected function getSystemBuildModuleData() {
+    return new SystemBuildModuleData(
+      $this->exampleModules,
+      $this->HookSystem);
+  }
+
+  /**
    * @return SystemRebuildModuleData
    *
    * @see DrupalComponentContainer::SystemRebuildModuleData
@@ -232,14 +252,7 @@ class DrupalComponentContainer {
    * @see DrupalComponentContainer::MockDrupalSystem
    */
   protected function getMockDrupalSystem() {
-    return new MockDrupalSystem(
-      $this->SystemTable,
-      $this->ModuleList,
-      $this->HookSystem,
-      $this->DrupalGetFilename,
-      $this->LibrariesInfo,
-      $this->SystemListReset,
-      $this->Cache);
+    return new MockDrupalSystem($this);
   }
 
   /**
