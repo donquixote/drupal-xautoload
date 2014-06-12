@@ -12,9 +12,11 @@ use Drupal\xautoload\Discovery\CachedClassMapGenerator;
 use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\DrupalSystem\DrupalSystem;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
+use Drupal\xautoload\Libraries\LibrariesInfoAlter;
 use Drupal\xautoload\Phases\DrupalPhaseControl;
 use Drupal\xautoload\Phases\ExtensionNamespaces;
 use Drupal\xautoload\Phases\HookXautoload;
+use Drupal\xautoload\Libraries\LibrariesOnInit;
 use Drupal\xautoload\Main;
 
 /**
@@ -141,6 +143,7 @@ class ServiceFactory {
     $observers = array(
       $services->extensionNamespaces,
       new HookXautoload($services->system),
+      new LibrariesOnInit($services->system),
     );
     return new DrupalPhaseControl($services->system, $observers);
   }
@@ -153,5 +156,15 @@ class ServiceFactory {
   function extensionNamespaces($services) {
     return new ExtensionNamespaces($services->system);
   }
+
+  /**
+   * @param ServiceContainer $services
+   *
+   * @return LibrariesInfoAlter
+   */
+  function librariesInfoAlter($services) {
+    return new LibrariesInfoAlter();
+  }
+
 }
 

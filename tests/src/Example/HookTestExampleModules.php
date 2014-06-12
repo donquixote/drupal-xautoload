@@ -52,6 +52,7 @@ class HookTestExampleModules extends AbstractExampleModules {
 function testmod_init() {
   \\Drupal\\xautoload\\Tests\\Util\\StaticCallLog::addCall();
   new \\Drupal\\testmod\\Foo();
+  # libraries_load('testlib');
   new \\Acme\\TestLib\\Foo();
 }
 

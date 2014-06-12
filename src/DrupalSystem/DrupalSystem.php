@@ -87,6 +87,7 @@ class DrupalSystem implements DrupalSystemInterface {
       // Libraries is at a lower version, which does not have this function.
       return array();
     }
+    # drupal_static_reset('libraries_info');
     return libraries_info();
   }
 
