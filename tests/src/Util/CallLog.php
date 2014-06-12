@@ -35,14 +35,10 @@ class CallLog {
     if (array_values($expectedCalls) !== $expectedCalls) {
       throw new \InvalidArgumentException('$expectedCalls must be a numeric array with no keys missing.');
     }
-    $extractFunction = function($call) {
-      return isset($call['function'])
-        ? $call['function']
-        : NULL;
-    };
+    $extractFunction = array($this, 'callGetFunction');
     $testCase->assertEquals(
-      array_map($extractFunction, $expectedCalls),
-      array_map($extractFunction, $this->calls));
+      "\n" . implode("\n", array_map($extractFunction, $expectedCalls)) . "\n",
+      "\n" . implode("\n", array_map($extractFunction, $this->calls)) . "\n");
     $testCase->assertEquals($expectedCalls, $this->calls);
     for ($i = 0; TRUE; ++$i) {
       $actualCall = isset($this->calls[$i]) ? $this->calls[$i] : NULL;
@@ -65,4 +61,15 @@ class CallLog {
     }
     $testCase->assertEquals($expectedCalls, $this->calls);
   }
+
+  function callGetFunction($call) {
+    if (!isset($call['function'])) {
+      return NULL;
+    }
+    if (!isset($call['class'])) {
+      return $call['function'];
+    }
+    return $call['class'] . '::' . $call['function'];
+  }
+
 } 
