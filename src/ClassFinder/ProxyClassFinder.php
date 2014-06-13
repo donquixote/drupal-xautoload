@@ -86,4 +86,5 @@ class ProxyClassFinder extends AbstractClassLoader implements ClassFinderInterfa
       $this->initialized = TRUE;
     }
   }
+
 }

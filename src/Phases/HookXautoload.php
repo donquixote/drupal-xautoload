@@ -107,4 +107,5 @@ class HookXautoload implements PhaseObserverInterface {
       $function($adapter, $dir);
     }
   }
+
 }

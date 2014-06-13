@@ -36,4 +36,5 @@ class ApcClassLoader extends AbstractCachedClassLoader implements CacheManagerOb
       apc_store($this->prefix . $class, $api->getFile());
     }
   }
+
 }

@@ -44,4 +44,5 @@ class CacheMissLoaderSetFinder implements CacheMissObserverInterface {
   function cacheMiss($finder) {
     $this->loader->setFinder($finder);
   }
+
 }

@@ -26,4 +26,5 @@ interface ClassFinderInterface extends ClassLoaderInterface {
    *   NULL, if we have no more suggestions.
    */
   function apiFindFile($api, $class);
+
 }
