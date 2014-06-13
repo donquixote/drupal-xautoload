@@ -16,12 +16,14 @@ function xautoload_form_system_performance_settings_alter(&$form) {
     'apcu' => (extension_loaded('apcu') && function_exists('apcu_store')),
     'wincache' => (extension_loaded('WinCache') && function_exists('wincache_ucache_get')),
     'xcache' => (extension_loaded('Xcache') && function_exists('xcache_get')),
+    'dbcache' => TRUE,
   );
   $cache_names = array(
     'apc' => 'APC',
     'apcu' => 'APCu',
     'wincache' => 'WinCache',
     'xcache' => 'XCache',
+    'dbcache' => 'Smart database cache (experimental)',
   );
   $options = array();
   foreach ($cache_names as $key => $title) {
