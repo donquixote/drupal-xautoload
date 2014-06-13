@@ -47,7 +47,7 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
           'function' => 'testmod_xautoload',
           'args' => array(
             '(xautoload_InjectedAPI_hookXautoload)',
-            'test://modules/testmod',
+            dirname(dirname(__DIR__)) . '/fixtures/.modules/testmod',
           ),
         );
       }
@@ -81,10 +81,16 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
           'function' => 'testmod_xautoload',
           'args' => array(
             '(xautoload_InjectedAPI_hookXautoload)',
-            'test://modules/testmod',
+            dirname(dirname(__DIR__)) . '/fixtures/.modules/testmod',
           ),
         );
       }
+      $expectedCalls[] = array(
+        'function' => 'testmod_modules_enabled',
+        'args' => array(
+          '(array)'
+        ),
+      );
       $expectedCalls[] = array(
         'function' => 'testmod_libraries_info',
         'args' => array(),
@@ -93,13 +99,7 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
         'function' => '_testmod_libraries_testlib_xautoload',
         'args' => array(
           '(xautoload_InjectedAPI_hookXautoload)',
-          'test://libraries/testlib',
-        ),
-      );
-      $expectedCalls[] = array(
-        'function' => 'testmod_modules_enabled',
-        'args' => array(
-          '(array)'
+          dirname(dirname(__DIR__)) . '/fixtures/.libraries/testlib',
         ),
       );
 
@@ -126,7 +126,6 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
   protected function prepare() {
     $this->initOnce();
     $filesystem = StreamWrapper::register('test');
-    $this->exampleModules->setupVirtualFiles($this, $filesystem);
     foreach ($this->exampleModules->discoverModuleFilenames('module') as $name => $filename) {
       $this->exampleDrupal->getSystemTable()->addModuleWithFilename($name, $filename);
     }
@@ -147,8 +146,13 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
         'function' => 'testmod_xautoload',
         'args' => array(
           '(xautoload_InjectedAPI_hookXautoload)',
-          'test://modules/testmod',
+          dirname(dirname(__DIR__)) . '/fixtures/.modules/testmod',
+          # 'test://modules/testmod',
         ),
+      ),
+      array(
+        'function' => 'testmod_init',
+        'args' => array(),
       ),
       array(
         'function' => 'testmod_libraries_info',
@@ -158,12 +162,9 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
         'function' => '_testmod_libraries_testlib_xautoload',
         'args' => array(
           '(xautoload_InjectedAPI_hookXautoload)',
-          'test://libraries/testlib',
+          dirname(dirname(__DIR__)) . '/fixtures/.libraries/testlib',
+          # 'test://libraries/testlib',
         ),
-      ),
-      array(
-        'function' => 'testmod_init',
-        'args' => array(),
       ),
     );
     return $expectedCalls;

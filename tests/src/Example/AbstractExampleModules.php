@@ -12,49 +12,6 @@ use Drupal\xautoload\Tests\VirtualDrupal\PureFunctions;
 abstract class AbstractExampleModules implements ExampleModulesInterface {
 
   /**
-   * Sets up virtual files to simulate a Drupal environment.
-   *
-   * @param AbstractDrupalBootTest $testCase
-   * @param \Drupal\xautoload\Tests\Filesystem\VirtualFilesystem $filesystem
-   */
-  public function setupVirtualFiles(AbstractDrupalBootTest $testCase, VirtualFilesystem $filesystem) {
-    $this->setupExampleModuleClassFiles($testCase, $filesystem);
-    $this->setupExampleModuleFiles($filesystem);
-    $phpNothing = <<<EOT
-<?php
-// Nothing special here.
-EOT;
-
-    $phpLibrariesModule = <<<EOT
-<?php
-
-function libraries_load(\$name) {
-  \\Drupal\\xautoload\\Tests\\VirtualDrupal\\DrupalEnvironment::getInstance()->librariesLoad(\$name);
-}
-EOT;
-
-    $filesystem->addPhpFile('test://modules/system/system.module', $phpNothing, TRUE);
-    $filesystem->addPhpFile('test://modules/system/system.install', $phpNothing, TRUE);
-    $filesystem->addPhpFile('test://modules/libraries/libraries.module', $phpLibrariesModule, TRUE);
-    $filesystem->addPhpFile('test://modules/libraries/libraries.install', $phpNothing, TRUE);
-  }
-
-  /**
-   * Sets up virtual class files for example modules.
-   *
-   * @param AbstractDrupalBootTest $testCase
-   * @param VirtualFilesystem $filesystem
-   */
-  abstract protected function setupExampleModuleClassFiles(AbstractDrupalBootTest $testCase, VirtualFilesystem $filesystem);
-
-  /**
-   * Sets up virtual *.module and *.install files.
-   *
-   * @throws \Exception
-   */
-  abstract protected function setupExampleModuleFiles(VirtualFilesystem $filesystem);
-
-  /**
    * Replicates drupal_system_listing('/^' . DRUPAL_PHP_FUNCTION_PATTERN . '\.module$/', 'modules', 'name', 0)
    *
    * @see drupal_system_listing()
@@ -140,12 +97,9 @@ EOT;
     if ('xautoload' === $name) {
       return dirname(dirname(dirname(__DIR__))) . '/xautoload.module';
     }
-    switch ($type) {
-      case 'theme':
-        return "test://themes/$name/$name.info";
-      case 'module':
-      default:
-        return "test://modules/$name/$name.module";
+    $file = dirname(dirname(__DIR__)) . '/fixtures/.modules/' . $name . '/' . $name . '.module';
+    if (is_file($file)) {
+      return $file;
     }
   }
 

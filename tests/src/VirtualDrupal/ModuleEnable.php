@@ -182,7 +182,9 @@ class ModuleEnable {
 
     // Include module files.
     require_once $filename;
-    require_once dirname($filename) . '/' . $extension . '.install';
+    if (file_exists($install_file = dirname($filename) . '/' . $extension . '.install')) {
+      require_once $install_file;
+    }
 
     // Update status in system table
     $this->systemTable->moduleSetEnabled($extension);

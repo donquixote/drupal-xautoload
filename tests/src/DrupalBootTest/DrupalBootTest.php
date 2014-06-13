@@ -130,7 +130,6 @@ class DrupalBootTest extends AbstractDrupalBootTest {
   protected function prepare() {
     $this->initOnce();
     $filesystem = StreamWrapper::register('test');
-    $this->exampleModules->setupVirtualFiles($this, $filesystem);
     foreach ($this->exampleModules->discoverModuleFilenames('module') as $name => $filename) {
       $this->exampleDrupal->getSystemTable()->addModuleWithFilename($name, $filename);
     }

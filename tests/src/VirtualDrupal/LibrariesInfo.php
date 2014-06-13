@@ -171,7 +171,7 @@ class LibrariesInfo {
     # $searchdir[] = "$config/libraries";
 
     // Custom location to search
-    $searchdir[] = 'test://libraries';
+    $searchdir[] = dirname(dirname(__DIR__)) . '/fixtures/.libraries';
 
     // Retrieve list of directories.
     $directories = array();
