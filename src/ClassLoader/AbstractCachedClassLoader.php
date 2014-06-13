@@ -38,8 +38,7 @@ abstract class AbstractCachedClassLoader
   }
 
   /**
-   * @throws \Exception
-   *   Throws an exception, if requirements are not satisfied.
+   * @return bool
    */
   protected abstract function checkRequirements();
 

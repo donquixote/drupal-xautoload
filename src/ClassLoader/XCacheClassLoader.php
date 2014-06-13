@@ -8,8 +8,7 @@ use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassGetFileInjectedApi;
 class XCacheClassLoader extends AbstractCachedClassLoader implements CacheManagerObserverInterface {
 
   /**
-   * @throws \Exception
-   *   Throws an exception, if requirements are not satisfied.
+   * @return bool
    */
   protected function checkRequirements() {
     return extension_loaded('Xcache') && function_exists('xcache_isset');
