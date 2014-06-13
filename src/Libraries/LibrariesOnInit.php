@@ -54,7 +54,7 @@ class LibrariesOnInit implements PhaseObserverInterface {
    * Enter the main phase of the request, where all module files are included.
    */
   public function enterMainPhase() {
-    $this->registerAllLibraries();
+    $this->registerLibrariesFinderPlugin();
   }
 
   /**
@@ -76,64 +76,16 @@ class LibrariesOnInit implements PhaseObserverInterface {
   public function modulesEnabled($modules) {
     $this->system->drupalStaticReset('libraries_info');
     $this->system->cacheClearAll('xautoload_libraries_info', 'cache');
-    $this->registerAllLibraries();
+    $this->registerLibrariesFinderPlugin();
   }
 
   /**
    * Registers all libraries that have an "xautoload" setting.
    */
-  private function registerAllLibraries() {
-    # StaticCallLog::addCall();
-    $adapter = \xautoload_InjectedAPI_hookXautoload::create($this->finder, '');
-    foreach ($info = $this->getLibrariesXautoloadInfo() as $name => $pathAndCallback) {
-      list($path, $callback) = $pathAndCallback;
-      if (!is_callable($callback)) {
-        continue;
-      }
-      if (!is_dir($path)) {
-        continue;
-      }
-      $adapter->setExtensionDir($path);
-      call_user_func($callback, $adapter, $path);
-    }
-  }
-
-  /**
-   * @return array[]
-   */
-  private function getLibrariesXautoloadInfo() {
-    # StaticCallLog::addCall();
-    $cached = $this->system->cacheGet('xautoload_libraries_info');
-    if (FALSE !== $cached) {
-      return $cached->data;
-    }
-    $info = $this->buildLibrariesXautoloadInfo();
-    $this->system->cacheSet('xautoload_libraries_info', $info);
-    return $info;
-  }
-
-  /**
-   * @return array[]
-   */
-  private function buildLibrariesXautoloadInfo() {
-    # StaticCallLog::addCall();
-    // @todo Reset drupal_static('libraries') ?
-    $all = array();
-    foreach ($this->system->getLibrariesInfo() as $name => $info) {
-      if (!isset($info['xautoload'])) {
-        continue;
-      }
-      $callback = $info['xautoload'];
-      if (!is_callable($callback)) {
-        continue;
-      }
-      $path = $this->system->librariesGetPath($name);
-      if (FALSE === $path) {
-        continue;
-      }
-      $all[$name] = array($path, $callback);
-    }
-    return $all;
+  private function registerLibrariesFinderPlugin() {
+    $plugin = new LibrariesFinderPlugin($this->finder, $this->system);
+    $this->finder->getPrefixMap()->registerDeepPath('', '', $plugin);
+    $this->finder->getNamespaceMap()->registerDeepPath('', '', $plugin);
   }
 
 }
