@@ -7,7 +7,6 @@ namespace Drupal\xautoload\Libraries;
 use Drupal\xautoload\ClassFinder\ExtendedClassFinderInterface;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 use Drupal\xautoload\Phases\PhaseObserverInterface;
-use Drupal\xautoload\Tests\Util\StaticCallLog;
 
 
 /**
@@ -75,7 +74,6 @@ class LibrariesOnInit implements PhaseObserverInterface {
    *   New module names.
    */
   public function modulesEnabled($modules) {
-    # StaticCallLog::addCall();
     $this->system->drupalStaticReset('libraries_info');
     $this->system->cacheClearAll('xautoload_libraries_info', 'cache');
     $this->registerAllLibraries();
