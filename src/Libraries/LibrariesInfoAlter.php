@@ -10,6 +10,7 @@ class LibrariesInfoAlter {
    * @param array $info
    *
    * @see hook_libraries_info_alter()
+   * @see xautoload_libraries_info_alter()
    */
   function librariesInfoAlter(&$info) {
     foreach ($info as $library_name => &$library_info) {
