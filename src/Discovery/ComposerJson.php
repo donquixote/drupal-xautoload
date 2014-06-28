@@ -32,7 +32,7 @@ class ComposerJson {
     if (NULL === $data && JSON_ERROR_NONE !== json_last_error()) {
       throw new \Exception("Invalid json in '$file'.");
     }
-    return self::createFromData($data, dirname($file));
+    return self::createFromData($data, dirname($file) . '/');
   }
 
   /**
