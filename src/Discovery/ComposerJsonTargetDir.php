@@ -28,7 +28,7 @@ class ComposerJsonTargetDir extends ComposerJson {
    *
    * @throws \Exception
    */
-  function writeToAdapter($adapter) {
+  function writeToAdapter(ClassFinderAdapter $adapter) {
 
     if (!empty($data['include-path'])) {
       $paths = $this->pathsResolveTargetDir((array) $data['include-path']);
@@ -76,7 +76,7 @@ class ComposerJsonTargetDir extends ComposerJson {
    * @param ClassFinderAdapter $adapter
    * @param array $prefixes
    */
-  protected function addMultipleWithTargetDir($adapter, array $prefixes) {
+  protected function addMultipleWithTargetDir(ClassFinderAdapter $adapter, array $prefixes) {
     $default_behavior = new DefaultDirectoryBehavior();
     $psr0_behavior = new Psr0DirectoryBehavior();
     $namespace_map = array();

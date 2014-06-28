@@ -12,7 +12,7 @@ class ComposerJson {
   protected $data;
 
   /**
-   * @var
+   * @var string
    */
   protected $pathPrefix;
 
