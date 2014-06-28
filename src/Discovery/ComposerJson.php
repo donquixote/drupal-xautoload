@@ -63,6 +63,8 @@ class ComposerJson {
    */
   function writeToAdapter($adapter) {
 
+    $data = $this->data;
+
     if (!empty($data['include-path'])) {
       $this->addIncludePaths((array)$data['include-path']);
     }

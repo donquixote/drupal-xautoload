@@ -30,6 +30,8 @@ class ComposerJsonTargetDir extends ComposerJson {
    */
   function writeToAdapter(ClassFinderAdapter $adapter) {
 
+    $data = $this->data;
+
     if (!empty($data['include-path'])) {
       $paths = $this->pathsResolveTargetDir((array) $data['include-path']);
       $this->addIncludePaths($paths, $this->pathPrefix);
