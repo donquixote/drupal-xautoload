@@ -11,6 +11,9 @@ function testmod_init() {
   new \Drupal\testmod\Foo();
   # libraries_load('testlib');
   new \Acme\TestLib\Foo();
+  new \ComposerTestLib\Other\Foo();
+  new \ComposerTestLib\Foo();
+  new \Acme\ComposerTargetDirTestLib\Foo();
 }
 
 /**
@@ -20,6 +23,9 @@ function testmod_modules_enabled() {
   StaticCallLog::addCall();
   # new \Drupal\testmod\Foo();
   new \Acme\TestLib\Foo();
+  new \ComposerTestLib\Other\Foo();
+  new \ComposerTestLib\Foo();
+  new \Acme\ComposerTargetDirTestLib\Foo();
 }
 
 /**
@@ -53,6 +59,12 @@ function testmod_libraries_info() {
       'name' => 'Test library',
       'xautoload' => '_testmod_libraries_testlib_xautoload',
     ),
+    'ComposerTestLib' => array(
+      'xautoload' => '_testmod_libraries_ComposerTestLib_xautoload',
+    ),
+    'ComposerTargetDirTestLib' => array(
+      'xautoload' => '_testmod_libraries_ComposerTargetDirTestLib_xautoload',
+    ),
   );
 }
 
@@ -62,4 +74,18 @@ function testmod_libraries_info() {
 function _testmod_libraries_testlib_xautoload($adapter) {
   StaticCallLog::addCall();
   $adapter->addPsr4('Acme\TestLib\\', 'src');
+}
+
+/**
+ * @param LocalDirectoryAdapter $adapter
+ */
+function _testmod_libraries_ComposerTestLib_xautoload($adapter) {
+  $adapter->composerJson('composer.json');
+}
+
+/**
+ * @param LocalDirectoryAdapter $adapter
+ */
+function _testmod_libraries_ComposerTargetDirTestLib_xautoload($adapter) {
+  $adapter->composerJson('composer.json');
 }
