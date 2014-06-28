@@ -28,7 +28,7 @@ class ComposerJson {
       throw new \Exception("File '$file' does not exist.");
     }
     $json = file_get_contents($file);
-    $data = json_decode($json);
+    $data = json_decode($json, TRUE);
     if (NULL === $data && JSON_ERROR_NONE !== json_last_error()) {
       throw new \Exception("Invalid json in '$file'.");
     }
