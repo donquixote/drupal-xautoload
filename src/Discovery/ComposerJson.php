@@ -61,7 +61,7 @@ class ComposerJson {
   /**
    * @param ClassFinderAdapter $adapter
    */
-  function writeToAdapter($adapter) {
+  function writeToAdapter(ClassFinderAdapter $adapter) {
 
     $data = $this->data;
 
