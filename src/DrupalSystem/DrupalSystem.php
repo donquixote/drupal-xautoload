@@ -6,8 +6,6 @@ class DrupalSystem implements DrupalSystemInterface {
 
   function __construct() {
     if (!function_exists('drupal_get_filename')) {
-      debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-      echo "\n\n";
       throw new \Exception("This class works only within a working Drupal environment.");
     }
   }
