@@ -12,6 +12,8 @@ function xautoload_form_system_performance_settings_alter(&$form) {
     '#title' => t('X Autoload'),
   );
 
+  $cache_default_value = variable_get('xautoload_cache_types', array());
+
   $cache_status = array(
     'apc' => (extension_loaded('apc') && function_exists('apc_store')),
     'apcu' => (extension_loaded('apcu') && function_exists('apcu_store')),
@@ -26,27 +28,47 @@ function xautoload_form_system_performance_settings_alter(&$form) {
     'xcache' => 'XCache',
     'dbcache' => 'Smart database cache (experimental)',
   );
-  $options = array();
+  $options = $cache_names;
+  $options_descriptions = array();
+  $options['dbcache'] = l($options['dbcache'], 'https://www.drupal.org/node/2451261');
+  $active_cache_key = NULL;
+  $active_cache_name = t('No cache.');
   foreach ($cache_names as $key => $title) {
-    $options[$key] = t('@cache_name (@status)', array(
-      '@cache_name' => $title,
-      '@status' => $cache_status[$key]
-        ? t('Running and available')
-        : t('Not currently available'),
-    ));
+    $status = $cache_status[$key];
+    if (!isset($active_cache_key) && $status && !empty($cache_default_value[$key])) {
+      $active_cache_key = $key;
+      $active_cache_name = $title;
+    }
+  }
+  foreach ($options as $key => $title) {
+    if ($cache_status[$key]) {
+      $options[$key] .= ' (' . t('Running and available') . ')';
+    }
+    else {
+      $options[$key] .= ' (' . t('Not currently available') . ')';
+      $options[$key] = '<em>' . $options[$key] . '</em>';
+    }
   }
 
   $form['xautoload']['xautoload_cache_types'] = array(
     /* @see system_element_info() */
     '#type' => 'checkboxes',
     '#title' => t('Cache mode'),
-    '#default_value' => variable_get('xautoload_cache_types', array()),
+    '#default_value' => $cache_default_value,
     '#options' => $options,
+    '#options_descriptions' => $options_descriptions,
+    '#description' => ''
+      . '<p>' . t('X Autoload will pick the first cache mode that is <em>available and enabled</em>.')
+      . '<br/>' . t('Currently, this is:') . ' ' . $active_cache_name . '.'
+      . '</p><p>' . t('It is usually safe to enable all these checkboxes, so xautoload can always use the best cache mode available on your system.')
+      . '<br/>' . t('This also makes it easier to sync these settings between environments, where different PHP extensions might be installed.')
+      . '</p>',
   );
 
   $form['xautoload']['xautoload_cache_lazy'] = array(
     '#type' => 'checkbox',
     '#title' => t('Postpone registration of module namespaces until the first cache miss (recommended).'),
     '#default_value' => variable_get('xautoload_cache_lazy', FALSE),
+    '#description' => t('This should speed up the bootstrap of xautoload.'),
   );
 }
