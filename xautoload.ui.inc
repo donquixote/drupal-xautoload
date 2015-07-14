@@ -7,6 +7,7 @@
 function xautoload_form_system_performance_settings_alter(&$form) {
 
   $form['xautoload'] = array(
+    /* @see system_element_info() */
     '#type' => 'fieldset',
     '#title' => t('X Autoload'),
   );
@@ -36,6 +37,7 @@ function xautoload_form_system_performance_settings_alter(&$form) {
   }
 
   $form['xautoload']['xautoload_cache_types'] = array(
+    /* @see system_element_info() */
     '#type' => 'checkboxes',
     '#title' => t('Cache mode'),
     '#default_value' => variable_get('xautoload_cache_types', array()),
