@@ -113,7 +113,10 @@ class LibrariesFinderPlugin implements FinderPluginInterface {
       if (!is_callable($callback)) {
         continue;
       }
-      $path = $this->system->librariesGetPath($name);
+      /** See https://www.drupal.org/node/2473901 */
+      $path = isset($info['library path'])
+        ? $info['library path']
+        : $this->system->librariesGetPath($name);
       if (FALSE === $path) {
         continue;
       }
