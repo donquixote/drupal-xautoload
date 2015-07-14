@@ -52,6 +52,24 @@ function xautoload_init() {
 }
 
 /**
+ * Implements hook_system_theme_info().
+ *
+ * This is the first hook to fire on update.php.
+ *
+ * Unfortunately, hook_custom_theme() and hook_init() are not called on
+ * update.php in _drupal_bootstrap_full().
+ *
+ * But in list_themes(), _system_rebuild_theme_data() is always called in
+ * maintenance mode. And from there, hook_system_theme_info().
+ *
+ * @see _drupal_bootstrap_full()
+ * @see list_themes()
+ */
+function xautoload_system_theme_info() {
+  xautoload()->phaseControl->enterMainPhase();
+}
+
+/**
  * Implements hook_module_implements_alter()
  *
  * @param array &$implementations
@@ -73,6 +91,7 @@ function xautoload_module_implements_alter(&$implementations, $hook) {
   switch ($hook) {
     case 'init':
     case 'custom_theme':
+    case 'system_theme_info':
       // Move xautoload_$hook() to the start.
       $implementations = array('xautoload' => FALSE) + $implementations;
       break;
