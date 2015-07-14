@@ -47,7 +47,7 @@ class XAutoloadUnitTestCase extends \DrupalUnitTestCase {
       'Drupal\\xautoload\\ClassFinder\\ClassFinder->loadClass()',
       'drupal_autoload_class',
       'drupal_autoload_interface',
-      '_simpletest_autoload_psr0',
+      '_simpletest_autoload_psr4_psr0',
     );
 
     $actual = array();
