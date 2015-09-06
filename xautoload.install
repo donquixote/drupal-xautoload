@@ -19,6 +19,7 @@ function xautoload_install() {
 function xautoload_uninstall() {
   variable_del('xautoload_cache_mode');
   variable_del('xautoload_cache_lazy');
+  variable_del('xautoload_replace_core');
 }
 
 /**

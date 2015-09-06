@@ -13,6 +13,7 @@ use Drupal\xautoload\Discovery\ClassMapGenerator;
 use Drupal\xautoload\DrupalSystem\DrupalSystem;
 use Drupal\xautoload\DrupalSystem\DrupalSystemInterface;
 use Drupal\xautoload\Libraries\LibrariesInfoAlter;
+use Drupal\xautoload\Phases\DrupalCoreRegistryRegistrator;
 use Drupal\xautoload\Phases\DrupalPhaseControl;
 use Drupal\xautoload\Phases\ExtensionNamespaces;
 use Drupal\xautoload\Phases\HookXautoload;
@@ -145,6 +146,9 @@ class ServiceFactory {
       new HookXautoload($services->system),
       new LibrariesOnInit($services->system),
     );
+    if ($services->system->variableGet('xautoload_replace_core', FALSE)) {
+      $observers[] = new DrupalCoreRegistryRegistrator();
+    }
     return new DrupalPhaseControl($services->system, $observers);
   }
 

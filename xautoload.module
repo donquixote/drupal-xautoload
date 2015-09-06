@@ -139,6 +139,18 @@ function _xautoload_register_drupal() {
 
   $services = xautoload()->getServiceContainer();
 
+  if ($services->system->variableGet('xautoload_replace_core')) {
+    /**
+     * Completely take over.
+     *
+     * @see _drupal_bootstrap_database()
+     * @see drupal_autoload_class()
+     * @see drupal_autoload_interface()
+     */
+    spl_autoload_unregister('drupal_autoload_class');
+    spl_autoload_unregister('drupal_autoload_interface');
+  }
+
   $lazy = $services->system->variableGet('xautoload_cache_lazy', FALSE);
   $decorated = $lazy
     ? $services->proxyFinder
