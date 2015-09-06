@@ -3,6 +3,8 @@
 /**
  * Implements hook_form_FORM_ID_alter()
  * with FORM_ID = "system_performance_settings"
+ *
+ * @param array $form
  */
 function xautoload_form_system_performance_settings_alter(&$form) {
 
