@@ -76,7 +76,7 @@ function _xautoload_register() {
   $_first_run = FALSE;
 
   // Register a temporary loader.
-  spl_autoload_register('_xautoload_autoload_temp');
+  spl_autoload_register('_xautoload_autoload_temp', TRUE, TRUE);
 
   // Some classes need to be loaded manually. Believe it!
   LoadClassInjectedAPI::forceAutoload();
