@@ -13,6 +13,7 @@ define('XAUTOLOAD_VARNAME_CACHE_TYPES', 'xautoload_cache_types');
 define('XAUTOLOAD_VARNAME_CACHE_LAZY', 'xautoload_cache_lazy');
 define('XAUTOLOAD_VARNAME_REPLACE_CORE', 'xautoload_replace_core');
 define('XAUTOLOAD_VARNAME_CACHE_PREFIX', 'xautoload_cache_prefix');
+define('XAUTOLOAD_CACHENAME_LIBRARIES_INFO', 'xautoload_libraries_info');
 
 
 // Public API functions.
