@@ -29,8 +29,8 @@ function xautoload_form_system_performance_settings_alter(&$form) {
     'apcu' => 'APCu',
     'wincache' => 'WinCache',
     'xcache' => 'XCache',
-    'apcu_q' => 'Self-updating APCu classmap',
-    'dbcache' => 'Self-updating database classmap',
+    'apcu_q' => t('Self-updating APCu classmap (*)'),
+    'dbcache' => t('Self-updating database classmap (*)'),
   );
   $options = $cache_names;
   $options_descriptions = array();
@@ -66,6 +66,8 @@ function xautoload_form_system_performance_settings_alter(&$form) {
       . '<br/>' . t('Currently, this is:') . ' ' . $active_cache_name . '.'
       . '</p><p>' . t('It is usually safe to enable all these checkboxes, so xautoload can always use the best cache mode available on your system.')
       . '<br/>' . t('This also makes it easier to sync these settings between environments, where different PHP extensions might be installed.')
+      . '</p>'
+      . '<p>(*) ' . t('The "Self-updating [_] classmap" cache types require more than one request until they are "hot", but may bring higher performance.')
       . '</p>',
   );
 
