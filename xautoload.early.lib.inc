@@ -9,6 +9,10 @@ use Drupal\xautoload\Main;
 
 define('XAUTOLOAD_LIB_DIR', __DIR__ . '/lib');
 define('XAUTOLOAD_SRC_DIR', __DIR__ . '/src');
+define('XAUTOLOAD_VARNAME_CACHE_TYPES', 'xautoload_cache_types');
+define('XAUTOLOAD_VARNAME_CACHE_LAZY', 'xautoload_cache_lazy');
+define('XAUTOLOAD_VARNAME_REPLACE_CORE', 'xautoload_replace_core');
+define('XAUTOLOAD_VARNAME_CACHE_PREFIX', 'xautoload_cache_prefix');
 
 
 // Public API functions.

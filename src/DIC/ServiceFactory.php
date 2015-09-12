@@ -146,7 +146,7 @@ class ServiceFactory {
       new HookXautoload($services->system),
       new LibrariesOnInit($services->system),
     );
-    if ($services->system->variableGet('xautoload_replace_core', FALSE)) {
+    if ($services->system->variableGet(XAUTOLOAD_VARNAME_REPLACE_CORE, FALSE)) {
       $observers[] = new DrupalCoreRegistryRegistrator();
     }
     return new DrupalPhaseControl($services->system, $observers);

@@ -139,7 +139,7 @@ function _xautoload_register_drupal() {
 
   $services = xautoload()->getServiceContainer();
 
-  if ($services->system->variableGet('xautoload_replace_core')) {
+  if ($services->system->variableGet(XAUTOLOAD_VARNAME_REPLACE_CORE)) {
     /**
      * Completely take over.
      *
@@ -151,14 +151,14 @@ function _xautoload_register_drupal() {
     spl_autoload_unregister('drupal_autoload_interface');
   }
 
-  $lazy = $services->system->variableGet('xautoload_cache_lazy', FALSE);
+  $lazy = $services->system->variableGet(XAUTOLOAD_VARNAME_CACHE_LAZY, FALSE);
   $decorated = $lazy
     ? $services->proxyFinder
     : $services->proxyFinder->getFinder()
   ;
 
   // Activate a cache, if available and enabled.
-  $cache_types = $services->system->variableGet('xautoload_cache_types', array());
+  $cache_types = $services->system->variableGet(XAUTOLOAD_VARNAME_CACHE_TYPES, array());
   if (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
     $cached_loader = ApcClassLoader::create($decorated, $services->cacheManager);
   }
