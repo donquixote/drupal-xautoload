@@ -7,8 +7,8 @@ use Drupal\xautoload\DIC\ServiceContainer;
 use Drupal\xautoload\DIC\ServiceFactory;
 use Drupal\xautoload\Main;
 
-define('XAUTOLOAD_LIB_DIR', dirname(__FILE__) . '/lib');
-define('XAUTOLOAD_SRC_DIR', dirname(__FILE__) . '/src');
+define('XAUTOLOAD_LIB_DIR', __DIR__ . '/lib');
+define('XAUTOLOAD_SRC_DIR', __DIR__ . '/src');
 
 
 // Public API functions.

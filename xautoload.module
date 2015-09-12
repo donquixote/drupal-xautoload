@@ -134,7 +134,7 @@ function _xautoload_register_drupal() {
   $_first_run = FALSE;
 
   // Register the class loader itself.
-  require_once dirname(__FILE__) . '/xautoload.early.lib.inc';
+  require_once __DIR__ . '/xautoload.early.lib.inc';
   _xautoload_register();
 
   $services = xautoload()->getServiceContainer();
