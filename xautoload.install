@@ -17,9 +17,12 @@ function xautoload_install() {
  * Implements hook_uninstall()
  */
 function xautoload_uninstall() {
-  variable_del('xautoload_cache_mode');
+  variable_del('xautoload_cache_types');
   variable_del('xautoload_cache_lazy');
   variable_del('xautoload_replace_core');
+
+  // The following variable is a leftover from previous versions.
+  variable_del('xautoload_cache_mode');
 }
 
 /**
