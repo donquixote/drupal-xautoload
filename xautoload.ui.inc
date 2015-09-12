@@ -28,7 +28,7 @@ function xautoload_form_system_performance_settings_alter(&$form) {
     'apcu' => 'APCu',
     'wincache' => 'WinCache',
     'xcache' => 'XCache',
-    'dbcache' => 'Smart database cache (experimental)',
+    'dbcache' => 'Self-updating database classmap',
   );
   $options = $cache_names;
   $options_descriptions = array();
