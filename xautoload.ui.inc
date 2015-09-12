@@ -17,19 +17,19 @@ function xautoload_form_system_performance_settings_alter(&$form) {
   $cache_default_value = variable_get(XAUTOLOAD_VARNAME_CACHE_TYPES, array());
 
   $cache_status = array(
+    'apcu_q' => $apcu_status = (extension_loaded('apcu') && function_exists('apcu_store')),
     'apc' => (extension_loaded('apc') && function_exists('apc_store')),
-    'apcu' => $apcu_status = (extension_loaded('apcu') && function_exists('apcu_store')),
+    'apcu' => $apcu_status,
     'wincache' => (extension_loaded('WinCache') && function_exists('wincache_ucache_get')),
     'xcache' => (extension_loaded('Xcache') && function_exists('xcache_get')),
-    'apcu_q' => $apcu_status,
     'dbcache' => TRUE,
   );
   $cache_names = array(
+    'apcu_q' => t('Self-updating APCu classmap (*)'),
     'apc' => 'APC',
     'apcu' => 'APCu',
     'wincache' => 'WinCache',
     'xcache' => 'XCache',
-    'apcu_q' => t('Self-updating APCu classmap (*)'),
     'dbcache' => t('Self-updating database classmap (*)'),
   );
   $options = $cache_names;

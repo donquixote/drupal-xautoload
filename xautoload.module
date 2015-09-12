@@ -160,7 +160,10 @@ function _xautoload_register_drupal() {
 
   // Activate a cache, if available and enabled.
   $cache_types = $services->system->variableGet(XAUTOLOAD_VARNAME_CACHE_TYPES, array());
-  if (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
+  if (!empty($cache_types['apcu_q'])) {
+    $cached_loader = ApcuQueuedCachedClassLoader::create($decorated, $services->cacheManager);
+  }
+  elseif (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
     $cached_loader = ApcClassLoader::create($decorated, $services->cacheManager);
   }
   elseif (!empty($cache_types['apcu']) && extension_loaded('apcu') && function_exists('apcu_store')) {
@@ -171,9 +174,6 @@ function _xautoload_register_drupal() {
   }
   elseif (!empty($cache_types['xcache']) && extension_loaded('Xcache') && function_exists('xcache_get')) {
     $cached_loader = XCacheClassLoader::create($decorated, $services->cacheManager);
-  }
-  elseif (!empty($cache_types['apcu_q'])) {
-    $cached_loader = ApcuQueuedCachedClassLoader::create($decorated, $services->cacheManager);
   }
   elseif (!empty($cache_types['dbcache'])) {
     $cached_loader = DbCacheClassLoader::create($decorated, $services->cacheManager);
