@@ -65,7 +65,11 @@ class DrupalCoreRegistryPlugin implements FinderPluginInterface {
     $stmt = $q->execute();
     while ($relative_path = $stmt->fetchField()) {
       $file = $this->baseDir . $relative_path;
-      # print __METHOD__ . ': ' . $file . "\n";
+      // Attention: The db_select() above can trigger the class loader for
+      // classes and interfaces of the database layer. This can cause some files
+      // to be included twice, if the file defines more than one class.
+      // So we need to use require_once here, instead of require. That is, use
+      // guessFile() instead of claimFile().
       if ($api->guessFile($file)) {
         return TRUE;
       }
