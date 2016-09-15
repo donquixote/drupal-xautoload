@@ -7,24 +7,24 @@ use Drupal\xautoload\Tests\Mock\MockDrupalSystem;
 
 /**
  *
- * @property ModuleEnable ModuleEnable
- * @property DrupalGetFilename DrupalGetFilename
- * @property SystemUpdateBootstrapStatus SystemUpdateBootstrapStatus
- * @property SystemRebuildModuleData SystemRebuildModuleData
- * @property SystemListReset SystemListReset
- * @property SystemTable SystemTable
- * @property ModuleList ModuleList
- * @property HookSystem HookSystem
- * @property DrupalStatic DrupalStatic
- * @property SystemList SystemList
- * @property Cache Cache
- * @property ModuleBuildDependencies ModuleBuildDependencies
- * @property SystemBuildModuleData SystemBuildModuleData
- * @property LibrariesInfo LibrariesInfo
- * @property LibrariesLoad LibrariesLoad
- * @property DrupalBootstrap DrupalBoot
- * @property DrupalLoad DrupalLoad
- * @property MockDrupalSystem MockDrupalSystem
+ * @property ModuleEnable $ModuleEnable
+ * @property DrupalGetFilename $DrupalGetFilename
+ * @property SystemUpdateBootstrapStatus $SystemUpdateBootstrapStatus
+ * @property SystemRebuildModuleData $SystemRebuildModuleData
+ * @property SystemListReset $SystemListReset
+ * @property SystemTable $SystemTable
+ * @property ModuleList $ModuleList
+ * @property HookSystem $HookSystem
+ * @property DrupalStatic $DrupalStatic
+ * @property SystemList $SystemList
+ * @property Cache $Cache
+ * @property ModuleBuildDependencies $ModuleBuildDependencies
+ * @property SystemBuildModuleData $SystemBuildModuleData
+ * @property LibrariesInfo $LibrariesInfo
+ * @property LibrariesLoad $LibrariesLoad
+ * @property DrupalBootstrap $DrupalBoot
+ * @property DrupalLoad $DrupalLoad
+ * @property MockDrupalSystem $MockDrupalSystem
  */
 class DrupalComponentContainer {
 
