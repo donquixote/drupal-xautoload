@@ -54,7 +54,7 @@ class DrupalGetFilename {
   function drupalGetFilename($type, $name) {
 
     // Profiles are a special case: they have a fixed location and naming.
-    if ($type == 'profile') {
+    if ($type === 'profile') {
       $profile_filename = "profiles/$name/$name.profile";
       $this->files[$type][$name] = file_exists($profile_filename)
         ? $profile_filename
