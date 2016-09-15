@@ -46,18 +46,16 @@ function xautoload_get_finder() {
 function xautoload($key = 'main') {
   static $service_registry;
   static $main;
+
   if (!isset($service_registry)) {
     $service_factory = new ServiceFactory();
     $service_registry = new ServiceContainer($service_factory);
     $main = $service_registry->main;
   }
-  switch ($key) {
-    case 'main':
-      return $main;
-    default:
-      // Legacy..
-      return $service_registry->get($key);
-  }
+
+  return 'main' === $key
+    ? $main
+    : $service_registry->get($key);
 }
 
 
