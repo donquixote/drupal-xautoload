@@ -64,9 +64,9 @@ class DrupalBootTest extends AbstractDrupalBootTest {
             'function' => $module . '_install',
             'args' => array(),
           );
-          foreach ($enabledModulesSoFar as $module) {
+          foreach ($enabledModulesSoFar as $enabledModule) {
             $expectedCalls[] = array(
-              'function' => $module . '_watchdog',
+              'function' => $enabledModule . '_watchdog',
               'args' => array(),
             );
           }
@@ -75,9 +75,9 @@ class DrupalBootTest extends AbstractDrupalBootTest {
           'function' => $module . '_enable',
           'args' => array(),
         );
-        foreach ($enabledModulesSoFar as $module) {
+        foreach ($enabledModulesSoFar as $enabledModule) {
           $expectedCalls[] = array(
-            'function' => $module . '_watchdog',
+            'function' => $enabledModule . '_watchdog',
             'args' => array(),
           );
         }
