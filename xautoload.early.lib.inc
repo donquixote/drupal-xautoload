@@ -47,7 +47,7 @@ function xautoload($key = 'main') {
   static $service_registry;
   static $main;
 
-  if (!isset($service_registry)) {
+  if (NULL === $service_registry) {
     $service_factory = new ServiceFactory();
     $service_registry = new ServiceContainer($service_factory);
     $main = $service_registry->main;
