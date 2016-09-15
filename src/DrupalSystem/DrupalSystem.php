@@ -11,6 +11,41 @@ class DrupalSystem implements DrupalSystemInterface {
   }
 
   /**
+   * Gets a hash that tries everything to be unique to this site.
+   *
+   * At the same time, it tries to not allow to determine any of the parts that
+   * went into its construction.
+   *
+   * The author is not sure if all of this is really necessary. But some
+   * paranoia was at work.
+   *
+   * @return string
+   */
+  function getUniqueSiteHash() {
+
+    $string = $this->variableGet(XAUTOLOAD_VARNAME_HASH_SALT, NULL);
+
+    if (empty($string)) {
+      $string = uniqid('', TRUE);
+      $this->variableSet(XAUTOLOAD_VARNAME_HASH_SALT, $string);
+    }
+
+    $string .= '|' . DRUPAL_ROOT . '/' . conf_path();
+
+    if (!empty($GLOBALS['drupal_hash_salt'])) {
+      // The hash salt should be fine, but sometimes people may copy the
+      // settings.php together with the site?
+      $string .= '|' . $GLOBALS['drupal_hash_salt'];
+    }
+
+    if (!empty($GLOBALS['databases'])) {
+      $string .= '|' . serialize($GLOBALS['databases']);
+    }
+
+    return md5($string);
+  }
+
+  /**
    * {@inheritdoc}
    */
   function variableSet($name, $value) {

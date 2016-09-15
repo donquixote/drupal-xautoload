@@ -25,9 +25,10 @@ class DrupalEnvironment {
 
   /**
    * @param ExampleModulesInterface $exampleModules
+   * @param string $uniqueSiteHash
    */
-  function __construct(ExampleModulesInterface $exampleModules) {
-    $this->components = new DrupalComponentContainer($exampleModules);
+  function __construct(ExampleModulesInterface $exampleModules, $uniqueSiteHash) {
+    $this->components = new DrupalComponentContainer($exampleModules, $uniqueSiteHash);
     $this->exampleModules = $exampleModules;
   }
 

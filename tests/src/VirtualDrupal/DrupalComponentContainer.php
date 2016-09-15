@@ -39,10 +39,17 @@ class DrupalComponentContainer {
   private $exampleModules;
 
   /**
-   * @param ExampleModulesInterface $exampleModules
+   * @var string
    */
-  function __construct(ExampleModulesInterface $exampleModules) {
+  private $uniqueSiteHash;
+
+  /**
+   * @param ExampleModulesInterface $exampleModules
+   * @param string $uniqueSiteHash
+   */
+  function __construct(ExampleModulesInterface $exampleModules, $uniqueSiteHash) {
     $this->exampleModules = $exampleModules;
+    $this->uniqueSiteHash = $uniqueSiteHash;
   }
 
   /**
@@ -252,7 +259,7 @@ class DrupalComponentContainer {
    * @see $MockDrupalSystem
    */
   protected function getMockDrupalSystem() {
-    return new MockDrupalSystem($this);
+    return new MockDrupalSystem($this, $this->uniqueSiteHash);
   }
 
   /**

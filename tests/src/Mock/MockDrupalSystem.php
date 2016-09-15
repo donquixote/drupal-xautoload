@@ -19,10 +19,24 @@ class MockDrupalSystem implements DrupalSystemInterface {
   private $variables = array();
 
   /**
-   * @param DrupalComponentContainer $components
+   * @var string
    */
-  function __construct(DrupalComponentContainer $components) {
+  private $uniqueSiteHash;
+
+  /**
+   * @param DrupalComponentContainer $components
+   * @param string $uniqueSiteHash
+   */
+  function __construct(DrupalComponentContainer $components, $uniqueSiteHash) {
     $this->components = $components;
+    $this->uniqueSiteHash = $uniqueSiteHash;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function getUniqueSiteHash() {
+    return $this->uniqueSiteHash;
   }
 
   /**

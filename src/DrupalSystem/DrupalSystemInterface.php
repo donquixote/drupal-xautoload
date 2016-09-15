@@ -5,6 +5,13 @@ namespace Drupal\xautoload\DrupalSystem;
 interface DrupalSystemInterface {
 
   /**
+   * Gets a hash that tries everything to be unique to this site.
+   *
+   * @return string
+   */
+  function getUniqueSiteHash();
+
+  /**
    * Wrapper for variable_set()
    *
    * @param string $name

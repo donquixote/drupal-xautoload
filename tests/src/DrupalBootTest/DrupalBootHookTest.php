@@ -113,7 +113,7 @@ class DrupalBootHookTest extends AbstractDrupalBootTest {
       return;
     }
     $this->exampleModules = new HookTestExampleModules();
-    $this->exampleDrupal = new DrupalEnvironment($this->exampleModules);
+    $this->exampleDrupal = new DrupalEnvironment($this->exampleModules, md5(__DIR__));
     $this->exampleDrupal->setStaticInstance();
   }
 
