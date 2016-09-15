@@ -68,7 +68,7 @@ class DrupalComponentContainer {
   /**
    * @return SystemTable
    *
-   * @see DrupalComponentContainer::SystemTable
+   * @see $SystemTable
    */
   protected function getSystemTable() {
     return new SystemTable();
@@ -77,7 +77,7 @@ class DrupalComponentContainer {
   /**
    * @return Cache
    *
-   * @see DrupalComponentContainer::Cache
+   * @see $Cache
    */
   protected function getCache() {
     return new Cache();
@@ -86,7 +86,7 @@ class DrupalComponentContainer {
   /**
    * @return DrupalStatic
    *
-   * @see DrupalComponentContainer::DrupalStatic
+   * @see $DrupalStatic
    */
   protected function getDrupalStatic() {
     return new DrupalStatic();
@@ -95,7 +95,7 @@ class DrupalComponentContainer {
   /**
    * @return DrupalGetFilename
    *
-   * @see DrupalComponentContainer::DrupalGetFilename
+   * @see $DrupalGetFilename
    */
   protected function getDrupalGetFilename() {
     return new DrupalGetFilename($this->SystemTable, $this->exampleModules);
@@ -104,7 +104,7 @@ class DrupalComponentContainer {
   /**
    * @return HookSystem
    *
-   * @see DrupalComponentContainer::HookSystem
+   * @see $HookSystem
    */
   protected function getHookSystem() {
     return new HookSystem(
@@ -116,7 +116,7 @@ class DrupalComponentContainer {
   /**
    * @return ModuleEnable
    *
-   * @see DrupalComponentContainer::ModuleEnable
+   * @see $ModuleEnable
    */
   protected function getModuleEnable() {
     return new ModuleEnable(
@@ -132,7 +132,7 @@ class DrupalComponentContainer {
   /**
    * @return ModuleList
    *
-   * @see DrupalComponentContainer::ModuleList
+   * @see $ModuleList
    */
   protected function getModuleList() {
     return new ModuleList(
@@ -144,7 +144,7 @@ class DrupalComponentContainer {
   /**
    * @return SystemListReset
    *
-   * @see DrupalComponentContainer::SystemListReset
+   * @see $SystemListReset
    */
   protected function getSystemListReset() {
     return new SystemListReset(
@@ -155,7 +155,7 @@ class DrupalComponentContainer {
   /**
    * @return ModuleBuildDependencies
    *
-   * @see DrupalComponentContainer::ModuleBuildDependencies
+   * @see $ModuleBuildDependencies
    */
   protected function getModuleBuildDependencies() {
     return new ModuleBuildDependencies();
@@ -164,7 +164,7 @@ class DrupalComponentContainer {
   /**
    * @return SystemBuildModuleData
    *
-   * @see DrupalComponentContainer::SystemBuildModuleData
+   * @see $SystemBuildModuleData
    */
   protected function getSystemBuildModuleData() {
     return new SystemBuildModuleData(
@@ -175,7 +175,7 @@ class DrupalComponentContainer {
   /**
    * @return SystemRebuildModuleData
    *
-   * @see DrupalComponentContainer::SystemRebuildModuleData
+   * @see $SystemRebuildModuleData
    */
   protected function getSystemRebuildModuleData() {
     return new SystemRebuildModuleData(
@@ -189,7 +189,7 @@ class DrupalComponentContainer {
   /**
    * @return SystemUpdateBootstrapStatus
    *
-   * @see DrupalComponentContainer::SystemUpdateBootstrapStatus
+   * @see $SystemUpdateBootstrapStatus
    */
   protected function getSystemUpdateBootstrapStatus() {
     return new SystemUpdateBootstrapStatus(
@@ -201,7 +201,7 @@ class DrupalComponentContainer {
   /**
    * @return SystemList
    *
-   * @see DrupalComponentContainer::SystemList
+   * @see $SystemList
    */
   protected function getSystemList() {
     return new SystemList(
@@ -214,7 +214,7 @@ class DrupalComponentContainer {
   /**
    * @return LibrariesInfo
    *
-   * @see DrupalComponentContainer::LibrariesInfo
+   * @see $LibrariesInfo
    */
   protected function getLibrariesInfo() {
     return new LibrariesInfo(
@@ -225,7 +225,7 @@ class DrupalComponentContainer {
   /**
    * @return LibrariesLoad
    *
-   * @see DrupalComponentContainer::LibrariesLoad
+   * @see $LibrariesLoad
    */
   protected function getLibrariesLoad() {
     return new LibrariesLoad(
@@ -237,7 +237,7 @@ class DrupalComponentContainer {
   /**
    * @return DrupalBootstrap
    *
-   * @see DrupalComponentContainer::DrupalBoot
+   * @see $DrupalBoot
    */
   protected function getDrupalBoot() {
     return new DrupalBootstrap(
@@ -249,7 +249,7 @@ class DrupalComponentContainer {
   /**
    * @return MockDrupalSystem
    *
-   * @see DrupalComponentContainer::MockDrupalSystem
+   * @see $MockDrupalSystem
    */
   protected function getMockDrupalSystem() {
     return new MockDrupalSystem($this);
@@ -258,7 +258,7 @@ class DrupalComponentContainer {
   /**
    * @return DrupalLoad
    *
-   * @see DrupalComponentContainer::DrupalLoad
+   * @see $DrupalLoad
    */
   protected function getDrupalLoad() {
     return new DrupalLoad(
