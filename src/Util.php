@@ -19,6 +19,8 @@ class Util {
    *
    * @return string
    *   Random string of the specified length
+   *
+   * @todo Use uniqid() instead?
    */
   static function randomString($length = 30, $chars = NULL, $chars_first = NULL) {
 
