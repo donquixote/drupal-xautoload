@@ -166,7 +166,6 @@ function _xautoload_register_drupal() {
   elseif (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
     $cached_loader = ApcClassLoader::create($decorated, $services->cacheManager);
   }
-  /** @noinspection NotOptimalIfConditionsInspection */
   elseif (!empty($cache_types['apcu']) && extension_loaded('apcu') && function_exists('apcu_store')) {
     $cached_loader = ApcuClassLoader::create($decorated, $services->cacheManager);
   }
