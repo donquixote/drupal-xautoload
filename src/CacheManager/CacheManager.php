@@ -65,4 +65,11 @@ class CacheManager {
       $observer->setCachePrefix($this->prefix);
     }
   }
+
+  /**
+   * @return string
+   */
+  public function getCachePrefix() {
+    return $this->prefix;
+  }
 }
