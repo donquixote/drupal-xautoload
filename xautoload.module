@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\xautoload\CacheManager\CacheManagerObserverInterface;
 use Drupal\xautoload\ClassLoader\ApcClassLoader;
 use Drupal\xautoload\ClassLoader\ApcuClassLoader;
 use Drupal\xautoload\ClassLoader\ApcuQueuedCachedClassLoader;
@@ -191,6 +192,9 @@ function _xautoload_register_drupal() {
   }
 
   if (isset($cached_loader)) {
+    if ($cached_loader instanceof CacheManagerObserverInterface) {
+      $services->cacheManager->observeCachePrefix($cached_loader);
+    }
     if ($lazy) {
       $decorated->observeFirstCacheMiss(new CacheMissLoaderSetFinder($cached_loader));
     }
