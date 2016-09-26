@@ -210,3 +210,10 @@ function _xautoload_register_drupal() {
   // Register prefixes and namespaces for enabled extensions.
   $services->proxyFinder->observeFirstCacheMiss($services->phaseControl);
 }
+
+/**
+ * Implements hook_flush_caches().
+ */
+function xautoload_flush_caches() {
+  xautoload()->main->flushCache();
+}
