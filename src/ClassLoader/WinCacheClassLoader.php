@@ -21,6 +21,8 @@ class WinCacheClassLoader extends AbstractCachedClassLoader implements CacheMana
   function loadClass($class) {
 
     // Look if the cache has anything for this class.
+    // @todo Use a suffix instead of a prefix? For faster lookup?
+    // See http://stackoverflow.com/questions/39701930/is-apcu-fetch-lookup-faster-with-prefix-or-suffix
     if ($file = wincache_ucache_get($this->prefix . $class)) {
       if (is_file($file)) {
         require $file;
