@@ -3,15 +3,40 @@
 namespace Drupal\xautoload\ClassLoader;
 
 use Drupal\xautoload\CacheManager\CacheManagerObserverInterface;
+use Drupal\xautoload\ClassFinder\ClassFinderInterface;
 use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassGetFileInjectedApi;
 
-class XCacheClassLoader extends AbstractCachedClassLoader implements CacheManagerObserverInterface {
+class XCacheClassLoader extends AbstractClassLoaderDecorator implements CacheManagerObserverInterface {
+
+  /**
+   * @var string
+   */
+  private $uniqueSiteHash;
+
+  /**
+   * @var string
+   */
+  private $prefix;
+
+  /**
+   * @param \Drupal\xautoload\ClassFinder\ClassFinderInterface $finder
+   * @param string $uniqueSiteHash
+   * @param string $dynamicKey
+   */
+  public function __construct(ClassFinderInterface $finder, $uniqueSiteHash, $dynamicKey) {
+    if (!$this->checkRequirements()) {
+      throw new \RuntimeException("Extension 'xcache' is missing.");
+    }
+    parent::__construct($finder);
+    $this->uniqueSiteHash = $uniqueSiteHash;
+    $this->setCachePrefix($dynamicKey);
+  }
 
   /**
    * @return bool
    */
   protected function checkRequirements() {
-    return extension_loaded('Xcache') && function_exists('xcache_isset');
+    return extension_loaded('Xcache') && function_exists('xcache_isset') && defined('XC_TYPE_PHP');
   }
 
   /**
@@ -38,5 +63,26 @@ class XCacheClassLoader extends AbstractCachedClassLoader implements CacheManage
     if ($this->finder->apiFindFile($api, $class)) {
       xcache_set($this->prefix . $class, $api->getFile());
     }
+  }
+
+  /**
+   * @param string $dynamicKey
+   */
+  public function setCachePrefix($dynamicKey) {
+
+    $signature_key = 'xautoload-key-value-signature-' . $this->uniqueSiteHash;
+
+    if (FALSE === $signature = apcu_fetch($signature_key)) {
+      // Signature missing.
+      apcu_store($signature_key, $dynamicKey);
+    }
+    elseif ($signature !== $dynamicKey) {
+      // Signature mismatch.
+      /** @noinspection PhpUndefinedConstantInspection */
+      xcache_clear_cache(XC_TYPE_PHP);
+      xcache_set($signature_key, $dynamicKey);
+    }
+
+    $this->prefix = md5($this->uniqueSiteHash . '|' . $dynamicKey);
   }
 }

@@ -3,9 +3,34 @@
 namespace Drupal\xautoload\ClassLoader;
 
 use Drupal\xautoload\CacheManager\CacheManagerObserverInterface;
+use Drupal\xautoload\ClassFinder\ClassFinderInterface;
 use Drupal\xautoload\ClassFinder\InjectedApi\LoadClassGetFileInjectedApi;
 
-class WinCacheClassLoader extends AbstractCachedClassLoader implements CacheManagerObserverInterface {
+class WinCacheClassLoader extends AbstractClassLoaderDecorator implements CacheManagerObserverInterface {
+
+  /**
+   * @var string
+   */
+  private $uniqueSiteHash;
+
+  /**
+   * @var string
+   */
+  private $prefix;
+
+  /**
+   * @param \Drupal\xautoload\ClassFinder\ClassFinderInterface $finder
+   * @param string $uniqueSiteHash
+   * @param string $dynamicKey
+   */
+  public function __construct(ClassFinderInterface $finder, $uniqueSiteHash, $dynamicKey) {
+    if (!$this->checkRequirements()) {
+      throw new \RuntimeException("Extension 'wincache' is missing.");
+    }
+    parent::__construct($finder);
+    $this->uniqueSiteHash = $uniqueSiteHash;
+    $this->setCachePrefix($dynamicKey);
+  }
 
   /**
    * @return bool
@@ -37,5 +62,25 @@ class WinCacheClassLoader extends AbstractCachedClassLoader implements CacheMana
     if ($this->finder->apiFindFile($api, $class)) {
       wincache_ucache_set($this->prefix . $class, $api->getFile());
     }
+  }
+
+  /**
+   * @param string $dynamicKey
+   */
+  public function setCachePrefix($dynamicKey) {
+
+    $signature_key = 'xautoload-key-value-signature-' . $this->uniqueSiteHash;
+
+    if (FALSE === $signature = apcu_fetch($signature_key)) {
+      // Signature missing.
+      wincache_ucache_set($signature_key, $dynamicKey);
+    }
+    elseif ($signature !== $dynamicKey) {
+      // Signature mismatch.
+      wincache_ucache_clear();
+      wincache_ucache_set($signature_key, $dynamicKey);
+    }
+
+    $this->prefix = md5($this->uniqueSiteHash . '|' . $dynamicKey);
   }
 }
