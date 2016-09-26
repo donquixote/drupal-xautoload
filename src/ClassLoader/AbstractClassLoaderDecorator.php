@@ -18,7 +18,7 @@ abstract class AbstractClassLoaderDecorator extends AbstractClassLoader {
    * @param \Drupal\xautoload\ClassFinder\ClassFinderInterface $finder
    *   The object that does the actual class finding.
    */
-  protected function __construct($finder) {
+  protected function __construct(ClassFinderInterface $finder) {
     $this->finder = $finder;
   }
 
