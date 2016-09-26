@@ -3,10 +3,13 @@
 use Drupal\xautoload\ClassLoader\ApcClassLoader;
 use Drupal\xautoload\ClassLoader\ApcuClassLoader;
 use Drupal\xautoload\ClassLoader\ApcuQueuedCachedClassLoader;
+use Drupal\xautoload\ClassLoader\ClassLoader_Cache_IncrementalClassmap;
 use Drupal\xautoload\ClassLoader\DbCacheClassLoader;
 use Drupal\xautoload\ClassLoader\WinCacheClassLoader;
 use Drupal\xautoload\ClassLoader\XCacheClassLoader;
 use Drupal\xautoload\CacheMissObserver\CacheMissLoaderSetFinder;
+use Drupal\xautoload\DataCache\DataCache_Apcu;
+use Drupal\xautoload\DataCache\DataCache_DrupalCore;
 
 /*
  * When the module has just been installed,
@@ -163,7 +166,10 @@ function _xautoload_register_drupal() {
   $uniqueSiteHash = $services->system->getUniqueSiteHash();
   $dynamicKey = $services->cacheManager->getCachePrefix();
   if (!empty($cache_types['apcu_q']) && extension_loaded('apcu') && function_exists('apcu_store')) {
-    $cached_loader = ApcuQueuedCachedClassLoader::create($decorated, $services->cacheManager);
+    $cached_loader = new ClassLoader_Cache_IncrementalClassmap(
+      $decorated,
+      new DataCache_Apcu($uniqueSiteHash . '-xautoload-incremental-classmap'),
+      $dynamicKey);
   }
   elseif (!empty($cache_types['apc']) && extension_loaded('apc') && function_exists('apc_store')) {
     $cached_loader = new ApcClassLoader($decorated, $uniqueSiteHash, $dynamicKey);
@@ -178,7 +184,10 @@ function _xautoload_register_drupal() {
     $cached_loader = new XCacheClassLoader($decorated, $uniqueSiteHash, $dynamicKey);
   }
   elseif (!empty($cache_types['dbcache'])) {
-    $cached_loader = DbCacheClassLoader::create($decorated, $services->cacheManager);
+    $cached_loader = new ClassLoader_Cache_IncrementalClassmap(
+      $decorated,
+      new DataCache_DrupalCore('xautoload-incremental-classmap'),
+      $dynamicKey);
   }
 
   if (isset($cached_loader)) {
